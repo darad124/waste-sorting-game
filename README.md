@@ -1,73 +1,75 @@
-# React + TypeScript + Vite
+# Waste Sorting Game
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An interactive recycling and waste-management game built with React, TypeScript, Vite, Tailwind CSS, Framer Motion, and Zustand.
 
-Currently, two official plugins are available:
+Players sort falling waste items into the right bins, unlock harder levels, review mistakes, and learn how to identify recyclable, organic, hazardous, e-waste, and general waste.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- 10 progressive sorting levels with increasing speed, item count, and accuracy targets
+- Five waste categories: recyclable, organic, hazardous, e-waste, and general waste
+- Educational review screens after failed attempts
+- Encyclopedia for learning about unlocked waste items
+- Extra game modes including trivia, trash detective, and contamination hunt
+- Local progress persistence for unlocked levels, high scores, encyclopedia items, and sound settings
+- Music and sound effects with in-game toggles
+- Responsive animated UI powered by Framer Motion
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Getting Started
 
-## Expanding the ESLint configuration
+Install dependencies:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Run the development server:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+Build for production:
+
+```bash
+npm run build
+```
+
+Preview the production build:
+
+```bash
+npm run preview
+```
+
+Run lint checks:
+
+```bash
+npm run lint
+```
+
+## Project Structure
+
+```text
+src/
+  components/    Reusable game UI and gameplay components
+  data/          Level definitions and waste item data
+  screens/       Main app screens and mini-game modes
+  state/         Zustand game store and persistence
+  utils/         Audio helpers
+public/
+  audio/         Background music and sound effects
+```
+
+## Tech Stack
+
+- React 19
+- TypeScript
+- Vite
+- Tailwind CSS
+- Zustand
+- Framer Motion
+- Lucide React
+
+## Notes
+
+Game progress is stored in the browser with `localStorage`, so progress is device- and browser-specific.
