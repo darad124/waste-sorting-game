@@ -589,13 +589,13 @@ export const TriviaScreen: React.FC<TriviaScreenProps> = ({ onBack }) => {
                       : cardPulseState === "wrong"
                       ? { x: [-6, 6, -4, 4, 0], opacity: 1, borderColor: "#f43f5e", boxShadow: "0 0 25px rgba(244,63,94,0.35)" }
                       : streak >= 4
-                      ? { scale: 1, borderColor: "#22d3ee", boxShadow: "0 0 30px rgba(34,211,238,0.5)" }
+                      ? { x: 0, opacity: 1, scale: 1, borderColor: "#22d3ee", boxShadow: "0 0 30px rgba(34,211,238,0.5)" }
                       : streak >= 2
-                      ? { scale: 1, borderColor: "#f59e0b", boxShadow: "0 0 20px rgba(245,158,11,0.35)" }
+                      ? { x: 0, opacity: 1, scale: 1, borderColor: "#f59e0b", boxShadow: "0 0 20px rgba(245,158,11,0.35)" }
                       : { x: 0, opacity: 1, scale: 1, borderColor: "rgba(15,23,42,0.1)", boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.05)" }
                   }
-                  exit={{ x: -220, opacity: 0, scale: 0.95 }}
-                  transition={{ type: "spring", damping: 20, stiffness: 150 }}
+                  exit={{ x: -220, opacity: 0, scale: 0.95, transition: { duration: 0.22, ease: "easeIn" } }}
+                  transition={{ type: "spring", damping: 24, stiffness: 220, opacity: { duration: 0.18 } }}
                   className="absolute inset-x-0 h-full glass-panel border bg-white/85 border-slate-950/10 py-5 px-4 rounded-3xl flex items-center justify-center flex-col overflow-hidden"
                 >
                   {/* Floating flame embers behind the question text when streak is active */}
