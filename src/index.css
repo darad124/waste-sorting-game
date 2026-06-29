@@ -20,8 +20,28 @@ body {
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
-  height: 100vh;
+  min-height: 100vh;
+  min-height: 100dvh;
   width: 100vw;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+.app-shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
+}
+
+@media (max-width: 767px) {
+  .app-shell {
+    padding-bottom: max(5rem, calc(env(safe-area-inset-bottom, 0px) + 5rem));
+  }
 }
 
 /* Light Frosted-Glassmorphism panels */

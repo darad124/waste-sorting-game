@@ -108,6 +108,13 @@ const getCategoryHexColor = (category: WasteCategory) => {
   return "#6b7280";
 };
 
+const getPickerAlignment = (left: string) => {
+  const leftPercent = parseFloat(left);
+  if (leftPercent >= 70) return "right";
+  if (leftPercent <= 28) return "left";
+  return "center";
+};
+
 // Scene 1: Kitchen Diorama Props with Interactive Micro-Animations
 const KitchenProps: React.FC = () => {
   const [isToasting, setIsToasting] = useState(false);
@@ -890,22 +897,25 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
             </div>
 
             {/* Scene Canvas Container */}
-            <div className="w-full aspect-[4/3] max-h-[42vh] relative rounded-3xl overflow-hidden border border-slate-950/10 shadow-premium bg-slate-50 shrink-0">
-              {/* Pattern Background matching scene */}
-              <div className={`absolute inset-0 ${selectedScene.bgDecorationClass}`} />
+            <div className="w-full aspect-[4/3] max-h-[42vh] relative rounded-3xl overflow-visible border border-slate-950/10 shadow-premium bg-slate-50 shrink-0">
+              <div className="absolute inset-0 rounded-3xl overflow-hidden bg-slate-50">
+                {/* Pattern Background matching scene */}
+                <div className={`absolute inset-0 ${selectedScene.bgDecorationClass}`} />
 
-              {/* Render vector diorama props */}
-              {selectedScene.id === "kitchen" && <KitchenProps />}
-              {selectedScene.id === "beach" && <BeachProps />}
-              {selectedScene.id === "office" && <OfficeProps />}
-              {selectedScene.id === "park" && <ParkProps />}
-              {selectedScene.id === "school" && <SchoolProps />}
+                {/* Render vector diorama props */}
+                {selectedScene.id === "kitchen" && <KitchenProps />}
+                {selectedScene.id === "beach" && <BeachProps />}
+                {selectedScene.id === "office" && <OfficeProps />}
+                {selectedScene.id === "park" && <ParkProps />}
+                {selectedScene.id === "school" && <SchoolProps />}
+              </div>
 
               {/* Tappable hidden objects */}
               {selectedScene.items.map((item) => {
                 const isFound = foundIds.includes(item.id);
                 const isSelected = activeItemId === item.id;
                 const isShaking = shakingItemId === item.id;
+                const pickerAlignment = getPickerAlignment(item.left);
 
                 return (
                   <AnimatePresence key={item.id}>
@@ -960,14 +970,21 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
                                 position: "absolute",
                                 top: parseFloat(item.top) < 35 ? "120%" : undefined,
                                 bottom: parseFloat(item.top) >= 35 ? "120%" : undefined,
-                                left: "50%",
-                                transform: "translateX(-50%)",
+                                left: pickerAlignment === "left" ? 0 : pickerAlignment === "center" ? "50%" : undefined,
+                                right: pickerAlignment === "right" ? 0 : undefined,
+                                transform: pickerAlignment === "center" ? "translateX(-50%)" : undefined,
                               }}
                               className="flex gap-1.5 p-2 rounded-2xl glass-panel border border-slate-950/10 shadow-2xl bg-white/95 z-50 min-w-[210px] justify-center relative"
                             >
                               {/* Indicator pointer arrow */}
                               <div
-                                className={`absolute left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 bg-white border z-[-1] ${
+                                className={`absolute ${
+                                  pickerAlignment === "left"
+                                    ? "left-4"
+                                    : pickerAlignment === "right"
+                                      ? "right-4"
+                                      : "left-1/2 -translate-x-1/2"
+                                } w-3 h-3 rotate-45 bg-white border z-[-1] ${
                                   parseFloat(item.top) < 35
                                     ? "-top-1.5 border-t border-l border-slate-950/10"
                                     : "-bottom-1.5 border-b border-r border-slate-950/10"

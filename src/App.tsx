@@ -131,8 +131,8 @@ function App() {
   };
 
   return (
-    <div className="w-screen h-screen bg-[#fde047] font-sans antialiased text-slate-800 overflow-hidden select-none relative flex flex-col">
-      <div className="flex-1 h-full w-full relative z-10">
+    <div className="app-shell w-screen bg-[#fde047] font-sans antialiased text-slate-800 overflow-hidden select-none relative flex flex-col">
+      <div className="flex-1 min-h-0 w-full relative z-10">
         {renderActiveScreen()}
       </div>
     </div>
