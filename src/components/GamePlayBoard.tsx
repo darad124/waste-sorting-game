@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type PanInfo } from "framer-motion";
 import { useGameStore } from "../state/gameStore";
 import { WASTE_ITEMS } from "../data/wasteItems";
 import type { WasteCategory } from "../data/wasteItems";
@@ -29,6 +29,14 @@ interface ScorePopup {
   text: string;
   color: string;
 }
+
+interface BoardMeasurements {
+  missLine: number;
+  measuredAt: number;
+}
+
+const PHYSICS_FRAME_MS = 1000 / 30;
+const MEASUREMENT_CACHE_MS = 250;
 
 // Actual Bucket SVG component (Now larger and with support for shake and hover animations)
 const BucketSVG: React.FC<{ category: WasteCategory; isHovered: boolean; isShaking: boolean }> = ({
@@ -147,17 +155,16 @@ export const GamePlayBoard: React.FC = () => {
   const spawnedCountRef = useRef(0);
   const boardRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<FallingItem[]>([]);
-
-  if (!currentLevel) return null;
+  const measurementsRef = useRef<BoardMeasurements | null>(null);
+  const popupIdRef = useRef(0);
 
   // Spawning system
   useEffect(() => {
-    if (gameStatus !== "playing") return;
+    if (gameStatus !== "playing" || !currentLevel) return;
 
     spawnedCountRef.current = 0;
     itemsRef.current = [];
-    setItems([]);
-    setPopups([]);
+    const clearPopupsTimeout = window.setTimeout(() => setPopups([]), 0);
 
     const possibleItems = WASTE_ITEMS.filter(
       (item) =>
@@ -192,19 +199,51 @@ export const GamePlayBoard: React.FC = () => {
     spawn();
 
     const spawnInterval = setInterval(spawn, currentLevel.spawnDelay);
-    return () => clearInterval(spawnInterval);
+    return () => {
+      window.clearTimeout(clearPopupsTimeout);
+      clearInterval(spawnInterval);
+    };
   }, [gameStatus, currentLevel]);
 
   // Physics animation loop
   useEffect(() => {
-    if (gameStatus !== "playing") return;
+    if (gameStatus !== "playing" || !currentLevel) return;
 
     let lastTime = performance.now();
+    let frameId = 0;
+    let frameAccumulator = 0;
+
+    const getMissLine = (now: number) => {
+      const cached = measurementsRef.current;
+      if (cached && now - cached.measuredAt < MEASUREMENT_CACHE_MS) {
+        return cached.missLine;
+      }
+
+      const boardRect = boardRef.current?.getBoundingClientRect();
+      const binElements = document.querySelectorAll("[data-bin-category]");
+      const binBottoms = Array.from(binElements).map((el) => el.getBoundingClientRect().bottom);
+      const lowestBinBottom = binBottoms.length > 0 ? Math.max(...binBottoms) : undefined;
+      const missLine =
+        boardRect && lowestBinBottom
+          ? lowestBinBottom - boardRect.top
+          : boardRef.current?.clientHeight || window.innerHeight;
+
+      measurementsRef.current = { missLine, measuredAt: now };
+      return missLine;
+    };
 
     const updatePhysics = () => {
       const time = performance.now();
       const deltaSeconds = Math.min((time - lastTime) / 1000, 1);
       lastTime = time;
+      frameAccumulator += deltaSeconds * 1000;
+
+      if (frameAccumulator < PHYSICS_FRAME_MS) {
+        frameId = requestAnimationFrame(updatePhysics);
+        return;
+      }
+
+      frameAccumulator %= PHYSICS_FRAME_MS;
 
       const prevItems = itemsRef.current;
 
@@ -217,6 +256,7 @@ export const GamePlayBoard: React.FC = () => {
       }
 
       if (prevItems.length === 0) {
+        frameId = requestAnimationFrame(updatePhysics);
         return;
       }
 
@@ -230,14 +270,7 @@ export const GamePlayBoard: React.FC = () => {
       });
 
       // Check for missed items
-      const boardRect = boardRef.current?.getBoundingClientRect();
-      const binElements = document.querySelectorAll("[data-bin-category]");
-      const binBottoms = Array.from(binElements).map((el) => el.getBoundingClientRect().bottom);
-      const lowestBinBottom = binBottoms.length > 0 ? Math.max(...binBottoms) : undefined;
-      const missLine =
-        boardRect && lowestBinBottom
-          ? lowestBinBottom - boardRect.top
-          : boardRef.current?.clientHeight || window.innerHeight;
+      const missLine = getMissLine(time);
 
       const missed = updated.filter((item) => !item.isDragged && !item.isSnapping && item.y > missLine);
       if (missed.length > 0) {
@@ -251,7 +284,7 @@ export const GamePlayBoard: React.FC = () => {
 
           // Spawn floating missed popup
           const screenX = (m.xPercent / 100) * (boardRef.current?.clientWidth || window.innerWidth);
-          const popupId = Math.random().toString();
+          const popupId = `missed-${popupIdRef.current++}`;
           setPopups((prev) => [
             ...prev,
             {
@@ -271,10 +304,12 @@ export const GamePlayBoard: React.FC = () => {
 
       itemsRef.current = updated;
       setItems([...itemsRef.current]);
+
+      frameId = requestAnimationFrame(updatePhysics);
     };
 
-    const physicsInterval = window.setInterval(updatePhysics, 16);
-    return () => window.clearInterval(physicsInterval);
+    frameId = requestAnimationFrame(updatePhysics);
+    return () => cancelAnimationFrame(frameId);
   }, [gameStatus, currentLevel, finishSession, recordSort]);
 
   // Drag handlers
@@ -286,7 +321,7 @@ export const GamePlayBoard: React.FC = () => {
     playSound.dragStart();
   };
 
-  const handleDrag = (_id: string, info: any) => {
+  const handleDrag = (_id: string, info: PanInfo) => {
     const clientX = info.point.x;
     const clientY = info.point.y;
 
@@ -363,7 +398,7 @@ export const GamePlayBoard: React.FC = () => {
         triggerConfetti(binCenterX, binCenterY, "#10b981");
 
         // Spawn Floating score popup
-        const popupId = Math.random().toString();
+        const popupId = `score-${popupIdRef.current++}`;
         setPopups((prev) => [
           ...prev,
           {
@@ -384,7 +419,7 @@ export const GamePlayBoard: React.FC = () => {
         setTimeout(() => setShakingBucketCategory(null), 400);
 
         // Spawn wrong mark popup
-        const popupId = Math.random().toString();
+        const popupId = `wrong-${popupIdRef.current++}`;
         setPopups((prev) => [
           ...prev,
           {
@@ -408,7 +443,7 @@ export const GamePlayBoard: React.FC = () => {
     }
   };
 
-  const handleDragEnd = (id: string, info: any) => {
+  const handleDragEnd = (id: string, info: PanInfo) => {
     setHoveredCategory(null);
     const clientX = info.point.x;
     const clientY = info.point.y;
@@ -441,6 +476,8 @@ export const GamePlayBoard: React.FC = () => {
       playSound.drop();
     }
   };
+
+  if (!currentLevel) return null;
 
   return (
     <div
