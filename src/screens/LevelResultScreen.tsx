@@ -26,7 +26,20 @@ export const LevelResultScreen: React.FC<LevelResultScreenProps> = ({
     sortedItems,
   } = useGameStore();
 
-  const [randomFact, setRandomFact] = useState<{ id: string; name: string; fact: string } | null>(null);
+  // Picked once when the screen mounts; the run is already over, so it never needs to change.
+  const [randomFact] = useState<{ id: string; name: string; fact: string } | null>(() => {
+    // Prefer a fact from a correctly sorted item, falling back to any sorted item.
+    const pool = sortedItems.filter((item) => item.isCorrect);
+    const source = pool.length > 0 ? pool : sortedItems;
+    if (source.length === 0) return null;
+
+    const randomRecord = source[Math.floor(Math.random() * source.length)];
+    return {
+      id: randomRecord.item.id,
+      name: randomRecord.item.name,
+      fact: randomRecord.item.shortFact,
+    };
+  });
 
   // Calculate results on mount
   const totalProcessed = correctCount + wrongCount;
@@ -42,26 +55,7 @@ export const LevelResultScreen: React.FC<LevelResultScreenProps> = ({
   useEffect(() => {
     // Play celebratory chime
     playSound.levelComplete();
-
-    // Pick a random fact from correct sorted items
-    const correctRecords = sortedItems.filter((item) => item.isCorrect);
-    if (correctRecords.length > 0) {
-      const randomRecord = correctRecords[Math.floor(Math.random() * correctRecords.length)];
-      setRandomFact({
-        id: randomRecord.item.id,
-        name: randomRecord.item.name,
-        fact: randomRecord.item.shortFact,
-      });
-    } else if (sortedItems.length > 0) {
-      // Fallback to any sorted item if none were correct
-      const randomRecord = sortedItems[Math.floor(Math.random() * sortedItems.length)];
-      setRandomFact({
-        id: randomRecord.item.id,
-        name: randomRecord.item.name,
-        fact: randomRecord.item.shortFact,
-      });
-    }
-  }, [sortedItems]);
+  }, []);
 
   if (!currentLevel) return null;
 

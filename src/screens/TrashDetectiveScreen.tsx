@@ -4,7 +4,7 @@ import { ArrowLeft, Search, Clock, AlertTriangle, Check } from "lucide-react";
 import { useGameStore } from "../state/gameStore";
 import { WASTE_ITEMS } from "../data/wasteItems";
 import type { WasteCategory } from "../data/wasteItems";
-import { CATEGORY_META } from "../components/BinBadge";
+import { CATEGORY_META } from "../data/categoryMeta";
 import { ItemSVG } from "../components/ItemSVG";
 import { playSound } from "../utils/audio";
 
@@ -763,10 +763,10 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
   const [gameState, setGameState] = useState<"select" | "play" | "results">("select");
   const timerRef = useRef<number | null>(null);
 
-  // Spawner and game timer effects
+  // Countdown for the active scene. The clock is reset by handleStartScene so the
+  // effect only owns the interval, never a synchronous state update.
   useEffect(() => {
     if (gameState === "play") {
-      setTimeLeft(90);
       timerRef.current = window.setInterval(() => {
         setTimeLeft((prev) => {
           if (prev <= 1) {
@@ -784,20 +784,12 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
     };
   }, [gameState]);
 
-  // Win condition trigger
-  useEffect(() => {
-    if (selectedScene && foundIds.length === selectedScene.items.length && gameState === "play") {
-      setGameState("results");
-      if (timerRef.current) clearInterval(timerRef.current);
-      playSound.detectiveClear();
-    }
-  }, [foundIds, selectedScene, gameState]);
-
   const handleStartScene = (scene: SceneConfig) => {
     setSelectedScene(scene);
     setFoundIds([]);
     setActiveItemId(null);
     setWrongAttempts([]);
+    setTimeLeft(90);
     setGameState("play");
     playSound.detectiveScan();
   };
@@ -805,11 +797,19 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
   const handleSelectCategory = (item: DetectiveItem, category: WasteCategory) => {
     if (item.category === category) {
       // Correct sorting!
-      setFoundIds((prev) => [...prev, item.id]);
+      const nextFoundIds = [...foundIds, item.id];
+      setFoundIds(nextFoundIds);
       setActiveItemId(null);
       playSound.detectiveFound();
       // Unlock in Encyclopedia
       useGameStore.getState().unlockEncyclopediaItem(item.itemId);
+
+      // Win condition: every planted item has been sorted correctly.
+      if (selectedScene && nextFoundIds.length === selectedScene.items.length) {
+        setGameState("results");
+        if (timerRef.current) clearInterval(timerRef.current);
+        playSound.detectiveClear();
+      }
     } else {
       // Wrong sorting!
       setShakingItemId(item.id);

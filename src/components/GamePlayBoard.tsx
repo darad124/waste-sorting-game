@@ -3,9 +3,9 @@ import { motion, AnimatePresence, type PanInfo } from "framer-motion";
 import { useGameStore } from "../state/gameStore";
 import { WASTE_ITEMS } from "../data/wasteItems";
 import type { WasteCategory } from "../data/wasteItems";
-import { CATEGORY_META } from "../components/BinBadge";
+import { CATEGORY_META } from "../data/categoryMeta";
 import { playSound } from "../utils/audio";
-import { triggerConfetti } from "./ParticleEmitter";
+import { triggerConfetti } from "../utils/particles";
 import { ItemSVG } from "./ItemSVG";
 
 interface FallingItem {

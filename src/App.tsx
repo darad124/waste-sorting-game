@@ -28,8 +28,11 @@ function App() {
   const [screen, setScreen] = useState<ScreenName>("home");
   const { gameStatus, startLevel } = useGameStore();
 
-  // Synchronize screen state with Zustand gameStatus changes (triggered by game completions/failures)
-  useEffect(() => {
+  // Synchronize screen state with Zustand gameStatus changes (triggered by game completions/failures).
+  // Adjusted during render rather than in an effect so the new screen paints in the same commit.
+  const [prevGameStatus, setPrevGameStatus] = useState(gameStatus);
+  if (gameStatus !== prevGameStatus) {
+    setPrevGameStatus(gameStatus);
     if (gameStatus === "completed") {
       setScreen("completed");
     } else if (gameStatus === "failed") {
@@ -37,7 +40,7 @@ function App() {
     } else if (gameStatus === "playing") {
       setScreen("game");
     }
-  }, [gameStatus]);
+  }
 
   // Unlock background music from the first real user gesture.
   useEffect(() => {

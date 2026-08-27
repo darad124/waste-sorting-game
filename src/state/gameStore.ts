@@ -60,15 +60,15 @@ const getLocalStorage = <T>(key: string, defaultValue: T): T => {
   try {
     const saved = localStorage.getItem(key);
     return saved ? JSON.parse(saved) : defaultValue;
-  } catch (e) {
+  } catch {
     return defaultValue;
   }
 };
 
-const setLocalStorage = (key: string, value: any) => {
+const setLocalStorage = (key: string, value: unknown) => {
   try {
     localStorage.setItem(key, JSON.stringify(value));
-  } catch (e) {
+  } catch {
     // Ignore errors in sandbox/private browsing
   }
 };
@@ -199,8 +199,8 @@ export const useGameStore = create<GameState>((set, get) => ({
       const nextWrongCount = state.wrongCount + (isCorrect ? 0 : 1);
       
       // 2. Streaks and scoring
-      let nextStreak = isCorrect ? state.streak + 1 : 0;
-      let nextMaxStreak = Math.max(state.maxStreak, nextStreak);
+      const nextStreak = isCorrect ? state.streak + 1 : 0;
+      const nextMaxStreak = Math.max(state.maxStreak, nextStreak);
       
       // Scoring formula:
       // Correct: +100 base score

@@ -3,7 +3,8 @@ import { ArrowLeft, BookOpen, Lock, X, Info, HelpCircle } from "lucide-react";
 import { WASTE_ITEMS } from "../data/wasteItems";
 import type { WasteItem, WasteCategory } from "../data/wasteItems";
 import { useGameStore } from "../state/gameStore";
-import { BinBadge, CATEGORY_META } from "../components/BinBadge";
+import { BinBadge } from "../components/BinBadge";
+import { CATEGORY_META } from "../data/categoryMeta";
 import { ItemSVG } from "../components/ItemSVG";
 
 interface EncyclopediaScreenProps {

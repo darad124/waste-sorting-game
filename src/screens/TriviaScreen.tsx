@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, HelpCircle, Check, X, Award, AlertCircle } from "lucide-react";
 import { playSound } from "../utils/audio";
 import { ItemSVG } from "../components/ItemSVG";
-import { triggerConfetti } from "../components/ParticleEmitter";
+import { triggerConfetti } from "../utils/particles";
 
 interface TriviaQuestion {
   id: string;
@@ -371,12 +371,25 @@ const ComboBanner: React.FC<ComboBannerProps> = ({ text, isSuper }) => {
   );
 };
 
+// Select 5 random unique questions for a round.
+const pickRoundQuestions = (): TriviaQuestion[] =>
+  [...TRIVIA_BANK].sort(() => 0.5 - Math.random()).slice(0, 5);
+
+// Randomised flame embers, generated once so re-renders don't jitter the animation.
+const makeEmbers = () =>
+  Array.from({ length: 6 }, () => ({
+    x: 20 + Math.random() * 260,
+    scale: 0.6 + Math.random() * 0.8,
+    duration: 1.4 + Math.random() * 1.2,
+  }));
+
 interface TriviaScreenProps {
   onBack: () => void;
 }
 
 export const TriviaScreen: React.FC<TriviaScreenProps> = ({ onBack }) => {
-  const [questions, setQuestions] = useState<TriviaQuestion[]>([]);
+  const [questions, setQuestions] = useState<TriviaQuestion[]>(pickRoundQuestions);
+  const [embers] = useState(makeEmbers);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<boolean | null>(null);
   const [cardPulseState, setCardPulseState] = useState<"none" | "correct" | "wrong">("none");
@@ -390,10 +403,6 @@ export const TriviaScreen: React.FC<TriviaScreenProps> = ({ onBack }) => {
   const [comboText, setComboText] = useState<string | null>(null);
   const [isExtinguishing, setIsExtinguishing] = useState(false);
 
-  useEffect(() => {
-    startNewRound();
-  }, []);
-
   const startNewRound = () => {
     setCurrentIndex(0);
     setUserAnswers([]);
@@ -406,9 +415,7 @@ export const TriviaScreen: React.FC<TriviaScreenProps> = ({ onBack }) => {
     setComboText(null);
     setIsExtinguishing(false);
     
-    // Select 5 random unique questions.
-    const shuffled = [...TRIVIA_BANK].sort(() => 0.5 - Math.random());
-    setQuestions(shuffled.slice(0, 5));
+    setQuestions(pickRoundQuestions());
   };
 
   const handleAnswer = (answer: boolean) => {
@@ -599,12 +606,12 @@ export const TriviaScreen: React.FC<TriviaScreenProps> = ({ onBack }) => {
                   className="absolute inset-x-0 h-full glass-panel border bg-white/85 border-slate-950/10 py-5 px-4 rounded-3xl flex items-center justify-center flex-col overflow-hidden"
                 >
                   {/* Floating flame embers behind the question text when streak is active */}
-                  {streak >= 2 && Array.from({ length: 6 }).map((_, i) => (
+                  {streak >= 2 && embers.map((ember, i) => (
                     <motion.div
                       key={i}
-                      initial={{ y: 220, x: 20 + Math.random() * 260, opacity: 0.7, scale: 0.6 + Math.random() * 0.8 }}
+                      initial={{ y: 220, x: ember.x, opacity: 0.7, scale: ember.scale }}
                       animate={{ y: -30, opacity: 0, scale: 0.1 }}
-                      transition={{ repeat: Infinity, duration: 1.4 + Math.random() * 1.2, delay: i * 0.25 }}
+                      transition={{ repeat: Infinity, duration: ember.duration, delay: i * 0.25 }}
                       className={`absolute w-2.5 h-2.5 rounded-full pointer-events-none z-0 ${
                         streak >= 4 
                           ? "bg-cyan-400 shadow-[0_0_8px_#22d3ee]" 

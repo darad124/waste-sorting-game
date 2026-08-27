@@ -3,7 +3,7 @@ import { ArrowLeft, Lock, Trophy, Play } from "lucide-react";
 import { LEVELS } from "../data/levels";
 import { useGameStore } from "../state/gameStore";
 import { ProgressStars } from "../components/ProgressStars";
-import { CATEGORY_META } from "../components/BinBadge";
+import { CATEGORY_META } from "../data/categoryMeta";
 
 interface LevelSelectScreenProps {
   onBack: () => void;

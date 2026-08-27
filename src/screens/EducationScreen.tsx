@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { AlertCircle, RotateCcw, Home, HelpCircle } from "lucide-react";
 import { useGameStore } from "../state/gameStore";
-import { CATEGORY_META } from "../components/BinBadge";
+import { CATEGORY_META } from "../data/categoryMeta";
 import { playSound } from "../utils/audio";
 import { ItemSVG } from "../components/ItemSVG";
 

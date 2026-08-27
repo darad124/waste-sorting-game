@@ -5,7 +5,10 @@ let audioCtx: AudioContext | null = null;
 
 const getAudioContext = (): AudioContext => {
   if (!audioCtx) {
-    audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const AudioContextCtor =
+      window.AudioContext ??
+      (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    audioCtx = new AudioContextCtor!();
   }
   if (audioCtx.state === "suspended") {
     audioCtx.resume();
@@ -160,7 +163,7 @@ export const playSound = {
 
       osc.start(now);
       osc.stop(now + 0.08);
-    } catch (e) {
+    } catch {
       // Ignored
     }
   },
@@ -187,7 +190,7 @@ export const playSound = {
 
       osc.start(now);
       osc.stop(now + 0.05);
-    } catch (e) {
+    } catch {
       // Ignored
     }
   },

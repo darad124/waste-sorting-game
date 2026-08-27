@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Trash2, CheckCircle, AlertCircle } from "lucide-react";
 import { useGameStore } from "../state/gameStore";
 import { WASTE_ITEMS } from "../data/wasteItems";
 import type { WasteCategory } from "../data/wasteItems";
-import { CATEGORY_META } from "../components/BinBadge";
+import { CATEGORY_META } from "../data/categoryMeta";
 import { ItemSVG } from "../components/ItemSVG";
-import { triggerConfetti } from "../components/ParticleEmitter";
+import { triggerConfetti } from "../utils/particles";
 import { playSound } from "../utils/audio";
 
 interface HuntRound {
@@ -111,25 +111,30 @@ export const ContaminationHuntScreen: React.FC<ContaminationHuntScreenProps> = (
   const [shakingItemId, setShakingItemId] = useState<string | null>(null);
   const [isPileShaking, setIsPileShaking] = useState(false);
   const [wrongAttempts, setWrongAttempts] = useState<{ itemId: string; explanation: string }[]>([]);
-  const [shuffledItems, setShuffledItems] = useState<{ id: string; isImposter: boolean }[]>([]);
+  // Shuffled once per mount: each compartment is visited a single time per run,
+  // so the layout is stable for the whole session.
+  const [roundLayouts] = useState<{ id: string; isImposter: boolean }[][]>(() =>
+    HUNTS.map((round) =>
+      [
+        ...round.validItemIds.map((id) => ({ id, isImposter: false })),
+        { id: round.imposterItemId, isImposter: true },
+      ].sort(() => 0.5 - Math.random())
+    )
+  );
   const [showExplanation, setShowExplanation] = useState(false);
 
-  // Prepare items for the active round
-  useEffect(() => {
-    if (currentRoundIdx < HUNTS.length) {
-      const activeRound = HUNTS[currentRoundIdx];
-      const itemsList = [
-        ...activeRound.validItemIds.map(id => ({ id, isImposter: false })),
-        { id: activeRound.imposterItemId, isImposter: true }
-      ];
-      // Shuffle items so position is random
-      setShuffledItems(itemsList.sort(() => 0.5 - Math.random()));
-      setIsFound(false);
-      setShakingItemId(null);
-      setIsPileShaking(false);
-      setShowExplanation(false);
-    }
-  }, [currentRoundIdx]);
+  // Reset the per-round flags when the compartment changes. Adjusted during render
+  // instead of in an effect so the new round never paints with the old round's state.
+  const [prevRoundIdx, setPrevRoundIdx] = useState(currentRoundIdx);
+  if (currentRoundIdx !== prevRoundIdx) {
+    setPrevRoundIdx(currentRoundIdx);
+    setIsFound(false);
+    setShakingItemId(null);
+    setIsPileShaking(false);
+    setShowExplanation(false);
+  }
+
+  const shuffledItems = roundLayouts[currentRoundIdx] ?? [];
 
   const handleTapItem = (id: string, isImposter: boolean) => {
     if (isFound) return;
