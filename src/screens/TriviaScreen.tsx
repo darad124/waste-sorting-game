@@ -4,6 +4,7 @@ import { ArrowLeft, HelpCircle, Check, X, Award, AlertCircle } from "lucide-reac
 import { playSound } from "../utils/audio";
 import { ItemSVG } from "../components/ItemSVG";
 import { triggerConfetti } from "../components/ParticleEmitter";
+import { ShareButton } from "../components/ShareButton";
 
 interface TriviaQuestion {
   id: string;
@@ -766,7 +767,10 @@ export const TriviaScreen: React.FC<TriviaScreenProps> = ({ onBack }) => {
             </div>
 
             {/* Actions Grid */}
-            <div className="grid grid-cols-2 gap-3 mt-1.5">
+            <div className="flex flex-col gap-3 mt-1.5">
+              <ShareButton target={{ kind: "mode", id: "trivia" }} />
+
+              <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={startNewRound}
                 className="w-full py-3 bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 font-black text-xs rounded-xl flex items-center justify-center gap-2 cursor-pointer transition-all shadow-premium"
@@ -780,6 +784,7 @@ export const TriviaScreen: React.FC<TriviaScreenProps> = ({ onBack }) => {
               >
                 MAIN MENU
               </button>
+              </div>
             </div>
           </div>
         )}

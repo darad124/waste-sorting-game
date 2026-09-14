@@ -11,6 +11,7 @@ import { TrashDetectiveScreen } from "./screens/TrashDetectiveScreen";
 import { TriviaScreen } from "./screens/TriviaScreen";
 import { ContaminationHuntScreen } from "./screens/ContaminationHuntScreen";
 import { backgroundMusic } from "./utils/audio";
+import { parseShareQuery } from "./utils/share";
 
 type ScreenName =
   | "home"
@@ -25,8 +26,25 @@ type ScreenName =
   | "contamination";
 
 function App() {
-  const [screen, setScreen] = useState<ScreenName>("home");
+  const initialShareTarget = parseShareQuery(new URLSearchParams(window.location.search).get("share"));
+  const [screen, setScreen] = useState<ScreenName>(() => {
+    if (!initialShareTarget) return "home";
+    return initialShareTarget.kind === "level" ? "game" : initialShareTarget.id;
+  });
   const { gameStatus, startLevel } = useGameStore();
+
+  // Shared links use a tiny query value so the static social page can hand
+  // the visitor back to the correct game inside the SPA.
+  useEffect(() => {
+    const target = parseShareQuery(new URLSearchParams(window.location.search).get("share"));
+    if (!target) return;
+
+    if (target.kind === "level") {
+      startLevel(target.id);
+    }
+
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }, [startLevel]);
 
   // Synchronize screen state with Zustand gameStatus changes (triggered by game completions/failures)
   useEffect(() => {

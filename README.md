@@ -73,3 +73,19 @@ public/
 ## Notes
 
 Game progress is stored in the browser with `localStorage`, so progress is device- and browser-specific.
+
+## Sharing
+
+Result screens include a cross-platform share menu for the arcade levels, Trash Detective, Yes/No Trivia, and Imposter Hunt. Each share link has a route-specific 1200×630 PNG card plus Open Graph and Twitter metadata, so social platforms can show the correct game image.
+
+The share pages are generated during the production build. Set the public deployment URL before building so the metadata contains absolute image URLs:
+
+```bash
+SHARE_SITE_URL=https://your-domain.example npm run build
+```
+
+Vercel's `VERCEL_URL` is used as a fallback when `SHARE_SITE_URL` is not set. The checked-in cards are gameplay screenshots. With the local Vite server running, you can recapture them after changing the gameplay layout by running:
+
+```bash
+npm run capture:share-cards
+```

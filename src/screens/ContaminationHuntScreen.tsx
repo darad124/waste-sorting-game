@@ -8,6 +8,7 @@ import { CATEGORY_META } from "../components/BinBadge";
 import { ItemSVG } from "../components/ItemSVG";
 import { triggerConfetti } from "../components/ParticleEmitter";
 import { playSound } from "../utils/audio";
+import { ShareButton } from "../components/ShareButton";
 
 interface HuntRound {
   binCategory: WasteCategory;
@@ -453,7 +454,10 @@ export const ContaminationHuntScreen: React.FC<ContaminationHuntScreenProps> = (
             )}
 
             {/* Actions Grid */}
-            <div className="grid grid-cols-2 gap-3 mt-1.5">
+            <div className="flex flex-col gap-3 mt-1.5">
+              <ShareButton target={{ kind: "mode", id: "contamination" }} />
+
+              <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={handleRestart}
                 className="w-full py-3 bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 font-black text-xs rounded-xl flex items-center justify-center gap-2 cursor-pointer transition-all shadow-premium"
@@ -467,6 +471,7 @@ export const ContaminationHuntScreen: React.FC<ContaminationHuntScreenProps> = (
               >
                 MAIN MENU
               </button>
+              </div>
             </div>
           </div>
         )}

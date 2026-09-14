@@ -4,6 +4,7 @@ import { useGameStore } from "../state/gameStore";
 import { ProgressStars } from "../components/ProgressStars";
 import { playSound } from "../utils/audio";
 import { ItemSVG } from "../components/ItemSVG";
+import { ShareButton } from "../components/ShareButton";
 
 interface LevelResultScreenProps {
   onNextLevel: (levelId: number) => void;
@@ -136,6 +137,8 @@ export const LevelResultScreen: React.FC<LevelResultScreenProps> = ({
 
         {/* Action Buttons */}
         <div className="flex flex-col gap-3">
+          <ShareButton target={{ kind: "level", id: currentLevel.id }} />
+
           <button
             onClick={() => onNextLevel(currentLevel.id + 1)}
             className="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black rounded-xl shadow-[0_6px_25px_rgba(16,185,129,0.25)] flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.01] active:scale-[0.99] transition-all"

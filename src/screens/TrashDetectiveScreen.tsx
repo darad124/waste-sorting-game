@@ -7,6 +7,7 @@ import type { WasteCategory } from "../data/wasteItems";
 import { CATEGORY_META } from "../components/BinBadge";
 import { ItemSVG } from "../components/ItemSVG";
 import { playSound } from "../utils/audio";
+import { ShareButton } from "../components/ShareButton";
 
 interface DetectiveItem {
   id: string;
@@ -1115,6 +1116,8 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
                   SELECT SCENE
                 </button>
               </div>
+
+              <ShareButton target={{ kind: "mode", id: "detective" }} />
 
               <button
                 onClick={onBack}

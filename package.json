@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && npm run generate:share-pages",
+    "generate:share-pages": "node scripts/generate-share-pages.mjs",
+    "capture:share-cards": "node scripts/capture-gameplay-share-cards.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },

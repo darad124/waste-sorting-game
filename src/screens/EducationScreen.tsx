@@ -4,6 +4,7 @@ import { useGameStore } from "../state/gameStore";
 import { CATEGORY_META } from "../components/BinBadge";
 import { playSound } from "../utils/audio";
 import { ItemSVG } from "../components/ItemSVG";
+import { ShareButton } from "../components/ShareButton";
 
 interface EducationScreenProps {
   onRetryLevel: (levelId: number) => void;
@@ -126,6 +127,8 @@ export const EducationScreen: React.FC<EducationScreenProps> = ({
 
         {/* Bottom Action buttons */}
         <div className="flex flex-col gap-3 shrink-0 mt-auto">
+          <ShareButton target={{ kind: "level", id: currentLevel.id }} label="Share this level" />
+
           <button
             onClick={() => onRetryLevel(currentLevel.id)}
             className="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black rounded-xl shadow-[0_6px_25px_rgba(16,185,129,0.25)] flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.01] active:scale-[0.99] transition-all"
