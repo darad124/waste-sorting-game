@@ -29,7 +29,8 @@ function App() {
   const initialShareTarget = parseShareQuery(new URLSearchParams(window.location.search).get("share"));
   const [screen, setScreen] = useState<ScreenName>(() => {
     if (!initialShareTarget) return "home";
-    return initialShareTarget.kind === "level" ? "game" : initialShareTarget.id;
+    if (initialShareTarget.kind === "level") return "game";
+    return initialShareTarget.id === "arcade" ? "levels" : initialShareTarget.id;
   });
   const { gameStatus, startLevel } = useGameStore();
 

@@ -76,7 +76,7 @@ Game progress is stored in the browser with `localStorage`, so progress is devic
 
 ## Sharing
 
-Result screens include a cross-platform share menu for the arcade levels, Trash Detective, Yes/No Trivia, and Imposter Hunt. Each share link has a route-specific 1200×630 PNG card plus Open Graph and Twitter metadata, so social platforms can show the correct game image.
+Share controls are available before play on the home mode cards and each level-selection card, and after play on the result screens for the arcade levels, Trash Detective, Yes/No Trivia, and Imposter Hunt. Each share link has a route-specific 1200×630 gameplay screenshot plus Open Graph and Twitter metadata, so social platforms can show the correct game image.
 
 The share pages are generated during the production build. Set the public deployment URL before building so the metadata contains absolute image URLs:
 

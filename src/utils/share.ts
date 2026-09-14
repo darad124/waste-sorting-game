@@ -1,6 +1,6 @@
 import { LEVELS } from "../data/levels";
 
-export type ShareMode = "detective" | "trivia" | "contamination";
+export type ShareMode = "arcade" | "detective" | "trivia" | "contamination";
 
 export type ShareTarget =
   | { kind: "level"; id: number }
@@ -17,6 +17,13 @@ export interface ShareDetails {
 }
 
 const MODE_DETAILS: Record<ShareMode, Omit<ShareDetails, "pathname" | "queryValue">> = {
+  arcade: {
+    title: "Arcade Mode | EcoSort",
+    description: "Sort falling waste into the right bins, build combos, and earn stars.",
+    shareText: "Try EcoSort Arcade Mode ♻️ Sort the falling waste, build a streak, and save the planet!",
+    imagePath: "/share-cards/mode-arcade.png",
+    imageAlt: "EcoSort Arcade Mode share card",
+  },
   detective: {
     title: "Trash Detective | EcoSort",
     description: "Scan messy scenes, find hidden waste, and learn where every item belongs.",

@@ -11,6 +11,7 @@ const browserTempRoot = join(tmpdir(), "ecosort-share-card-captures");
 
 const targets = [
   ...Array.from({ length: 10 }, (_, index) => `level-${index + 1}`),
+  "mode-arcade",
   "mode-detective",
   "mode-trivia",
   "mode-contamination",

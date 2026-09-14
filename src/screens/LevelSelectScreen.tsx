@@ -4,6 +4,7 @@ import { LEVELS } from "../data/levels";
 import { useGameStore } from "../state/gameStore";
 import { ProgressStars } from "../components/ProgressStars";
 import { CATEGORY_META } from "../components/BinBadge";
+import { ShareButton } from "../components/ShareButton";
 
 interface LevelSelectScreenProps {
   onBack: () => void;
@@ -98,6 +99,12 @@ export const LevelSelectScreen: React.FC<LevelSelectScreenProps> = ({ onBack, on
                     <Lock size={16} />
                   </div>
                 )}
+                <ShareButton
+                  target={{ kind: "level", id: level.id }}
+                  label={`Share Level ${level.id}`}
+                  compact
+                  className="mt-2"
+                />
               </div>
             </div>
           );

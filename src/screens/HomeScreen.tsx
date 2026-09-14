@@ -5,6 +5,7 @@ import { SoundToggle } from "../components/SoundToggle";
 import { LEVELS } from "../data/levels";
 import { WASTE_ITEMS } from "../data/wasteItems";
 import { ItemSVG } from "../components/ItemSVG";
+import { ShareButton } from "../components/ShareButton";
 
 interface HomeScreenProps {
   onNavigate: (screen: string) => void;
@@ -70,60 +71,76 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
         <h2 className="text-[9px] sm:text-[10px] font-black text-slate-600 uppercase tracking-widest mb-2.5">Select Game Mode</h2>
         <div className="grid grid-cols-2 gap-3 max-w-md mx-auto w-full">
           {/* Arcade Card */}
-          <button
-            onClick={() => onNavigate("levels")}
-            className="flex flex-col items-start text-left p-3 sm:p-4 rounded-2xl border-2 border-slate-950/10 bg-white/75 hover:bg-white transition-all duration-200 cursor-pointer shadow-premium hover:-translate-y-0.5 active:translate-y-0 hover:border-emerald-500 group min-h-[105px] sm:min-h-[125px] justify-between"
-          >
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-emerald-500/10 text-emerald-800 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Play size={16} className="fill-emerald-800" />
-            </div>
-            <div className="mt-2">
-              <div className="font-extrabold text-slate-900 text-xs sm:text-sm leading-none">Arcade Mode</div>
-              <div className="text-[9px] sm:text-[10px] text-slate-600 font-semibold mt-1 leading-snug">Falling waste action with timer, combos, and stars.</div>
-            </div>
-          </button>
+          <div className="relative min-h-[105px] sm:min-h-[125px]">
+            <button
+              type="button"
+              onClick={() => onNavigate("levels")}
+              className="flex h-full w-full flex-col items-start justify-between rounded-2xl border-2 border-slate-950/10 bg-white/75 p-3 text-left shadow-premium transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-500 hover:bg-white active:translate-y-0 group sm:p-4"
+            >
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-emerald-500/10 text-emerald-800 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Play size={16} className="fill-emerald-800" />
+              </div>
+              <div className="mt-2">
+                <div className="font-extrabold text-slate-900 text-xs sm:text-sm leading-none">Arcade Mode</div>
+                <div className="text-[9px] sm:text-[10px] text-slate-600 font-semibold mt-1 leading-snug">Falling waste action with timer, combos, and stars.</div>
+              </div>
+            </button>
+            <ShareButton target={{ kind: "mode", id: "arcade" }} label="Share Arcade Mode" compact className="absolute top-2.5 right-2.5 z-20" />
+          </div>
 
           {/* Trash Detective */}
-          <button
-            onClick={() => onNavigate("detective")}
-            className="flex flex-col items-start text-left p-3 sm:p-4 rounded-2xl border-2 border-slate-950/10 bg-white/75 hover:bg-white transition-all duration-200 cursor-pointer shadow-premium hover:-translate-y-0.5 active:translate-y-0 hover:border-blue-500 group min-h-[105px] sm:min-h-[125px] justify-between"
-          >
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-blue-500/10 text-blue-800 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <BookOpen size={16} />
-            </div>
-            <div className="mt-2">
-              <div className="font-extrabold text-slate-900 text-xs sm:text-sm leading-none">Trash Detective</div>
-              <div className="text-[9px] sm:text-[10px] text-slate-600 font-semibold mt-1 leading-snug">Scan cooking or cleaning scenes to spot hidden litter.</div>
-            </div>
-          </button>
+          <div className="relative min-h-[105px] sm:min-h-[125px]">
+            <button
+              type="button"
+              onClick={() => onNavigate("detective")}
+              className="flex h-full w-full flex-col items-start justify-between rounded-2xl border-2 border-slate-950/10 bg-white/75 p-3 text-left shadow-premium transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-500 hover:bg-white active:translate-y-0 group sm:p-4"
+            >
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-blue-500/10 text-blue-800 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <BookOpen size={16} />
+              </div>
+              <div className="mt-2">
+                <div className="font-extrabold text-slate-900 text-xs sm:text-sm leading-none">Trash Detective</div>
+                <div className="text-[9px] sm:text-[10px] text-slate-600 font-semibold mt-1 leading-snug">Scan cooking or cleaning scenes to spot hidden litter.</div>
+              </div>
+            </button>
+            <ShareButton target={{ kind: "mode", id: "detective" }} label="Share Trash Detective" compact className="absolute top-2.5 right-2.5 z-20" />
+          </div>
 
           {/* Yes/No Trivia */}
-          <button
-            onClick={() => onNavigate("trivia")}
-            className="flex flex-col items-start text-left p-3 sm:p-4 rounded-2xl border-2 border-slate-950/10 bg-white/75 hover:bg-white transition-all duration-200 cursor-pointer shadow-premium hover:-translate-y-0.5 active:translate-y-0 hover:border-amber-500 group min-h-[105px] sm:min-h-[125px] justify-between"
-          >
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-amber-500/10 text-amber-800 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Award size={16} />
-            </div>
-            <div className="mt-2">
-              <div className="font-extrabold text-slate-900 text-xs sm:text-sm leading-none">Yes/No Trivia</div>
-              <div className="text-[9px] sm:text-[10px] text-slate-600 font-semibold mt-1 leading-snug">Quick facts statement quiz to test your sorting knowledge.</div>
-            </div>
-          </button>
+          <div className="relative min-h-[105px] sm:min-h-[125px]">
+            <button
+              type="button"
+              onClick={() => onNavigate("trivia")}
+              className="flex h-full w-full flex-col items-start justify-between rounded-2xl border-2 border-slate-950/10 bg-white/75 p-3 text-left shadow-premium transition-all duration-200 hover:-translate-y-0.5 hover:border-amber-500 hover:bg-white active:translate-y-0 group sm:p-4"
+            >
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-amber-500/10 text-amber-800 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Award size={16} />
+              </div>
+              <div className="mt-2">
+                <div className="font-extrabold text-slate-900 text-xs sm:text-sm leading-none">Yes/No Trivia</div>
+                <div className="text-[9px] sm:text-[10px] text-slate-600 font-semibold mt-1 leading-snug">Quick facts statement quiz to test your sorting knowledge.</div>
+              </div>
+            </button>
+            <ShareButton target={{ kind: "mode", id: "trivia" }} label="Share Yes/No Trivia" compact className="absolute top-2.5 right-2.5 z-20" />
+          </div>
 
           {/* Contamination Hunt */}
-          <button
-            onClick={() => onNavigate("contamination")}
-            className="flex flex-col items-start text-left p-3 sm:p-4 rounded-2xl border-2 border-slate-950/10 bg-white/75 hover:bg-white transition-all duration-200 cursor-pointer shadow-premium hover:-translate-y-0.5 active:translate-y-0 hover:border-rose-500 group min-h-[105px] sm:min-h-[125px] justify-between"
-          >
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-rose-500/10 text-rose-800 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Trash2 size={16} />
-            </div>
-            <div className="mt-2">
-              <div className="font-extrabold text-slate-900 text-xs sm:text-sm leading-none">Imposter Hunt</div>
-              <div className="text-[9px] sm:text-[10px] text-slate-600 font-semibold mt-1 leading-snug">Find the contaminant item placed in the wrong bin.</div>
-            </div>
-          </button>
+          <div className="relative min-h-[105px] sm:min-h-[125px]">
+            <button
+              type="button"
+              onClick={() => onNavigate("contamination")}
+              className="flex h-full w-full flex-col items-start justify-between rounded-2xl border-2 border-slate-950/10 bg-white/75 p-3 text-left shadow-premium transition-all duration-200 hover:-translate-y-0.5 hover:border-rose-500 hover:bg-white active:translate-y-0 group sm:p-4"
+            >
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-rose-500/10 text-rose-800 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Trash2 size={16} />
+              </div>
+              <div className="mt-2">
+                <div className="font-extrabold text-slate-900 text-xs sm:text-sm leading-none">Imposter Hunt</div>
+                <div className="text-[9px] sm:text-[10px] text-slate-600 font-semibold mt-1 leading-snug">Find the contaminant item placed in the wrong bin.</div>
+              </div>
+            </button>
+            <ShareButton target={{ kind: "mode", id: "contamination" }} label="Share Imposter Hunt" compact className="absolute top-2.5 right-2.5 z-20" />
+          </div>
         </div>
       </div>
 

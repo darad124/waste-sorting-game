@@ -23,6 +23,7 @@ const levels = [
 ];
 
 const modes = [
+  ["arcade", "Arcade Mode", "Sort falling waste into the right bins, build combos, and earn stars."],
   ["detective", "Trash Detective", "Scan messy scenes, find hidden waste, and learn where every item belongs."],
   ["trivia", "Yes/No Trivia", "Test your recycling knowledge with quick yes-or-no waste trivia."],
   ["contamination", "Imposter Hunt", "Spot the contaminant hiding in each waste stream before it ruins the batch."],
