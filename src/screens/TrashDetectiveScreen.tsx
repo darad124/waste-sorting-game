@@ -10,6 +10,8 @@ import { playSound } from "../utils/audio";
 import { ShareButton } from "../components/ShareButton";
 import { FeedbackPrompt } from "../components/FeedbackPrompt";
 import { canPrompt } from "../utils/feedbackGate";
+import { KitchenScene } from "../components/detective/KitchenScene";
+import { KITCHEN_CLUE_ART } from "../components/detective/kitchenClues";
 
 interface DetectiveItem {
   id: string;
@@ -38,11 +40,13 @@ const SCENES: SceneConfig[] = [
     colorClass: "from-amber-100 to-orange-100 border-amber-200/60 hover:border-amber-400",
     bgDecorationClass: "bg-[radial-gradient(#d97706_1px,transparent_1px)] [background-size:16px_16px] opacity-10",
     items: [
-      { id: "k1", itemId: "plastic_bottle", name: "Plastic Water Bottle", category: "recyclable", top: "68%", left: "12%" },
-      { id: "k2", itemId: "banana_peel", name: "Banana Peel", category: "organic", top: "75%", left: "34%" },
-      { id: "k3", itemId: "newspaper", name: "Newspaper", category: "recyclable", top: "54%", left: "56%" },
-      { id: "k4", itemId: "alkaline_battery", name: "Alkaline Battery", category: "hazardous", top: "78%", left: "82%" },
-      { id: "k5", itemId: "apple_core", name: "Apple Core", category: "organic", top: "32%", left: "44%" },
+      // Seated on the worktop in the artwork itself — these are the centres of
+      // the pieces as they were drawn, not guesses.
+      { id: "k1", itemId: "plastic_bottle", name: "Plastic Water Bottle", category: "recyclable", top: "87.8%", left: "39.2%" },
+      { id: "k2", itemId: "banana_peel", name: "Banana Peel", category: "organic", top: "85.3%", left: "45.3%" },
+      { id: "k3", itemId: "newspaper", name: "Newspaper", category: "recyclable", top: "92%", left: "75.2%" },
+      { id: "k4", itemId: "alkaline_battery", name: "Alkaline Battery", category: "hazardous", top: "83.1%", left: "69.8%" },
+      { id: "k5", itemId: "apple_core", name: "Apple Core", category: "organic", top: "84.7%", left: "83.7%" },
     ]
   },
   {
@@ -118,164 +122,7 @@ const getPickerAlignment = (left: string) => {
   return "center";
 };
 
-// Scene 1: Kitchen Diorama Props with Interactive Micro-Animations
-const KitchenProps: React.FC = () => {
-  const [isToasting, setIsToasting] = useState(false);
-  const [isCoffeeBrewing, setIsCoffeeBrewing] = useState(false);
-  const [cerealShake, setCerealShake] = useState(false);
-
-  const handleToasterClick = () => {
-    if (isToasting) return;
-    setIsToasting(true);
-    playSound.detectiveScan();
-    setTimeout(() => {
-      setIsToasting(false);
-      playSound.detectiveFound();
-    }, 1500);
-  };
-
-  const handleCerealClick = () => {
-    setCerealShake(true);
-    playSound.detectiveScan();
-    setTimeout(() => setCerealShake(false), 500);
-  };
-
-  return (
-    <>
-      {/* Subway tile wall background */}
-      <div className="absolute inset-x-0 top-0 h-[65%] bg-[#f1f5f9] border-b border-slate-300 z-0">
-        <div className="absolute inset-0 opacity-15" style={{
-          backgroundImage: "linear-gradient(to right, #475569 1px, transparent 1px), linear-gradient(to bottom, #475569 1px, transparent 1px)",
-          backgroundSize: "28px 16px"
-        }} />
-      </div>
-      {/* Wooden Countertop */}
-      <div className="absolute inset-x-0 bottom-0 h-[35%] bg-gradient-to-b from-[#854d0e] to-[#713f12] z-0 shadow-[inset_0_4px_6px_rgba(0,0,0,0.25)] border-t border-amber-900/40" />
-      {/* Counter Reflection/Depth */}
-      <div className="absolute inset-x-0 bottom-[31%] h-[4%] bg-white/10 z-0" />
-      
-      {/* Wall Shelf */}
-      <div className="absolute right-[5%] top-[12%] w-[26%] h-[8%] bg-amber-800/80 rounded-sm shadow-md z-10 border-b-2 border-amber-950">
-        {/* Pots on the shelf */}
-        <svg className="absolute -top-5 left-2 w-6 h-5" viewBox="0 0 24 20">
-          <rect x="4" y="8" width="16" height="12" rx="2" fill="#f43f5e" />
-          <path d="M 12 8 C 8 0 16 0 12 8 Z" fill="#22c55e" />
-        </svg>
-        <svg className="absolute -top-4 right-3 w-5 h-4" viewBox="0 0 20 16">
-          <rect x="3" y="6" width="14" height="10" rx="1.5" fill="#eab308" />
-          <path d="M 10 6 C 7 0 13 0 10 6 Z" fill="#10b981" />
-        </svg>
-      </div>
-      
-      {/* Window */}
-      <div className="absolute left-[4%] top-[4%] w-[28%] h-[40%] border-4 border-amber-950/20 bg-gradient-to-b from-sky-200 to-cyan-100 rounded-lg flex items-center justify-center overflow-hidden z-10 shadow-sm">
-        <div className="w-0.5 h-full bg-amber-950/15 absolute left-1/2" />
-        <div className="h-0.5 w-full bg-amber-950/15 absolute top-1/2" />
-        <div className="w-8 h-8 rounded-full bg-amber-200 absolute -top-1 -right-1 opacity-70 animate-pulse" />
-      </div>
-      
-      {/* Interactive Coffee Maker */}
-      <div 
-        onClick={() => {
-          setIsCoffeeBrewing(!isCoffeeBrewing);
-          playSound.detectiveScan();
-        }}
-        className="absolute left-[64%] top-[34%] w-[16%] h-[36%] z-10 cursor-pointer"
-      >
-        <svg className="w-full h-full filter drop-shadow-[0_4px_6px_rgba(0,0,0,0.15)]" viewBox="0 0 50 80">
-          <rect x="5" y="10" width="40" height="60" rx="3" fill="#334155" />
-          <rect x="10" y="45" width="30" height="20" rx="2" fill={isCoffeeBrewing ? "#78350f" : "#94a3b8"} opacity="0.4" />
-          <circle cx="25" cy="25" r="10" fill="#e2e8f0" />
-          <circle cx="25" cy="25" r="3" fill={isCoffeeBrewing ? "#10b981" : "#ef4444"} className={isCoffeeBrewing ? "animate-pulse" : ""} />
-          <rect x="20" y="20" width="10" height="10" fill="#475569" />
-          <path d="M12 42 H38 V48 H12 Z" fill="#475569" />
-        </svg>
-        {/* Steam overlay when brewing */}
-        <AnimatePresence>
-          {isCoffeeBrewing && (
-            <motion.div 
-              initial={{ y: 5, opacity: 0 }}
-              animate={{ y: [-5, -20], opacity: [0, 0.7, 0] }}
-              exit={{ opacity: 0 }}
-              transition={{ repeat: Infinity, duration: 1.5 }}
-              className="absolute left-[38%] top-[-8%] text-xs pointer-events-none"
-            >
-              💨
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-      
-      {/* Interactive Toaster */}
-      <div 
-        onClick={handleToasterClick}
-        className="absolute left-[14%] top-[54%] w-[18%] h-[24%] z-10 cursor-pointer"
-      >
-        <motion.div
-          animate={isToasting ? { y: [0, 1, 0] } : {}}
-          className="relative w-full h-full"
-        >
-          <svg className="w-full h-full filter drop-shadow-[0_4px_6px_rgba(0,0,0,0.15)]" viewBox="0 0 60 40">
-            <rect x="5" y="5" width="50" height="30" rx="6" fill="#cbd5e1" stroke="#94a3b8" strokeWidth="1.5" />
-            <motion.rect 
-              animate={isToasting ? { y: 10 } : { y: 0 }}
-              x="50" y="12" width="4" height="8" fill="#475569" rx="1" 
-            />
-            <line x1="20" y1="2" x2="20" y2="6" stroke="#475569" strokeWidth="2.5" />
-            <line x1="40" y1="2" x2="40" y2="6" stroke="#475569" strokeWidth="2.5" />
-          </svg>
-          {/* Pop-up toast bread slices */}
-          <AnimatePresence>
-            {isToasting && (
-              <motion.div
-                initial={{ y: 0, opacity: 0 }}
-                animate={{ y: -16, opacity: 1 }}
-                exit={{ y: -30, opacity: 0, scale: 0.8 }}
-                className="absolute left-[30%] top-[-10%] text-xs pointer-events-none"
-              >
-                🍞
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.div>
-      </div>
-      
-      {/* Bread Box */}
-      <svg className="absolute left-[36%] top-[42%] w-[20%] h-[22%] z-10 filter drop-shadow-[0_4px_6px_rgba(0,0,0,0.15)]" viewBox="0 0 60 45">
-        <path d="M 5 40 Q 5 10 30 10 Q 55 10 55 40 Z" fill="#d97706" opacity="0.85" />
-        <rect x="5" y="36" width="50" height="4" fill="#b45309" />
-        <circle cx="30" cy="28" r="3.5" fill="#f59e0b" />
-      </svg>
-      
-      {/* Fruit Bowl */}
-      <svg className="absolute left-[6%] top-[72%] w-[20%] h-[18%] z-30 filter drop-shadow-[0_4px_6px_rgba(0,0,0,0.15)]" viewBox="0 0 60 30">
-        <path d="M 5 5 Q 30 35 55 5 Z" fill="#e2e8f0" stroke="#cbd5e1" strokeWidth="2" />
-        <ellipse cx="30" cy="5" rx="25" ry="3" fill="#cbd5e1" />
-      </svg>
-      
-      {/* Interactive Cereal Box */}
-      <motion.div 
-        onClick={handleCerealClick}
-        animate={cerealShake ? { x: [-3, 3, -2, 2, 0], rotate: [-2, 2, -1, 1, 0] } : {}}
-        transition={{ duration: 0.4 }}
-        className="absolute left-[74%] top-[48%] w-[18%] h-[28%] z-30 cursor-pointer"
-      >
-        <svg className="w-full h-full filter drop-shadow-[0_4px_6px_rgba(0,0,0,0.15)]" viewBox="0 0 45 60">
-          <rect x="5" y="5" width="35" height="50" rx="2" fill="#ef4444" />
-          <rect x="9" y="9" width="27" height="42" fill="#fef08a" opacity="0.9" />
-          <circle cx="22" cy="30" r="10" fill="#f97316" />
-          <text x="22" y="47" textAnchor="middle" fontSize="6" fontWeight="bold" fill="#7f1d1d">CEREAL</text>
-        </svg>
-        {/* Grain particles falling when shaken */}
-        {cerealShake && (
-          <div className="absolute left-[40%] bottom-[-15px] flex flex-col gap-1 text-[8px] opacity-80 pointer-events-none">
-            ⭐
-          </div>
-        )}
-      </motion.div>
-    </>
-  );
-};
+// Scene 1: Kitchen — now the high-fidelity KitchenScene component.
 
 // Scene 2: Beach Diorama Props with Interactive Micro-Animations
 const BeachProps: React.FC = () => {
@@ -914,7 +761,7 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
                 <div className={`absolute inset-0 ${selectedScene.bgDecorationClass}`} />
 
                 {/* Render vector diorama props */}
-                {selectedScene.id === "kitchen" && <KitchenProps />}
+                {selectedScene.id === "kitchen" && <KitchenScene />}
                 {selectedScene.id === "beach" && <BeachProps />}
                 {selectedScene.id === "office" && <OfficeProps />}
                 {selectedScene.id === "park" && <ParkProps />}
@@ -927,6 +774,7 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
                 const isSelected = activeItemId === item.id;
                 const isShaking = shakingItemId === item.id;
                 const pickerAlignment = getPickerAlignment(item.left);
+                const clueArt = KITCHEN_CLUE_ART[item.id];
 
                 return (
                   <AnimatePresence key={item.id}>
@@ -937,8 +785,21 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
                           top: item.top,
                           left: item.left,
                           zIndex: isSelected ? 50 : 20,
+                          ...(clueArt
+                            ? {
+                                // 200 scene units wide out of 1200x900, centred on
+                                // the anchor, so the art scales with the frame
+                                width: "16.667%",
+                                height: "22.222%",
+                                transform: "translate(-50%, -50%)",
+                              }
+                            : {}),
                         }}
-                        className="w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center animate-soft-pulse"
+                        className={
+                          clueArt
+                            ? "flex items-center justify-center"
+                            : "w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center animate-soft-pulse"
+                        }
                       >
                         <motion.button
                           animate={isShaking ? { x: [-6, 6, -4, 4, 0] } : { scale: 1 }}
@@ -955,16 +816,20 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
                             setActiveItemId(isSelected ? null : item.id);
                             playSound.detectiveScan();
                           }}
-                          className={`w-8.5 h-8.5 sm:w-11 sm:h-11 flex items-center justify-center rounded-lg sm:rounded-xl transition-all duration-300 relative ${
-                            isSelected
-                              ? "shadow-[0_0_20px_#fbbf24] border-2 border-amber-400 bg-amber-400/20 scale-110"
-                              : "border border-slate-950/5 bg-white/45 hover:bg-white/80 hover:scale-105"
-                          }`}
+                          className={
+                            clueArt
+                              ? `kitchen-clue relative w-full h-full ${isSelected ? "kitchen-clue--active" : ""}`
+                              : `w-8.5 h-8.5 sm:w-11 sm:h-11 flex items-center justify-center rounded-lg sm:rounded-xl transition-all duration-300 relative ${
+                                  isSelected
+                                    ? "shadow-[0_0_20px_#fbbf24] border-2 border-amber-400 bg-amber-400/20 scale-110"
+                                    : "border border-slate-950/5 bg-white/45 hover:bg-white/80 hover:scale-105"
+                                }`
+                          }
                         >
-                          <ItemSVG itemId={item.itemId} size={26} />
+                          {clueArt ?? <ItemSVG itemId={item.itemId} size={26} />}
 
                           {/* Sparkle/Glow Ring indicating interactive area */}
-                          {!isSelected && (
+                          {!clueArt && !isSelected && (
                             <span className="absolute -inset-1 rounded-lg sm:rounded-xl border border-dashed border-blue-500/20 animate-pulse pointer-events-none" />
                           )}
                         </motion.button>

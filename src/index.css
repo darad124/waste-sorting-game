@@ -115,3 +115,61 @@ body,
   outline: none;
   box-sizing: border-box;
 }
+
+/* ==================================================================== *
+ *  Kitchen Mess — ambient life and clue states
+ *  Every period is a different number so the scene never visibly loops.
+ * ==================================================================== */
+@keyframes kt-steam1 { 0%{opacity:0; transform:translate(0,0) scale(.6)}
+                       20%{opacity:.5} 100%{opacity:0; transform:translate(-30px,-170px) scale(2.1)} }
+@keyframes kt-steam2 { 0%{opacity:0; transform:translate(0,0) scale(.5)}
+                       24%{opacity:.36} 100%{opacity:0; transform:translate(18px,-150px) scale(1.9)} }
+.steam-a { animation: kt-steam1 5.3s ease-out infinite; }
+.steam-b { animation: kt-steam2 7.1s ease-out 1.1s infinite; }
+
+@keyframes kt-mote { 0%{transform:translate(0,0); opacity:0}
+                     14%{opacity:.9} 86%{opacity:.7}
+                     100%{transform:translate(54px,230px); opacity:0} }
+.mote { animation: kt-mote linear infinite; }
+
+@keyframes kt-shaft { 0%,100%{opacity:.42} 50%{opacity:.62} }
+.shaft { animation: kt-shaft 13s ease-in-out infinite; }
+
+@keyframes kt-leaf { 0%,100%{transform:rotate(-1.4deg)} 50%{transform:rotate(1.8deg)} }
+.leaf { transform-origin: 990px 250px; animation: kt-leaf 7.9s ease-in-out infinite; }
+
+@keyframes kt-towel { 0%,100%{transform:rotate(-.6deg)} 50%{transform:rotate(.8deg)} }
+.towel { transform-origin: 1128px 700px; animation: kt-towel 9.7s ease-in-out infinite; }
+
+@keyframes kt-drip { 0%,70%{opacity:0; transform:translateY(0)}
+                     74%{opacity:.95; transform:translateY(0)}
+                     96%{opacity:.8; transform:translateY(124px)}
+                     100%{opacity:0; transform:translateY(132px)} }
+.drip { animation: kt-drip 6.3s cubic-bezier(.45,0,.9,.6) infinite; }
+
+@keyframes kt-ripple { 0%,70%{opacity:0; transform:scale(.3)}
+                       82%{opacity:.5; transform:scale(1)}
+                       100%{opacity:0; transform:scale(1.7)} }
+.ripple { transform-origin:152px 686px; animation: kt-ripple 6.3s ease-out infinite; }
+
+/* Litter sits in the picture, so it gets no chip — it lifts under the
+   pointer and takes an amber rim when selected. */
+.kitchen-clue {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), filter 0.25s ease;
+}
+.kitchen-clue:hover {
+  transform: translateY(-3px) scale(1.06);
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.9));
+}
+.kitchen-clue--active {
+  transform: translateY(-4px) scale(1.1);
+  filter: drop-shadow(0 0 3px rgba(251, 191, 36, 1)) drop-shadow(0 0 11px rgba(251, 191, 36, 0.9));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .steam-a, .steam-b, .mote, .shaft, .leaf, .towel, .drip, .ripple { animation: none; }
+}
