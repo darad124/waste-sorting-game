@@ -107,19 +107,14 @@ const SCENES: SceneConfig[] = [
   }
 ];
 
-const getCategoryHexColor = (category: WasteCategory) => {
-  if (category === "recyclable") return "#10b981";
-  if (category === "organic") return "#b45309";
-  if (category === "hazardous") return "#f43f5e";
-  if (category === "eWaste") return "#3b82f6";
-  return "#6b7280";
-};
-
-const getPickerAlignment = (left: string) => {
-  const leftPercent = parseFloat(left);
-  if (leftPercent >= 70) return "right";
-  if (leftPercent <= 28) return "left";
-  return "center";
+/** The brand bin colours are tuned for the light shell and go muddy on the
+ *  picker's dark panel, so it uses these brighter hues instead. */
+const CATEGORY_GLOW: Record<WasteCategory, string> = {
+  recyclable: "#34d399",
+  organic: "#fbbf24",
+  hazardous: "#fb7185",
+  eWaste: "#60a5fa",
+  general: "#cbd5e1",
 };
 
 // Scene 1: Kitchen — now the high-fidelity KitchenScene component.
@@ -621,8 +616,13 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
   const [contaminated, setContaminated] = useState<WasteCategory[]>([]);
   const [wrongPicks, setWrongPicks] = useState(0);
   const [decoyTaps, setDecoyTaps] = useState(0);
+  // A costed hint gives the player agency when they are stuck, instead of the
+  // game simply handing them the answer list up front.
+  const [hintsLeft, setHintsLeft] = useState(2);
+  const [hintedId, setHintedId] = useState<string | null>(null);
   const [toast, setToast] = useState<{ id: number; text: string; tone: "good" | "bad" | "info" } | null>(null);
-  const toastId = useRef(0);
+  const frameRef = useRef<HTMLDivElement | null>(null);
+  const [frameBox, setFrameBox] = useState({ w: 0, h: 0 });
   
   const [timeLeft, setTimeLeft] = useState(90);
   const [gameState, setGameState] = useState<"select" | "play" | "results">("select");
@@ -659,6 +659,24 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
     }
   }, [foundIds, selectedScene, gameState]);
 
+  // One timer owns the toast; a new message resets it through the cleanup.
+  useEffect(() => {
+    if (!toast) return;
+    const t = window.setTimeout(() => setToast(null), 1700);
+    return () => window.clearTimeout(t);
+  }, [toast]);
+
+  // The picker is clamped inside the frame, so it needs the frame's real size.
+  useEffect(() => {
+    const el = frameRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) =>
+      setFrameBox({ w: entry.contentRect.width, h: entry.contentRect.height })
+    );
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [gameState, selectedScene]);
+
   const handleStartScene = (scene: SceneConfig) => {
     setSelectedScene(scene);
     setFoundIds([]);
@@ -670,18 +688,15 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
     setContaminated([]);
     setWrongPicks(0);
     setDecoyTaps(0);
+    setHintsLeft(2);
+    setHintedId(null);
     setToast(null);
     setGameState("play");
     playSound.detectiveScan();
   };
 
-  const say = (text: string, tone: "good" | "bad" | "info") => {
-    const id = ++toastId.current;
-    setToast({ id, text, tone });
-    window.setTimeout(() => {
-      setToast((t) => (t && t.id === id ? null : t));
-    }, 1700);
-  };
+  const say = (text: string, tone: "good" | "bad" | "info") =>
+    setToast((prev) => ({ id: (prev?.id ?? 0) + 1, text, tone }));
 
   /** Tapping something that belongs in the kitchen costs time. That penalty is
    *  what turns "spot the highlighted thing" into an actual judgement. */
@@ -692,6 +707,19 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
     setTimeLeft((t) => Math.max(1, t - 4));
     playSound.wrong();
     say(`The ${label} isn't waste — it lives here. -4s`, "bad");
+  };
+
+  const useHint = () => {
+    if (gameState !== "play" || hintsLeft <= 0 || !selectedScene) return;
+    const remaining = selectedScene.items.filter((i) => !foundIds.includes(i.id));
+    if (remaining.length === 0) return;
+    const pick = remaining[timeLeft % remaining.length];
+    setHintsLeft((n) => n - 1);
+    setHintedId(pick.id);
+    setTimeLeft((t) => Math.max(1, t - 5));
+    playSound.detectiveScan();
+    say("Sweep: one piece of litter marked. -5s", "info");
+    window.setTimeout(() => setHintedId((h) => (h === pick.id ? null : h)), 1800);
   };
 
   const handleSelectCategory = (item: DetectiveItem, category: WasteCategory) => {
@@ -731,8 +759,13 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
 
   // Every contaminated bin takes a bite out of the whole haul, so one careless
   // drop can cost more than the item it was made on.
+  const activeItem = selectedScene?.items.find((i) => i.id === activeItemId) ?? null;
   const purity = Math.max(0.4, 1 - 0.12 * contaminated.length);
-  const totalPoints = Math.round(score * purity);
+  // Finishing early is worth something, so the clock matters even on a round
+  // you would otherwise coast through.
+  const cleared = !!selectedScene && foundIds.length === selectedScene.items.length;
+  const timeBonus = cleared ? timeLeft * 5 : 0;
+  const totalPoints = Math.round(score * purity) + timeBonus;
   const attempts = foundIds.length + wrongPicks + decoyTaps;
   const accuracy = attempts > 0 ? Math.round((foundIds.length / attempts) * 100) : 0;
 
@@ -818,6 +851,14 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
 
               {/* Bin purity — one pip per bin, dirtied by a wrong drop */}
               <div className="flex items-center gap-1.5">
+                <button
+                  onClick={useHint}
+                  disabled={hintsLeft <= 0}
+                  className="mr-1 flex items-center gap-1 rounded-full border border-slate-950/10 bg-white/70 px-2 py-1 text-[10px] font-black uppercase tracking-wider text-slate-700 transition-all hover:bg-white active:scale-95 disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  <Search size={10} />
+                  <span>Sweep {hintsLeft}</span>
+                </button>
                 <span className="text-[8px] font-black uppercase tracking-wider text-slate-500 mr-0.5">Bins</span>
                 {(["recyclable", "organic", "hazardous", "eWaste", "general"] as WasteCategory[]).map((cat) => {
                   const dirty = contaminated.includes(cat);
@@ -835,7 +876,8 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
             </div>
 
             {/* Scene Canvas Container */}
-            <div className="w-full max-w-[calc(42vh*4/3)] mx-auto aspect-[4/3] relative rounded-3xl overflow-visible border border-slate-950/10 shadow-premium bg-slate-50 shrink-0">
+            <div ref={frameRef}
+              className="w-full max-w-[calc(42vh*4/3)] mx-auto aspect-[4/3] relative rounded-3xl overflow-visible border border-slate-950/10 shadow-premium bg-slate-50 shrink-0">
               <div className="absolute inset-0 rounded-3xl overflow-hidden bg-slate-50">
                 {/* Pattern Background matching scene */}
                 <div className={`absolute inset-0 ${selectedScene.bgDecorationClass}`} />
@@ -847,6 +889,84 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
                 {selectedScene.id === "park" && <ParkProps />}
                 {selectedScene.id === "school" && <SchoolProps />}
               </div>
+
+              {/* Sorting panel.
+                  Rendered once at frame level rather than inside the 40px clue
+                  box, so it can be measured and clamped: it flips above or
+                  below the litter depending on where the litter sits, never
+                  runs off the edge, and its caret keeps pointing at the item
+                  even when the panel has been pushed sideways to fit. */}
+              <AnimatePresence>
+                {activeItem && frameBox.w > 0 && (() => {
+                  const W = Math.min(268, frameBox.w - 16);
+                  const cx = (parseFloat(activeItem.left) / 100) * frameBox.w;
+                  const cy = (parseFloat(activeItem.top) / 100) * frameBox.h;
+                  const left = Math.max(8, Math.min(cx - W / 2, frameBox.w - W - 8));
+                  const below = cy < frameBox.h * 0.55;
+                  const caret = Math.max(20, Math.min(cx - left, W - 20));
+                  const art = KITCHEN_CLUE_ART[activeItem.id];
+
+                  return (
+                    <motion.div
+                      key={activeItem.id}
+                      initial={{ opacity: 0, y: below ? -8 : 8, scale: 0.97 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.97 }}
+                      transition={{ type: "spring", stiffness: 420, damping: 28 }}
+                      className="detective-picker absolute z-[70] rounded-2xl p-2.5"
+                      style={{
+                        left,
+                        width: W,
+                        ...(below ? { top: cy + 34 } : { bottom: frameBox.h - cy + 34 }),
+                      }}
+                    >
+                      <span
+                        className={`detective-picker__caret detective-picker__caret--${below ? "up" : "down"}`}
+                        style={{ left: caret, ...(below ? { top: -7 } : { bottom: -7 }) }}
+                      />
+
+                      <div className="flex items-center gap-2 mb-2 px-0.5">
+                        <span className="relative w-7 h-7 shrink-0">
+                          {art ?? <ItemSVG itemId={activeItem.itemId} size={26} />}
+                        </span>
+                        <span className="truncate text-[11px] font-black text-white">
+                          {activeItem.name}
+                        </span>
+                        <span className="ml-auto text-[8px] font-black uppercase tracking-[0.18em] text-white/40">
+                          Which bin?
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-5 gap-1.5">
+                        {(["recyclable", "organic", "hazardous", "eWaste", "general"] as WasteCategory[]).map((cat) => {
+                          const meta = CATEGORY_META[cat];
+                          const hex = CATEGORY_GLOW[cat];
+                          return (
+                            <button
+                              key={cat}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSelectCategory(activeItem, cat);
+                              }}
+                              title={meta.description}
+                              className="flex flex-col items-center gap-1 rounded-xl border px-0.5 py-1.5 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                              style={{ backgroundColor: `${hex}26`, borderColor: `${hex}59` }}
+                            >
+                              <span className="text-[15px] leading-none">{meta.emoji}</span>
+                              <span
+                                className="text-[7px] font-black uppercase leading-none tracking-tight"
+                                style={{ color: hex }}
+                              >
+                                {meta.label.split(" ")[0]}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </motion.div>
+                  );
+                })()}
+              </AnimatePresence>
 
               {/* Feedback, so every action says what it cost or earned */}
               <AnimatePresence>
@@ -874,7 +994,6 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
                 const isFound = foundIds.includes(item.id);
                 const isSelected = activeItemId === item.id;
                 const isShaking = shakingItemId === item.id;
-                const pickerAlignment = getPickerAlignment(item.left);
                 const clueArt = KITCHEN_CLUE_ART[item.id];
 
                 return (
@@ -919,7 +1038,9 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
                           }}
                           className={
                             clueArt
-                              ? `kitchen-clue relative w-full h-full ${isSelected ? "kitchen-clue--active" : ""}`
+                              ? `kitchen-clue relative w-full h-full ${isSelected ? "kitchen-clue--active" : ""} ${
+                                  hintedId === item.id ? "kitchen-clue--hinted" : ""
+                                }`
                               : `w-8.5 h-8.5 sm:w-11 sm:h-11 flex items-center justify-center rounded-lg sm:rounded-xl transition-all duration-300 relative ${
                                   isSelected
                                     ? "shadow-[0_0_20px_#fbbf24] border-2 border-amber-400 bg-amber-400/20 scale-110"
@@ -935,59 +1056,6 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
                           )}
                         </motion.button>
 
-                        {/* Radial Category Picker */}
-                        <AnimatePresence>
-                          {isSelected && (
-                            <motion.div
-                              initial={{ scale: 0.8, opacity: 0 }}
-                              animate={{ scale: 1, opacity: 1 }}
-                              exit={{ scale: 0.8, opacity: 0 }}
-                              transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                              style={{
-                                position: "absolute",
-                                top: parseFloat(item.top) < 35 ? "120%" : undefined,
-                                bottom: parseFloat(item.top) >= 35 ? "120%" : undefined,
-                                left: pickerAlignment === "left" ? 0 : pickerAlignment === "center" ? "50%" : undefined,
-                                right: pickerAlignment === "right" ? 0 : undefined,
-                                transform: pickerAlignment === "center" ? "translateX(-50%)" : undefined,
-                              }}
-                              className="flex gap-1.5 p-2 rounded-2xl glass-panel border border-slate-950/10 shadow-2xl bg-white/95 z-50 min-w-[210px] justify-center relative"
-                            >
-                              {/* Indicator pointer arrow */}
-                              <div
-                                className={`absolute ${
-                                  pickerAlignment === "left"
-                                    ? "left-4"
-                                    : pickerAlignment === "right"
-                                      ? "right-4"
-                                      : "left-1/2 -translate-x-1/2"
-                                } w-3 h-3 rotate-45 bg-white border z-[-1] ${
-                                  parseFloat(item.top) < 35
-                                    ? "-top-1.5 border-t border-l border-slate-950/10"
-                                    : "-bottom-1.5 border-b border-r border-slate-950/10"
-                                }`}
-                              />
-
-                              {(["recyclable", "organic", "hazardous", "eWaste", "general"] as WasteCategory[]).map((cat) => {
-                                const meta = CATEGORY_META[cat];
-                                return (
-                                  <button
-                                    key={cat}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleSelectCategory(item, cat);
-                                    }}
-                                    className="w-8 h-8 rounded-lg flex items-center justify-center text-base hover:scale-110 active:scale-95 transition-all shadow-sm border border-slate-950/5 cursor-pointer"
-                                    style={{ backgroundColor: `${getCategoryHexColor(cat)}25` }}
-                                    title={meta.label}
-                                  >
-                                    {meta.emoji}
-                                  </button>
-                                );
-                              })}
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
                       </div>
                     )}
                   </AnimatePresence>
@@ -997,16 +1065,22 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
 
             {/* Target Items Checklist */}
             <div className="mt-3 bg-white/40 p-2.5 rounded-2xl border border-slate-950/5 flex flex-col items-center gap-1.5 shrink-0 max-w-sm mx-auto w-full">
-              <span className="text-[8px] font-black uppercase text-slate-500 tracking-wider">Target Items List</span>
+              <span className="text-[8px] font-black uppercase text-slate-500 tracking-wider">Evidence recovered</span>
               <div className="flex gap-4 items-center justify-center">
                 {selectedScene.items.map((it) => {
                   const wasFound = foundIds.includes(it.id);
                   return (
                     <div key={it.id} className="relative flex flex-col items-center gap-0.5">
-                      <div className={`w-9 h-9 rounded-xl border flex items-center justify-center transition-all bg-white/85 ${
-                        wasFound ? "opacity-30 border-emerald-500 bg-emerald-50/20" : "border-slate-950/5"
+                      <div className={`w-9 h-9 rounded-xl border flex items-center justify-center transition-all ${
+                        wasFound
+                          ? "border-emerald-500 bg-emerald-50"
+                          : "border-dashed border-slate-950/15 bg-white/40"
                       }`}>
-                        <ItemSVG itemId={it.itemId} size={20} className={wasFound ? "grayscale opacity-50" : ""} />
+                        {wasFound ? (
+                          <ItemSVG itemId={it.itemId} size={20} />
+                        ) : (
+                          <span className="text-[13px] font-black text-slate-400">?</span>
+                        )}
                       </div>
                       {wasFound && (
                         <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-sm">
@@ -1021,7 +1095,7 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
 
             {/* Hint Box */}
             <div className="text-[10px] font-semibold text-slate-700 mt-2">
-              Tap the hidden waste items in the scene above, then select where they belong!
+              Not everything here is rubbish. Find the litter, bin it right, and keep the bins clean.
             </div>
           </div>
         )}
@@ -1049,6 +1123,11 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
                 {contaminated.length > 0 && (
                   <span className="text-[9px] font-bold text-rose-700 mt-0.5">
                     {score.toLocaleString()} × {Math.round(purity * 100)}% purity
+                  </span>
+                )}
+                {timeBonus > 0 && (
+                  <span className="text-[9px] font-bold text-emerald-700">
+                    +{timeBonus} time bonus
                   </span>
                 )}
               </div>

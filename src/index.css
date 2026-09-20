@@ -192,3 +192,47 @@ body,
 @media (prefers-reduced-motion: reduce) {
   .kt-glint, .kt-splash { animation: none; }
 }
+
+/* Sorting panel — sits on the photo, so it is glass over the scene rather
+   than app chrome floating above it. */
+.detective-picker {
+  background: rgba(15, 23, 42, 0.93);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow:
+    0 22px 44px -14px rgba(0, 0, 0, 0.75),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+}
+
+/* Caret keeps pointing at the litter even when the panel has been nudged
+   sideways to stay inside the frame. */
+.detective-picker__caret {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  transform: rotate(45deg);
+  background: rgba(15, 23, 42, 0.93);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+
+
+.detective-picker__caret--up {
+  border-right: none;
+  border-bottom: none;
+}
+.detective-picker__caret--down {
+  border-left: none;
+  border-top: none;
+}
+
+/* A swept clue pulses briefly so the hint is legible without giving the
+   answer away permanently. */
+@keyframes kt-hint {
+  0%, 100% { filter: drop-shadow(0 0 2px rgba(56,189,248,.9)) drop-shadow(0 0 10px rgba(56,189,248,.7)); }
+  50%      { filter: drop-shadow(0 0 4px rgba(56,189,248,1)) drop-shadow(0 0 20px rgba(56,189,248,.95)); }
+}
+.kitchen-clue--hinted { animation: kt-hint .6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .kitchen-clue--hinted { animation: none; } }
