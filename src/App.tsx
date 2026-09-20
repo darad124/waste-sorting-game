@@ -12,6 +12,7 @@ import { TriviaScreen } from "./screens/TriviaScreen";
 import { ContaminationHuntScreen } from "./screens/ContaminationHuntScreen";
 import { backgroundMusic } from "./utils/audio";
 import { parseShareQuery } from "./utils/share";
+import { SHARE_CARDS } from "./components/shareCards";
 import { logVisit } from "./api/analytics";
 
 const AdminDashboard = lazy(() => import("./screens/AdminDashboard"));
@@ -43,6 +44,13 @@ function App() {
   useEffect(() => {
     if (!isAdminRoute()) logVisit();
   }, []);
+
+  // ?card= renders a link-preview POSTER and nothing else — no shell, no
+  // music, no visit logged. It is what the capture script screenshots, and
+  // it is deliberately not ?share=, which is the link a real person follows
+  // and which has to put them in the game rather than on a picture of it.
+  const cardTarget = new URLSearchParams(window.location.search).get("card");
+  const ShareCard = cardTarget ? SHARE_CARDS[cardTarget] : undefined;
 
   const initialShareTarget = parseShareQuery(new URLSearchParams(window.location.search).get("share"));
   const [screen, setScreen] = useState<ScreenName>(() => {
@@ -174,6 +182,8 @@ function App() {
       </Suspense>
     );
   }
+
+  if (ShareCard) return <ShareCard />;
 
   return (
     <div className="app-shell w-screen bg-[#fde047] font-sans antialiased text-slate-800 overflow-hidden select-none relative flex flex-col">
