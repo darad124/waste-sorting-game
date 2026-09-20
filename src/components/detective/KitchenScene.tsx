@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { playSound } from "../../utils/audio";
 
 /* ==================================================================== *
@@ -21,20 +21,21 @@ export const KitchenScene: React.FC = () => {
   const [waterOn, setWaterOn] = useState(false);
   const [toasting, setToasting] = useState(false);
   const [windowOpen, setWindowOpen] = useState(false);
-  const popTimer = useRef<number | null>(null);
-
-  useEffect(() => () => {
-    if (popTimer.current) window.clearTimeout(popTimer.current);
-  }, []);
+  // The pop-down is owned by the toasting state rather than a ref, so it
+  // cleans itself up if the scene unmounts mid-cycle.
+  useEffect(() => {
+    if (!toasting) return;
+    const t = window.setTimeout(() => {
+      setToasting(false);
+      playSound.detectiveFound();
+    }, 2600);
+    return () => window.clearTimeout(t);
+  }, [toasting]);
 
   const toast = () => {
     if (toasting) return;
     setToasting(true);
     playSound.detectiveScan();
-    popTimer.current = window.setTimeout(() => {
-      setToasting(false);
-      playSound.detectiveFound();
-    }, 2600);
   };
 
   const prop = (label: string, onActivate: () => void) => ({
