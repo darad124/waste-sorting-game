@@ -16,20 +16,23 @@ import { playSound } from "../../utils/audio";
  * ==================================================================== */
 
 /** Things in the kitchen that are genuinely confusable with litter but are not
- *  waste. Tapping one is a real mistake — that judgement is the game. */
-const DECOYS: { label: string; x: number; y: number; w: number; h: number }[] = [
-  { label: "sponge",      x: 238, y: 582, w: 68,  h: 44 },
-  { label: "mug",         x: 248, y: 726, w: 88,  h: 92 },
-  { label: "loaf",        x: 606, y: 716, w: 190, h: 98 },
-  { label: "clean plates", x: 648, y: 600, w: 138, h: 74 },
-  { label: "fruit bowl",  x: 982, y: 596, w: 200, h: 118 },
-  { label: "tea towels",  x: 1016, y: 726, w: 150, h: 98 },
-  { label: "kettle",      x: 298, y: 528, w: 146, h: 158 },
+ *  waste. Each carries its own note rather than a template — a line written for
+ *  the object is the difference between a game with a voice and a game that
+ *  fills in a blank. The voice is the detective's: short, dry, dismissive. */
+const DECOYS: { label: string; note: string; x: number; y: number; w: number; h: number }[] = [
+  { label: "sponge",       note: "Grubby, but still on duty.",        x: 238,  y: 582, w: 68,  h: 44 },
+  { label: "mug",          note: "Someone's coming back for that.",   x: 248,  y: 726, w: 88,  h: 92 },
+  { label: "loaf",         note: "Bread. Not rubbish — yet.",         x: 606,  y: 716, w: 190, h: 98 },
+  { label: "clean plates", note: "Washed, dried, stacked. Innocent.", x: 648,  y: 600, w: 138, h: 74 },
+  { label: "fruit bowl",   note: "All present and edible.",           x: 982,  y: 596, w: 200, h: 118 },
+  { label: "tea towels",   note: "Folded. Someone here is trying.",   x: 1016, y: 726, w: 150, h: 98 },
+  { label: "kettle",       note: "Still warm. Still wanted.",         x: 298,  y: 528, w: 146, h: 158 },
 ];
 
 interface KitchenSceneProps {
-  /** Called when the player taps something that is not litter. */
-  onDecoy?: (label: string) => void;
+  /** Called with that object's own note when the player taps something that
+   *  turns out not to be litter. */
+  onDecoy?: (note: string) => void;
 }
 
 export const KitchenScene: React.FC<KitchenSceneProps> = ({ onDecoy }) => {
@@ -762,12 +765,12 @@ export const KitchenScene: React.FC<KitchenSceneProps> = ({ onDecoy }) => {
         style={{ pointerEvents: "auto", cursor: "pointer" }}
         onClick={(e) => {
           e.stopPropagation();
-          onDecoy(d.label);
+          onDecoy(d.note);
         }}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            onDecoy(d.label);
+            onDecoy(d.note);
           }
         }}
       />

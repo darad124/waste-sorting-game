@@ -701,11 +701,11 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
   /** Checking something that turns out to belong here is free: it is how you
    *  learn what does and does not count as waste, so it should not be
    *  punished. It still tells you, and the clock is still running. */
-  const handleDecoy = (label: string) => {
+  const handleDecoy = (note: string) => {
     if (gameState !== "play") return;
     setDecoyTaps((n) => n + 1);
     playSound.detectiveScan();
-    say(`The ${label} isn't waste — it lives here.`, "info");
+    say(note, "info");
   };
 
   const useHint = () => {
@@ -717,7 +717,7 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
     setHintedId(pick.id);
     setTimeLeft((t) => Math.max(1, t - 5));
     playSound.detectiveScan();
-    say("Sweep: one piece of litter marked. -5s", "info");
+    say("Swept. One piece marked. Cost you five seconds.", "info");
     window.setTimeout(() => setHintedId((h) => (h === pick.id ? null : h)), 1800);
   };
 
@@ -731,7 +731,7 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
       setFoundIds((prev) => [...prev, item.id]);
       setActiveItemId(null);
       playSound.detectiveFound();
-      say(bonus > 0 ? `+${150 + bonus}  ${nextStreak}x clean run` : "+150", "good");
+      say(bonus > 0 ? `+${150 + bonus} · ${nextStreak} clean in a row` : "+150 · bagged", "good");
       useGameStore.getState().unlockEncyclopediaItem(item.itemId);
     } else {
       // A wrong bin does not just fail — it contaminates that bin, and every
@@ -742,7 +742,7 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
       setStreak(0);
       setWrongPicks((n) => n + 1);
       setContaminated((c) => (c.includes(category) ? c : [...c, category]));
-      say(`${CATEGORY_META[category].label} bin contaminated`, "bad");
+      say(`Wrong bin. That spoils the ${CATEGORY_META[category].label.toLowerCase()} load.`, "bad");
 
       if (!wrongAttempts.some(att => att.itemId === item.itemId)) {
         setWrongAttempts((prev) => [...prev, { itemId: item.itemId, category }]);
@@ -1094,7 +1094,7 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
 
             {/* Hint Box */}
             <div className="text-[10px] font-semibold text-slate-700 mt-2">
-              Not everything here is rubbish. Find the litter, bin it right, and keep the bins clean.
+              Not everything here is rubbish. Find what is — and don't spoil a bin guessing.
             </div>
           </div>
         )}
