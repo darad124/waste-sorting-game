@@ -95,7 +95,7 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
   const [decoyTaps, setDecoyTaps] = useState(0);
   // A costed hint gives the player agency when they are stuck, instead of the
   // game simply handing them the answer list up front.
-  const [hintsLeft, setHintsLeft] = useState(RULES.hintsPerRound);
+  const [hintsLeft, setHintsLeft] = useState<number>(RULES.hintsPerRound);
   const [hintedId, setHintedId] = useState<string | null>(null);
   const [toast, setToast] = useState<{ id: number; text: string; tone: "good" | "bad" | "info" } | null>(null);
   const frameRef = useRef<HTMLDivElement | null>(null);
@@ -107,7 +107,7 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
   // cannot be cheated and cannot drift; timeLeft is only what it looks like
   // right now.
   const [deadline, setDeadline] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(RULES.roundSeconds);
+  const [timeLeft, setTimeLeft] = useState<number>(RULES.roundSeconds);
   const [gameState, setGameState] =
     useState<"select" | "loading" | "play" | "results">("select");
   const [showFeedback, setShowFeedback] = useState(false);
@@ -313,7 +313,7 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
                 <button
                   key={scene.id}
                   onClick={() => handleStartScene(scene)}
-                  className={`w-full text-left p-4 rounded-3xl border-2 bg-gradient-to-br ${scene.colorClass} transition-all duration-300 shadow-premium cursor-pointer hover:scale-[1.01] hover:shadow-lg active:scale-100 flex items-center justify-between group`}
+                  className={`w-full text-left p-4 rounded-3xl border-2 bg-gradient-to-br ${scene.accentClass} transition-all duration-300 shadow-premium cursor-pointer hover:scale-[1.01] hover:shadow-lg active:scale-100 flex items-center justify-between group`}
                 >
                   <div className="flex flex-col gap-1 pr-4">
                     <h3 className="font-black text-slate-900 text-base">{scene.title}</h3>
