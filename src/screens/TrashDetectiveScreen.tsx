@@ -16,6 +16,10 @@ import { BeachScene } from "../components/detective/BeachScene";
 import { BEACH_CLUE_ART } from "../components/detective/beachClues";
 import { OfficeScene } from "../components/detective/OfficeScene";
 import { OFFICE_CLUE_ART, OFFICE_CLUE_BOX } from "../components/detective/officeClues";
+import { ParkScene } from "../components/detective/ParkScene";
+import { PARK_CLUE_ART, PARK_CLUE_BOX } from "../components/detective/parkClues";
+import { SchoolScene } from "../components/detective/SchoolScene";
+import { SCHOOL_CLUE_ART, SCHOOL_CLUE_BOX } from "../components/detective/schoolClues";
 
 /** Clue art for every scene that has been rebuilt to the high-fidelity
  *  standard, keyed by clue id. Ids are unique across scenes, so one lookup
@@ -25,12 +29,19 @@ const CLUE_ART: Record<string, React.ReactNode> = {
   ...KITCHEN_CLUE_ART,
   ...BEACH_CLUE_ART,
   ...OFFICE_CLUE_ART,
+  ...PARK_CLUE_ART,
+  ...SCHOOL_CLUE_ART,
 };
 
-/** Most clues are drawn in a 200x200 window of scene units, but some simply
- *  are not that shape — the Office keyboard is 543 wide — so a clue may
- *  declare its own slot and the rest fall back to the square. */
-const CLUE_BOX: Record<string, { w: number; h: number }> = { ...OFFICE_CLUE_BOX };
+/** Most clues are drawn in a 200x200 window of scene units, but plenty are
+ *  not that shape — the Office keyboard is 543 wide, the School milk jug is
+ *  287 tall — so a clue may declare its own slot and the rest fall back to
+ *  the square. */
+const CLUE_BOX: Record<string, { w: number; h: number }> = {
+  ...OFFICE_CLUE_BOX,
+  ...PARK_CLUE_BOX,
+  ...SCHOOL_CLUE_BOX,
+};
 const DEFAULT_CLUE_BOX = { w: 200, h: 200 };
 
 interface DetectiveItem {
@@ -117,11 +128,11 @@ const SCENES: SceneConfig[] = [
     colorClass: "from-green-100 to-emerald-100 border-green-200/60 hover:border-green-400",
     bgDecorationClass: "bg-[radial-gradient(#047857_1px,transparent_1px)] [background-size:14px_14px] opacity-10",
     items: [
-      { id: "p1", itemId: "tea_bag", name: "Paper Tea Bag", category: "organic", top: "68%", left: "16%" },
-      { id: "p2", itemId: "wooden_chopsticks", name: "Wooden Chopsticks", category: "organic", top: "74%", left: "42%" },
-      { id: "p3", itemId: "chewing_gum", name: "Chewing Gum", category: "general", top: "54%", left: "62%" },
-      { id: "p4", itemId: "steel_tin_can", name: "Steel Soup Can", category: "recyclable", top: "78%", left: "82%" },
-      { id: "p5", itemId: "plastic_wrap", name: "Cling Wrap", category: "general", top: "36%", left: "54%" }
+      { id: "p1", itemId: "tea_bag", name: "Paper Tea Bag", category: "organic", top: "89.8%", left: "38.0%" },
+      { id: "p2", itemId: "wooden_chopsticks", name: "Wooden Chopsticks", category: "organic", top: "85.8%", left: "45.9%" },
+      { id: "p3", itemId: "chewing_gum", name: "Chewing Gum", category: "general", top: "94.9%", left: "31.7%" },
+      { id: "p4", itemId: "steel_tin_can", name: "Steel Soup Can", category: "recyclable", top: "88.4%", left: "79.9%" },
+      { id: "p5", itemId: "plastic_wrap", name: "Cling Wrap", category: "general", top: "81.9%", left: "57.2%" }
     ]
   },
   {
@@ -131,11 +142,11 @@ const SCENES: SceneConfig[] = [
     colorClass: "from-violet-100 to-indigo-100 border-violet-200/60 hover:border-violet-400",
     bgDecorationClass: "bg-[radial-gradient(#4338ca_1px,transparent_1px)] [background-size:18px_18px] opacity-10",
     items: [
-      { id: "s1", itemId: "milk_jug", name: "Plastic Milk Jug", category: "recyclable", top: "56%", left: "12%" },
-      { id: "s2", itemId: "broken_tablet", name: "Cracked Tablet", category: "eWaste", top: "76%", left: "34%" },
-      { id: "s3", itemId: "chewing_gum", name: "Chewing Gum", category: "general", top: "32%", left: "56%" },
-      { id: "s4", itemId: "apple_core", name: "Apple Core", category: "organic", top: "78%", left: "74%" },
-      { id: "s5", itemId: "charging_cable", name: "Charging Cable", category: "eWaste", top: "66%", left: "52%" }
+      { id: "s1", itemId: "milk_jug", name: "Plastic Milk Jug", category: "recyclable", top: "84.0%", left: "9.4%" },
+      { id: "s2", itemId: "broken_tablet", name: "Cracked Tablet", category: "eWaste", top: "80.4%", left: "55.0%" },
+      { id: "s3", itemId: "chewing_gum", name: "Chewing Gum", category: "general", top: "96.1%", left: "33.9%" },
+      { id: "s4", itemId: "apple_core", name: "Apple Core", category: "organic", top: "92.2%", left: "64.0%" },
+      { id: "s5", itemId: "charging_cable", name: "Charging Cable", category: "eWaste", top: "89.5%", left: "81.6%" }
     ]
   }
 ];
@@ -156,240 +167,9 @@ const CATEGORY_GLOW: Record<WasteCategory, string> = {
 
 // Scene 3: Office — now the high-fidelity OfficeScene component.
 
-// Scene 4: Park Picnic Diorama Props with Interactive Micro-Animations
-const ParkProps: React.FC = () => {
-  const [isGrillOn, setIsGrillOn] = useState(false);
-  const [isSquirrelPeeking, setIsSquirrelPeeking] = useState(false);
-  const [frisbeeSpin, setFrisbeeSpin] = useState(false);
+// Scene 4: Park — now the high-fidelity ParkScene component.
 
-  const handleFrisbeeClick = () => {
-    if (frisbeeSpin) return;
-    setFrisbeeSpin(true);
-    playSound.detectiveScan();
-    setTimeout(() => setFrisbeeSpin(false), 1200);
-  };
-
-  return (
-    <>
-      {/* Sky & Tree line */}
-      <div className="absolute inset-x-0 top-0 h-[40%] bg-gradient-to-b from-sky-200 to-sky-100 z-0">
-        <circle cx="85" cy="22" r="10" fill="#fef08a" opacity="0.8" className="filter blur-[1px]" />
-        <svg className="absolute left-[8%] top-[20%] w-16 h-7 text-white/80" viewBox="0 0 50 20">
-          <path d="M 5 15 A 8 8 0 0 1 20 10 A 10 10 0 0 1 38 12 A 7 7 0 0 1 45 15 Z" fill="currentColor" />
-        </svg>
-      </div>
-
-      {/* Grassy floor */}
-      <div className="absolute inset-x-0 bottom-0 h-[60%] bg-[#86efac] z-0 shadow-[inset_0_4px_6px_rgba(0,0,0,0.1)] border-t border-emerald-300">
-        <div className="absolute inset-0 opacity-10" style={{
-          backgroundImage: "radial-gradient(#059669 1px, transparent 1px)",
-          backgroundSize: "12px 12px"
-        }} />
-      </div>
-
-      {/* Picnic Blanket */}
-      <svg className="absolute left-[8%] top-[50%] w-[32%] h-[32%] z-10 filter drop-shadow-[0_4px_6px_rgba(0,0,0,0.15)]" viewBox="0 0 80 60">
-        <polygon points="5,45 75,30 65,58 12,56" fill="#ef4444" />
-        <path d="M15,43 L22,56 M30,40 L37,56 M45,36 L52,56 M60,33 L67,56" stroke="#ffffff" strokeWidth="2.5" opacity="0.4" />
-        <path d="M9,47 L68,34 M11,51 L66,37 M13,55 L64,41" stroke="#ffffff" strokeWidth="2.5" opacity="0.4" />
-      </svg>
-
-      {/* Interactive Picnic Basket & Peeking Squirrel */}
-      <div 
-        onClick={() => {
-          setIsSquirrelPeeking(!isSquirrelPeeking);
-          playSound.detectiveScan();
-        }}
-        className="absolute left-[38%] top-[40%] w-[18%] h-[24%] z-30 cursor-pointer"
-      >
-        <AnimatePresence>
-          {isSquirrelPeeking && (
-            <motion.div
-              initial={{ y: 15, opacity: 0 }}
-              animate={{ y: -8, opacity: 1 }}
-              exit={{ y: 15, opacity: 0 }}
-              className="absolute left-[26%] top-[-10%] text-sm pointer-events-none z-10"
-            >
-              🐿️
-            </motion.div>
-          )}
-        </AnimatePresence>
-        <svg className="w-full h-full filter drop-shadow-[0_4px_6px_rgba(0,0,0,0.15)]" viewBox="0 0 50 40">
-          <rect x="5" y="15" width="40" height="22" rx="2" fill="#d97706" />
-          <rect x="3" y="12" width="44" height="4" rx="1" fill="#b45309" />
-          <line x1="12" y1="16" x2="12" y2="35" stroke="#b45309" strokeWidth="1.5" />
-          <line x1="25" y1="16" x2="25" y2="35" stroke="#b45309" strokeWidth="1.5" />
-          <line x1="38" y1="16" x2="38" y2="35" stroke="#b45309" strokeWidth="1.5" />
-          <line x1="6" y1="24" x2="44" y2="24" stroke="#b45309" strokeWidth="1.5" />
-          <path d="M 12 12 Q 25 -4 38 12" fill="none" stroke="#b45309" strokeWidth="3" />
-        </svg>
-      </div>
-
-      {/* Interactive Barbecue Grill */}
-      <div 
-        onClick={() => {
-          setIsGrillOn(!isGrillOn);
-          playSound.detectiveScan();
-        }}
-        className="absolute left-[66%] top-[30%] w-[20%] h-[40%] z-10 cursor-pointer"
-      >
-        <svg className="w-full h-full filter drop-shadow-[0_4px_6px_rgba(0,0,0,0.15)]" viewBox="0 0 50 80">
-          <line x1="15" y1="46" x2="10" y2="76" stroke="#475569" strokeWidth="3" strokeLinecap="round" />
-          <line x1="35" y1="46" x2="40" y2="76" stroke="#475569" strokeWidth="3" strokeLinecap="round" />
-          <line x1="25" y1="46" x2="25" y2="74" stroke="#475569" strokeWidth="2.5" strokeLinecap="round" />
-          <path d="M 8 36 A 17 17 0 0 0 42 36 Z" fill="#334155" />
-          <motion.path
-            animate={isGrillOn ? { y: -8, rotate: -8 } : { y: 0, rotate: 0 }}
-            transition={{ type: "spring", stiffness: 120 }}
-            d="M 8 33 A 17 17 0 0 1 42 33 Z"
-            fill="#dc2626"
-            style={{ originX: "42px", originY: "33px" }}
-          />
-          <motion.rect
-            animate={isGrillOn ? { y: -8, rotate: -8 } : { y: 0, rotate: 0 }}
-            transition={{ type: "spring", stiffness: 120 }}
-            x="20" y="10" width="10" height="4" fill="#334155" rx="1"
-            style={{ originX: "42px", originY: "33px" }}
-          />
-        </svg>
-
-        <AnimatePresence>
-          {isGrillOn && (
-            <motion.div
-              initial={{ y: 5, opacity: 0 }}
-              animate={{ y: [-5, -28], x: [-2, 2, -1], opacity: [0, 0.7, 0] }}
-              exit={{ opacity: 0 }}
-              transition={{ repeat: Infinity, duration: 1.6 }}
-              className="absolute left-[36%] top-[-8%] text-[10px] pointer-events-none"
-            >
-              💨
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* Interactive Frisbee */}
-      <motion.div
-        onClick={handleFrisbeeClick}
-        animate={frisbeeSpin ? { x: [0, 60, -40, 0], y: [0, -45, -20, 0], rotate: [0, 360, 720] } : {}}
-        transition={{ duration: 1.2, ease: "easeInOut" }}
-        className="absolute left-[54%] top-[72%] w-[12%] h-[8%] z-30 cursor-pointer"
-      >
-        <svg className="w-full h-full filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.18)]" viewBox="0 0 40 20">
-          <ellipse cx="20" cy="10" rx="18" ry="8" fill="#fbbf24" stroke="#d97706" strokeWidth="1.5" />
-          <ellipse cx="20" cy="8" rx="14" ry="5" fill="#fef08a" opacity="0.8" />
-        </svg>
-      </motion.div>
-    </>
-  );
-};
-
-// Scene 5: School Lunch Table Diorama Props with Interactive Micro-Animations
-const SchoolProps: React.FC = () => {
-  const [isBackpackOpen, setIsBackpackOpen] = useState(false);
-  const [juiceSquirts, setJuiceSquirts] = useState(false);
-  const [isSmileDrawing, setIsSmileDrawing] = useState(false);
-
-  const handleJuiceClick = () => {
-    setJuiceSquirts(true);
-    playSound.detectiveFound();
-    setTimeout(() => setJuiceSquirts(false), 900);
-  };
-
-  return (
-    <>
-      {/* Background Blackboard & Wall */}
-      <div className="absolute inset-x-0 top-0 h-[46%] bg-[#e2e8f0] border-b-2 border-slate-400 z-0">
-        <div 
-          onClick={() => {
-            setIsSmileDrawing(!isSmileDrawing);
-            playSound.detectiveScan();
-          }}
-          className="absolute left-[15%] top-[8%] right-[15%] bottom-[12%] bg-[#064e3b] border-8 border-[#78350f] rounded-sm shadow-md cursor-pointer flex flex-col items-center justify-center relative overflow-hidden"
-        >
-          <svg className="w-14 h-14 text-white/80 filter drop-shadow-sm" viewBox="0 0 40 40">
-            {isSmileDrawing ? (
-              <>
-                <circle cx="20" cy="20" r="16" fill="none" stroke="currentColor" strokeWidth="2.5" />
-                <circle cx="14" cy="15" r="2" fill="currentColor" />
-                <circle cx="26" cy="15" r="2" fill="currentColor" />
-                <path d="M 12 24 Q 20 32 28 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-              </>
-            ) : (
-              <path d="M12 28 H28 L20 12 Z M20 28 L24 24 M16 24 L20 28" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-            )}
-          </svg>
-          <span className="absolute bottom-1 right-2 text-[5px] text-white/50 font-mono">CHALK</span>
-        </div>
-      </div>
-
-      {/* Classroom Cafeteria Table */}
-      <div className="absolute inset-x-0 bottom-0 h-[54%] bg-gradient-to-b from-[#ca8a04] to-[#a16207] z-0 shadow-[inset_0_4px_6px_rgba(0,0,0,0.2)] border-t border-yellow-800" />
-      <div className="absolute left-[12%] top-[56%] right-[12%] bottom-[8%] bg-sky-600/25 rounded-3xl border border-sky-500/20 z-0" />
-
-      {/* Interactive Backpack with sliding notebook */}
-      <div 
-        onClick={() => {
-          setIsBackpackOpen(!isBackpackOpen);
-          playSound.detectiveScan();
-        }}
-        className="absolute left-[66%] top-[38%] w-[22%] h-[36%] z-30 cursor-pointer"
-      >
-        <div className="relative w-full h-full">
-          <AnimatePresence>
-            {isBackpackOpen && (
-              <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: -16, opacity: 1 }}
-                exit={{ y: 20, opacity: 0 }}
-                className="absolute left-[15%] top-0 w-[70%] h-[70%] z-10"
-              >
-                <svg className="w-full h-full filter drop-shadow-md" viewBox="0 0 30 35">
-                  <rect x="2" y="2" width="26" height="31" rx="2" fill="#a855f7" />
-                  <rect x="6" y="2" width="2" height="31" fill="#cbd5e1" />
-                  <line x1="12" y1="8" x2="24" y2="8" stroke="#ffffff" strokeWidth="1.5" />
-                  <line x1="12" y1="14" x2="24" y2="14" stroke="#ffffff" strokeWidth="1.5" />
-                  <line x1="12" y1="20" x2="24" y2="20" stroke="#ffffff" strokeWidth="1.5" />
-                </svg>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <svg className="w-full h-full filter drop-shadow-[0_4px_6px_rgba(0,0,0,0.18)] relative z-20" viewBox="0 0 45 60">
-            <path d="M 5 55 Q 5 15 22.5 10 Q 40 15 40 55 Z" fill="#3b82f6" />
-            <path d="M 8 55 Q 8 32 22.5 28 Q 37 32 37 55 Z" fill="#2563eb" />
-            <rect x="18" y="28" width="9" height="2" rx="0.5" fill="#94a3b8" />
-          </svg>
-        </div>
-      </div>
-
-      {/* Interactive Juice Box (squirt animation) */}
-      <div 
-        onClick={handleJuiceClick}
-        className="absolute left-[38%] top-[46%] w-[16%] h-[26%] z-30 cursor-pointer"
-      >
-        <svg className="w-full h-full filter drop-shadow-[0_4px_5px_rgba(0,0,0,0.15)]" viewBox="0 0 35 50">
-          <rect x="5" y="10" width="25" height="36" rx="2" fill="#ec4899" />
-          <rect x="8" y="15" width="19" height="20" fill="#fbcfe8" opacity="0.9" />
-          <circle cx="18" cy="25" r="5" fill="#f43f5e" />
-          <line x1="15" y1="10" x2="12" y2="2" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" />
-        </svg>
-
-        {juiceSquirts && (
-          <div className="absolute left-[15%] top-[-10px] flex flex-col gap-1 text-[8px] opacity-80 pointer-events-none z-30">
-            💦
-          </div>
-        )}
-      </div>
-
-      {/* Apple Bowl */}
-      <svg className="absolute left-[4%] top-[72%] w-[20%] h-[18%] z-30 filter drop-shadow-[0_3px_5px_rgba(0,0,0,0.15)]" viewBox="0 0 60 30">
-        <path d="M 5 5 Q 30 35 55 5 Z" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="2" />
-        <ellipse cx="30" cy="5" rx="25" ry="3" fill="#cbd5e1" />
-      </svg>
-    </>
-  );
-};
+// Scene 5: School — now the high-fidelity SchoolScene component.
 
 interface TrashDetectiveScreenProps {
   onBack: () => void;
@@ -683,8 +463,8 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
                 {selectedScene.id === "kitchen" && <KitchenScene onDecoy={handleDecoy} />}
                 {selectedScene.id === "beach" && <BeachScene onDecoy={handleDecoy} />}
                 {selectedScene.id === "office" && <OfficeScene onDecoy={handleDecoy} />}
-                {selectedScene.id === "park" && <ParkProps />}
-                {selectedScene.id === "school" && <SchoolProps />}
+                {selectedScene.id === "park" && <ParkScene onDecoy={handleDecoy} />}
+                {selectedScene.id === "school" && <SchoolScene onDecoy={handleDecoy} />}
               </div>
 
               {/* Sorting panel.

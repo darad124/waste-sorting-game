@@ -414,3 +414,159 @@ body,
   #of-screenOn, #of-screenBloom, #of-lampPool, #of-lampBulb,
   #of-lampBloom, #of-lampShadeLit { transition: none !important; }
 }
+
+/* ── Park Picnic (`pk-`) ───────────────────────────────────────────────
+   Authored as a standalone page and ported; see
+   src/components/detective/ParkScene.tsx.
+   Every class, keyframe and id is namespaced so two scenes can share a
+   document without colliding. */
+
+/* ── ambient life ──────────────────────────────────────────────────
+   Late afternoon, and nothing here is in a hurry: the canopy turns
+   over in the breeze, the light it drops shifts with it, a butterfly
+   crosses, and someone's kite is up over the far side of the park. */
+
+@keyframes pk-canopySway { 0%,100%{transform:rotate(-.55deg)} 50%{transform:rotate(.62deg)} }
+.pk-canopy { transform-origin: 1150px 430px; animation: pk-canopySway 11.2s ease-in-out infinite; }
+
+/* The dapple drifts with the leaves that cast it. Only TRANSFORM is
+   animated here — an opacity animation on this group would make it a
+   stacking context, and the screen blend inside would stop working. */
+@keyframes pk-dappleDrift { 0%,100%{transform:translate(0,0)} 50%{transform:translate(17px,-7px)} }
+.pk-dapple { animation: pk-dappleDrift 11.2s ease-in-out infinite; }
+
+@keyframes pk-nearSway { 0%,100%{transform:skewX(0deg)} 50%{transform:skewX(-1.4deg)} }
+.pk-nearGrass { transform-origin: 600px 900px; animation: pk-nearSway 8.6s ease-in-out infinite; }
+
+@keyframes pk-flit {
+  0%   {transform:translate(212px,806px) scale(1)    rotate(-7deg)}
+  21%  {transform:translate(402px,718px) scale(.85)  rotate(5deg)}
+  44%  {transform:translate(596px,648px) scale(.69)  rotate(-6deg)}
+  68%  {transform:translate(788px,556px) scale(.52)  rotate(4deg)}
+  100% {transform:translate(1014px,462px) scale(.35) rotate(-3deg)} }
+.pk-butterfly { animation: pk-flit 17s cubic-bezier(.4,0,.6,1) infinite; }
+@keyframes pk-bfFade { 0%{opacity:0} 9%{opacity:1} 84%{opacity:1} 100%{opacity:0} }
+.pk-bfFade { animation: pk-bfFade 17s linear infinite; }
+/* the near wing beats through a full arc; the far one is turned away
+   from us, so the same beat covers less ground on screen */
+@keyframes pk-flapNear { 0%,100%{transform:scaleX(1)} 50%{transform:scaleX(.18)} }
+@keyframes pk-flapFar  { 0%,100%{transform:scaleX(.62)} 50%{transform:scaleX(.1)} }
+.pk-wingNear { transform-box: fill-box; transform-origin: 100% 40%;
+            animation: pk-flapNear .19s ease-in-out infinite; }
+.pk-wingFar  { transform-box: fill-box; transform-origin: 0% 40%;
+            animation: pk-flapFar .19s ease-in-out infinite; }
+
+@keyframes pk-kiteBob { 0%,100%{transform:translate(386px,122px) rotate(-4deg)}
+                     50%   {transform:translate(360px,105px) rotate(5deg)} }
+.pk-kite { animation: pk-kiteBob 8.1s ease-in-out infinite; }
+
+@keyframes pk-steam { 0%  {opacity:0; transform:translate(0,0) scale(.5)}
+                   24% {opacity:.42}
+                   100%{opacity:0; transform:translate(-13px,-74px) scale(1.8)} }
+.pk-steam { animation: pk-steam 7.3s ease-out infinite; }
+
+/* ── the three toys ────────────────────────────────────────────────
+   Click the tree and it lets go of a few leaves. Click the speaker and
+   it wakes up. Click the turned-back corner of the blanket and a gust
+   runs across the cloth — and the dapple slides with it, because the
+   same wind is in the tree that is casting it. */
+
+@keyframes pk-fall0 { 0%{opacity:0; transform:translate(0,0) rotate(0)} 8%{opacity:1}
+                   100%{opacity:0; transform:translate(-180px,470px) rotate(-420deg)} }
+@keyframes pk-fall1 { 0%{opacity:0; transform:translate(0,0) rotate(0)} 8%{opacity:1}
+                   100%{opacity:0; transform:translate(-268px,520px) rotate(380deg)} }
+@keyframes pk-fall2 { 0%{opacity:0; transform:translate(0,0) rotate(0)} 8%{opacity:1}
+                   100%{opacity:0; transform:translate(-92px,500px) rotate(-300deg)} }
+.pk-leaffall { opacity:0; }
+.pk-shedding .pk-leaffall { animation-duration: 4.2s; animation-timing-function: cubic-bezier(.3,.05,.5,1); }
+.pk-shedding .pk-lf0 { animation-name: pk-fall0 } .pk-shedding .pk-lf1 { animation-name: pk-fall1 }
+.pk-shedding .pk-lf2 { animation-name: pk-fall2 }
+
+#pk-speakerGlow, #pk-speakerBars, #pk-notes { opacity: 0; transition: opacity .3s ease; }
+.pk-playing #pk-speakerGlow, .pk-playing #pk-speakerBars, .pk-playing #pk-notes { opacity: 1; }
+@keyframes pk-bar { 0%,100%{transform:scaleY(.25)} 50%{transform:scaleY(1)} }
+.pk-playing .pk-bar { animation: pk-bar .58s ease-in-out infinite;
+                transform-box: fill-box; transform-origin: 50% 100%; }
+@keyframes pk-noteUp { 0%{opacity:0; transform:translate(0,0) scale(.6)}
+                    20%{opacity:.9} 100%{opacity:0; transform:translate(26px,-88px) scale(1.25)} }
+.pk-playing .pk-note { animation: pk-noteUp 3.1s ease-out infinite; }
+
+@keyframes pk-gustCorner { 0%,100%{transform:translate(0,0) rotate(0)}
+                        30%{transform:translate(-13px,-24px) rotate(-7deg)}
+                        62%{transform:translate(5px,-7px) rotate(2.5deg)} }
+@keyframes pk-gustCloth  { 0%,100%{transform:translate(0,0)}
+                        34%{transform:translate(-5px,-3.5px)} 68%{transform:translate(2px,1px)} }
+@keyframes pk-gustLight  { 0%,100%{transform:translate(0,0)} 40%{transform:translate(-34px,11px)} }
+.pk-gust .pk-cornerFlap { animation: pk-gustCorner 1.5s cubic-bezier(.36,.07,.19,.97); }
+.pk-gust .pk-cloth      { animation: pk-gustCloth  1.5s cubic-bezier(.36,.07,.19,.97); }
+.pk-gust .pk-dapple     { animation: pk-gustLight  1.5s cubic-bezier(.36,.07,.19,.97); }
+
+@media (prefers-reduced-motion: reduce) {
+  .pk-canopy, .pk-dapple, .pk-nearGrass, .pk-butterfly, .pk-bfFade,
+  .pk-wingNear, .pk-wingFar, .pk-kite, .pk-steam, .pk-leaffall,
+  .pk-playing .pk-bar, .pk-playing .pk-note,
+  .pk-gust .pk-cornerFlap, .pk-gust .pk-cloth, .pk-gust .pk-dapple {
+    animation: none !important;
+  }
+}
+
+/* ── School Lunch (`sc-`) ───────────────────────────────────────────────
+   Authored as a standalone page and ported; see
+   src/components/detective/SchoolScene.tsx.
+   Every class, keyframe and id is namespaced so two scenes can share a
+   document without colliding. */
+
+/* ── ambient life ──────────────────────────────────────────────────
+   The hall after the second sitting. Dust turning over in the window
+   light, a clock nobody is watching, one strip light on the blink. */
+
+@keyframes sc-mote { 0%   {opacity:0; transform:translate(0,0)}
+                  14%  {opacity:.85}
+                  82%  {opacity:.5}
+                  100% {opacity:0; transform:translate(-118px,96px)} }
+.sc-mote { animation: sc-mote linear infinite; }
+
+@keyframes sc-beam { 0%,100%{opacity:.5} 50%{opacity:.68} }
+.sc-beams { animation: sc-beam 13.4s ease-in-out infinite; }
+
+@keyframes sc-tick { 0%,92%{transform:rotate(0)} 100%{transform:rotate(6deg)} }
+.sc-second { transform-origin: 1046px 86px; animation: sc-tick 1s steps(1,end) infinite; }
+
+/* water does not stop dead — it swings past level and settles */
+@keyframes sc-slosh { 0%,100%{transform:rotate(0)}
+                   18%{transform:rotate(3.4deg)} 44%{transform:rotate(-2.4deg)}
+                   68%{transform:rotate(1.3deg)} 86%{transform:rotate(-.5deg)} }
+.sc-water { transform-box: fill-box; transform-origin: 50% 100%; }
+.sc-sloshing .sc-water { animation: sc-slosh 1.5s cubic-bezier(.36,.07,.19,.97); }
+
+/* ── the three toys ────────────────────────────────────────────────
+   The tablet still has one flicker left in it. The bell is the bell.
+   And somebody folded a paper plane during registration and never got
+   to throw it — click it and it goes. */
+
+#sc-screenLive { opacity: 0; }
+
+@keyframes sc-fly { 0%   {transform:translate(0,0) rotate(0) scale(1)}
+                 18%  {transform:translate(-150px,-96px) rotate(-11deg) scale(.86)}
+                 48%  {transform:translate(-430px,-176px) rotate(5deg) scale(.6)}
+                 78%  {transform:translate(-700px,-206px) rotate(-6deg) scale(.42)}
+                 100% {transform:translate(-880px,-176px) rotate(3deg) scale(.34)} }
+.sc-launched .sc-plane { animation: sc-fly 3.4s cubic-bezier(.22,.6,.4,1) forwards; }
+
+@keyframes sc-clang { 0%,100%{transform:rotate(0)} 12%{transform:rotate(9deg)}
+                   34%{transform:rotate(-7deg)} 58%{transform:rotate(4deg)}
+                   80%{transform:rotate(-2deg)} }
+.sc-ringing .sc-bellBody { transform-box: fill-box; transform-origin: 50% 8%;
+                     animation: sc-clang .9s ease-out; }
+.sc-ring { opacity: 0; }
+@keyframes sc-ripple { 0%{opacity:0; transform:scale(.3)} 20%{opacity:.8}
+                    100%{opacity:0; transform:scale(1.9)} }
+.sc-ringing .sc-ring { transform-box: fill-box; transform-origin: 0% 50%;
+                 animation: sc-ripple 1.2s ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sc-mote, .sc-beams, .sc-second, .sc-sloshing .sc-water,
+  .sc-launched .sc-plane, .sc-ringing .sc-bellBody, .sc-ringing .sc-ring {
+    animation: none !important;
+  }
+}
