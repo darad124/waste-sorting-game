@@ -1,4 +1,4 @@
-import { supabase, supabaseConfigured } from "../lib/supabase";
+import { supabaseWrite as supabase, supabaseConfigured } from "../lib/supabase";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -88,14 +88,12 @@ async function ensurePlayer(ageRange?: AgeRange | null): Promise<void> {
   const row: { id: string; age_range?: AgeRange } = { id };
   if (ageRange) row.age_range = ageRange;
 
-  // Insert-only: ON CONFLICT DO NOTHING. The players table has no public
-  // UPDATE policy, so a returning player's row is created once and never
-  // altered. Age is therefore captured only on this first insert.
-  const { error } = await supabase
-    .from("players")
-    .upsert(row, { onConflict: "id", ignoreDuplicates: true });
-
-  if (error) throw error;
+  // Plain insert (write-only): anon has INSERT but no SELECT, and an upsert
+  // would return the row, which triggers the SELECT policy and fails. 23505 =
+  // the row already exists (a returning player) -> ignore. Age is captured
+  // only on this first insert.
+  const { error } = await supabase.from("players").insert(row);
+  if (error && error.code !== "23505") throw error;
 }
 
 export interface SubmitResult {
@@ -121,23 +119,20 @@ export async function submitFeedback(
 
     const learned = input.learned?.trim() ? input.learned.trim().slice(0, 500) : null;
 
-    const { error } = await supabase.from("feedback").upsert(
-      {
-        player_id: getPlayerId(),
-        game_mode: input.mode,
-        level_id: input.levelId,
-        enjoyed: input.enjoyed,
-        learned,
-        score: input.score ?? null,
-        accuracy: input.accuracy ?? null,
-        stars: input.stars ?? null,
-      },
-      // Insert-only: ON CONFLICT DO NOTHING (first answer wins). No public
-      // UPDATE policy exists, so existing feedback can never be overwritten.
-      { onConflict: "player_id,game_mode,level_id", ignoreDuplicates: true },
-    );
+    const { error } = await supabase.from("feedback").insert({
+      player_id: getPlayerId(),
+      game_mode: input.mode,
+      level_id: input.levelId,
+      enjoyed: input.enjoyed,
+      learned,
+      score: input.score ?? null,
+      accuracy: input.accuracy ?? null,
+      stars: input.stars ?? null,
+    });
 
-    if (error) throw error;
+    // 23505 = a feedback row for this (player, mode, level) already exists.
+    // First answer wins; treat a resubmit as success rather than an error.
+    if (error && error.code !== "23505") throw error;
     return { ok: true };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : String(e) };

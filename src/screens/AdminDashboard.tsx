@@ -23,6 +23,9 @@ interface FeedbackRow {
   level_id: number | null;
   enjoyed: boolean;
   learned: string | null;
+  score: number | null;
+  accuracy: number | null;
+  stars: number | null;
   created_at: string;
 }
 interface PlayerRow {
@@ -92,7 +95,7 @@ const Login: React.FC<{ onDone: () => void }> = ({ onDone }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+    <div className="h-[100dvh] overflow-y-auto flex items-center justify-center bg-slate-50 p-4">
       <form onSubmit={submit} className="w-full max-w-sm bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col gap-4">
         <div>
           <h1 className="text-xl font-black text-slate-900">Feedback Dashboard</h1>
@@ -146,17 +149,32 @@ const Dashboard: React.FC<{ onSignOut: () => void }> = ({ onSignOut }) => {
     (async () => {
       if (!supabase) return;
       setLoading(true);
+
+      // First confirm this account is actually an admin. RLS returns an empty
+      // set (not an error) to non-admins, so without this check a non-admin
+      // would just see an empty dashboard and think there's no data.
+      const { data: me } = await supabase.auth.getUser();
+      const adminCheck = await supabase
+        .from("admins")
+        .select("user_id")
+        .eq("user_id", me.user?.id ?? "")
+        .maybeSingle();
+      if (!adminCheck.data) {
+        setError(
+          `Signed in as ${me.user?.email ?? "unknown"}, but this account is not in the admins table. ` +
+            "Run 0002_seed_admin.sql with this exact email, then reload.",
+        );
+        setLoading(false);
+        return;
+      }
+
       const [s, f, p] = await Promise.all([
         supabase.from("feedback_stats").select("*"),
         supabase.from("feedback").select("*").order("created_at", { ascending: false }).limit(500),
         supabase.from("players").select("id, age_range"),
       ]);
       if (s.error || f.error || p.error) {
-        // Most likely cause: signed-in user is not in the admins table.
-        setError(
-          (s.error || f.error || p.error)?.message +
-            " — is this account listed in the admins table?",
-        );
+        setError((s.error || f.error || p.error)?.message ?? "Query failed");
       } else {
         setStats((s.data as StatRow[]) ?? []);
         setFeedback((f.data as FeedbackRow[]) ?? []);
@@ -232,21 +250,75 @@ const Dashboard: React.FC<{ onSignOut: () => void }> = ({ onSignOut }) => {
     [feedback, modeFilter],
   );
 
-  if (loading) return <div className="min-h-screen grid place-items-center text-slate-500">Loading…</div>;
+  const [exporting, setExporting] = useState(false);
+  const exportXlsx = async () => {
+    if (exporting) return;
+    setExporting(true);
+    try {
+      // Lazy-load SheetJS only when the admin actually exports, so it never
+      // ships in the normal bundle (or even the dashboard chunk until now).
+      const XLSX = await import("xlsx");
+      const ageOf = new Map(players.map((p) => [p.id, p.age_range]));
+
+      const rows = feedback.map((f) => ({
+        Date: new Date(f.created_at).toLocaleString(),
+        Mode: MODE_LABELS[f.game_mode] ?? f.game_mode,
+        Level: f.level_id == null ? "" : levelName(f.level_id),
+        Enjoyed: f.enjoyed ? "Yes" : "No",
+        "Age range": ageOf.get(f.player_id) ? AGE_LABEL[ageOf.get(f.player_id) as string] : "",
+        Comment: f.learned ?? "",
+        Score: f.score ?? "",
+        "Accuracy %": f.accuracy ?? "",
+        Stars: f.stars ?? "",
+        Player: f.player_id,
+      }));
+
+      const summary = stats.map((r) => ({
+        Mode: MODE_LABELS[r.game_mode] ?? r.game_mode,
+        Level: r.level_id == null ? "" : levelName(r.level_id),
+        Responses: r.responses,
+        "Enjoyed %": r.enjoyed_pct ?? "",
+        Comments: r.comment_count,
+        "Avg accuracy": r.avg_accuracy ?? "",
+        "Avg score": r.avg_score ?? "",
+      }));
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), "Feedback");
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(summary), "Summary");
+      const stamp = new Date().toISOString().slice(0, 10);
+      XLSX.writeFile(wb, `feedback-${stamp}.xlsx`);
+    } catch (e) {
+      alert("Export failed: " + (e instanceof Error ? e.message : String(e)));
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  if (loading) return <div className="h-[100dvh] grid place-items-center text-slate-500">Loading…</div>;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800">
+    <div className="h-[100dvh] overflow-y-auto bg-slate-50 text-slate-800">
       <header className="sticky top-0 z-10 bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between">
         <h1 className="text-lg font-black text-slate-900">Feedback Dashboard</h1>
-        <button
-          onClick={onSignOut}
-          className="text-sm font-semibold text-slate-500 hover:text-slate-900 border border-slate-300 rounded-lg px-3 py-1.5"
-        >
-          Sign out
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={exportXlsx}
+            disabled={exporting || feedback.length === 0}
+            className="text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg px-3 py-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {exporting ? "Exporting…" : "Export .xlsx"}
+          </button>
+          <button
+            onClick={onSignOut}
+            className="text-sm font-semibold text-slate-500 hover:text-slate-900 border border-slate-300 rounded-lg px-3 py-1.5"
+          >
+            Sign out
+          </button>
+        </div>
       </header>
 
-      <main className="max-w-5xl mx-auto p-6 flex flex-col gap-6">
+      <main className="max-w-5xl mx-auto p-6 pb-20 flex flex-col gap-6">
         {error && (
           <div className="bg-rose-50 border border-rose-200 text-rose-700 rounded-xl p-4 text-sm">
             {error}
@@ -256,13 +328,13 @@ const Dashboard: React.FC<{ onSignOut: () => void }> = ({ onSignOut }) => {
         {/* KPI row */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { label: "Total responses", value: totals.responses },
-            { label: "Enjoyment rate", value: `${totals.pct}%` },
-            { label: "Players", value: totals.players },
-            { label: "Written comments", value: totals.comments },
+            { label: "Total responses", value: totals.responses, accent: "text-slate-900" },
+            { label: "Enjoyment rate", value: `${totals.pct}%`, accent: totals.pct >= 60 ? "text-emerald-600" : "text-amber-600" },
+            { label: "Players", value: totals.players, accent: "text-slate-900" },
+            { label: "Written comments", value: totals.comments, accent: "text-slate-900" },
           ].map((k) => (
             <div key={k.label} className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
-              <div className="text-2xl font-black text-slate-900">{k.value}</div>
+              <div className={`text-2xl font-black ${k.accent ?? "text-slate-900"}`}>{k.value}</div>
               <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 mt-1">
                 {k.label}
               </div>
@@ -412,7 +484,7 @@ const AdminDashboard: React.FC = () => {
 
   if (!supabaseConfigured) {
     return (
-      <div className="min-h-screen grid place-items-center bg-slate-50 p-6 text-center">
+      <div className="h-[100dvh] overflow-y-auto grid place-items-center bg-slate-50 p-6 text-center">
         <div className="max-w-md">
           <h1 className="text-xl font-black text-slate-900 mb-2">Dashboard not configured</h1>
           <p className="text-sm text-slate-600">
@@ -425,7 +497,7 @@ const AdminDashboard: React.FC = () => {
     );
   }
 
-  if (authed === null) return <div className="min-h-screen grid place-items-center text-slate-500">Loading…</div>;
+  if (authed === null) return <div className="h-[100dvh] grid place-items-center text-slate-500">Loading…</div>;
   if (!authed) return <Login onDone={() => setAuthed(true)} />;
   return <Dashboard onSignOut={async () => { await supabase?.auth.signOut(); setAuthed(false); }} />;
 };
