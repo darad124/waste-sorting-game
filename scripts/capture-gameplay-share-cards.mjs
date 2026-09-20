@@ -17,6 +17,14 @@ const targets = [
   "mode-contamination",
 ];
 
+// Targets with a purpose-made poster in src/components/ShareCard.tsx. The
+// rest are captured from live gameplay, which is the right card for a mode
+// whose screen IS the picture — but Trash Detective's screen is a menu, and
+// a photograph of a menu tells a stranger nothing about the game.
+const posterTargets = new Set(["mode-detective"]);
+const urlFor = (target) =>
+  posterTargets.has(target) ? `${baseUrl}/?card=${target}` : `${baseUrl}/?share=${target}`;
+
 await mkdir(outputDirectory, { recursive: true });
 
 for (const target of targets) {
@@ -37,9 +45,9 @@ for (const target of targets) {
       `--user-data-dir=${profilePath}`,
       "--window-size=1200,630",
       "--force-device-scale-factor=1",
-      "--virtual-time-budget=2600",
+      "--virtual-time-budget=6000",
       `--screenshot=${outputPath}`,
-      `${baseUrl}/?share=${target}`,
+      urlFor(target),
     ],
     { stdio: "ignore" },
   );
