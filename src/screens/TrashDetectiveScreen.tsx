@@ -14,12 +14,24 @@ import { KitchenScene } from "../components/detective/KitchenScene";
 import { KITCHEN_CLUE_ART } from "../components/detective/kitchenClues";
 import { BeachScene } from "../components/detective/BeachScene";
 import { BEACH_CLUE_ART } from "../components/detective/beachClues";
+import { OfficeScene } from "../components/detective/OfficeScene";
+import { OFFICE_CLUE_ART, OFFICE_CLUE_BOX } from "../components/detective/officeClues";
 
 /** Clue art for every scene that has been rebuilt to the high-fidelity
  *  standard, keyed by clue id. Ids are unique across scenes, so one lookup
  *  serves them all and the remaining dioramas simply fall through to the
  *  generic ItemSVG chip. */
-const CLUE_ART: Record<string, React.ReactNode> = { ...KITCHEN_CLUE_ART, ...BEACH_CLUE_ART };
+const CLUE_ART: Record<string, React.ReactNode> = {
+  ...KITCHEN_CLUE_ART,
+  ...BEACH_CLUE_ART,
+  ...OFFICE_CLUE_ART,
+};
+
+/** Most clues are drawn in a 200x200 window of scene units, but some simply
+ *  are not that shape — the Office keyboard is 543 wide — so a clue may
+ *  declare its own slot and the rest fall back to the square. */
+const CLUE_BOX: Record<string, { w: number; h: number }> = { ...OFFICE_CLUE_BOX };
+const DEFAULT_CLUE_BOX = { w: 200, h: 200 };
 
 interface DetectiveItem {
   id: string;
@@ -85,11 +97,17 @@ const SCENES: SceneConfig[] = [
     colorClass: "from-slate-100 to-zinc-200 border-slate-300/60 hover:border-slate-500",
     bgDecorationClass: "bg-[linear-gradient(45deg,#6b7280_12%,transparent_12%,transparent_50%,#6b7280_50%,#6b7280_62%,transparent_62%,transparent_100%)] [background-size:12px_12px] opacity-5",
     items: [
-      { id: "o1", itemId: "charging_cable", name: "Charging Cable", category: "eWaste", top: "66%", left: "16%" },
-      { id: "o2", itemId: "keyboard", name: "Broken Keyboard", category: "eWaste", top: "74%", left: "48%" },
-      { id: "o3", itemId: "styrofoam_cup", name: "Styrofoam Cup", category: "general", top: "38%", left: "78%" },
-      { id: "o4", itemId: "coffee_grounds", name: "Coffee Grounds", category: "organic", top: "46%", left: "34%" },
-      { id: "o5", itemId: "spray_can", name: "Aerosol Spray Can", category: "hazardous", top: "70%", left: "82%" },
+      // Seated on the authored artwork: each figure is the measured centre of
+      // that piece's drawing, as a percentage of the 1200x900 scene.
+      { id: "o1", itemId: "charging_cable", name: "Charging Cable", category: "eWaste", top: "87.7%", left: "20.8%" },
+      { id: "o2", itemId: "keyboard", name: "Broken Keyboard", category: "eWaste", top: "77.7%", left: "48.3%" },
+      // Was a styrofoam cup, which the Beach now uses. A broken ceramic mug is
+      // more of a desk object, its lesson is sharper — ceramics melt at a
+      // different temperature and ruin a whole batch of recycled glass — and it
+      // pairs with the coffee grounds beside it: one accident, two clues.
+      { id: "o3", itemId: "ceramic_mug", name: "Broken Ceramic Mug", category: "general", top: "81.8%", left: "68.9%" },
+      { id: "o4", itemId: "coffee_grounds", name: "Coffee Grounds", category: "organic", top: "87.6%", left: "60.5%" },
+      { id: "o5", itemId: "spray_can", name: "Aerosol Spray Can", category: "hazardous", top: "69.2%", left: "93.5%" },
     ]
   },
   {
@@ -136,129 +154,7 @@ const CATEGORY_GLOW: Record<WasteCategory, string> = {
 
 // Scene 2: Beach — now the high-fidelity BeachScene component.
 
-// Scene 3: Office Diorama Props with Interactive Micro-Animations
-const OfficeProps: React.FC = () => {
-  const [isMonitorOn, setIsMonitorOn] = useState(true);
-  const [isLampOn, setIsLampOn] = useState(false);
-  const [isPlantSwaying, setIsPlantSwaying] = useState(false);
-
-  const handlePlantClick = () => {
-    if (isPlantSwaying) return;
-    setIsPlantSwaying(true);
-    playSound.detectiveScan();
-    setTimeout(() => setIsPlantSwaying(false), 1000);
-  };
-
-  return (
-    <>
-      {/* Office wall background */}
-      <div className="absolute inset-x-0 top-0 h-[50%] bg-[#cbd5e1] border-b-2 border-slate-400 z-0">
-        {/* Wall Panel lines */}
-        <div className="absolute inset-0 opacity-20" style={{
-          backgroundImage: "linear-gradient(to right, #475569 1px, transparent 1px)",
-          backgroundSize: "80px 100%"
-        }} />
-        
-        {/* Framed Poster */}
-        <div className="absolute left-[70%] top-[8%] w-[20%] h-[30%] bg-slate-900 border-2 border-slate-100 rounded-sm shadow-md flex items-center justify-center p-1 overflow-hidden">
-          <div className="w-full h-full bg-emerald-700/80 rounded-xs flex flex-col items-center justify-center text-[5px] text-white font-bold tracking-tighter">
-            <span>GO</span>
-            <span>GREEN</span>
-          </div>
-        </div>
-      </div>
-      
-      {/* Wooden Desk Surface */}
-      <div className="absolute inset-x-0 bottom-0 h-[50%] bg-gradient-to-b from-[#7c2d12] to-[#4c1d95]/0 bg-[#451a03] z-0 shadow-[inset_0_4px_6px_rgba(0,0,0,0.3)] border-t border-amber-950" />
-      {/* Desk Mat */}
-      <div className="absolute left-[5%] top-[55%] right-[5%] bottom-[5%] bg-slate-800/25 rounded-2xl border border-slate-700/30 z-0" />
-
-      {/* Interactive Monitor */}
-      <div 
-        onClick={() => {
-          setIsMonitorOn(!isMonitorOn);
-          playSound.detectiveScan();
-        }}
-        className="absolute left-[32%] top-[18%] w-[36%] h-[32%] z-10 cursor-pointer"
-      >
-        <svg className="w-full h-full filter drop-shadow-[0_4px_6px_rgba(0,0,0,0.15)]" viewBox="0 0 70 50">
-          <rect x="5" y="5" width="60" height="36" rx="3" fill="#1e293b" />
-          <rect x="8" y="8" width="54" height="30" fill={isMonitorOn ? "#0f172a" : "#334155"} />
-          {isMonitorOn ? (
-            <>
-              <text x="35" y="24" textAnchor="middle" fontSize="6" fill="#10b981" fontWeight="bold">EcoOS 1.0</text>
-              <line x1="12" y1="28" x2="58" y2="28" stroke="#10b981" strokeWidth="1" opacity="0.7" />
-              <rect x="15" y="14" width="4" height="4" fill="#10b981" opacity="0.6" className="animate-pulse" />
-            </>
-          ) : (
-            <circle cx="35" cy="23" r="5" fill="#f43f5e" opacity="0.3" />
-          )}
-          <rect x="30" y="41" width="10" height="6" fill="#475569" />
-          <ellipse cx="35" cy="47" rx="14" ry="2" fill="#334155" />
-        </svg>
-      </div>
-
-      {/* Keyboard Base */}
-      <svg className="absolute left-[28%] top-[52%] w-[44%] h-[12%] z-10 filter drop-shadow-[0_3px_5px_rgba(0,0,0,0.15)]" viewBox="0 0 80 20">
-        <rect x="2" y="2" width="76" height="16" rx="2" fill="#475569" stroke="#334155" strokeWidth="1" />
-        <rect x="8" y="6" width="64" height="3" fill="#1e293b" opacity="0.4" />
-        <rect x="8" y="11" width="64" height="3" fill="#1e293b" opacity="0.4" />
-      </svg>
-      
-      {/* Interactive Desk Plant */}
-      <motion.div 
-        onClick={handlePlantClick}
-        animate={isPlantSwaying ? { rotate: [-5, 5, -3, 3, 0] } : {}}
-        transition={{ duration: 1 }}
-        className="absolute left-[8%] top-[38%] w-[16%] h-[28%] z-30 cursor-pointer"
-      >
-        <svg className="w-full h-full filter drop-shadow-[0_4px_6px_rgba(0,0,0,0.15)]" viewBox="0 0 40 65">
-          <rect x="10" y="38" width="20" height="24" rx="2" fill="#d97706" />
-          <path d="M 20 38 C 10 22 2 30 12 38 Z" fill="#22c55e" />
-          <path d="M 20 38 C 30 22 38 30 28 38 Z" fill="#15803d" />
-          <path d="M 20 38 C 20 15 15 12 20 38 Z" fill="#166534" />
-        </svg>
-      </motion.div>
-
-      {/* Organizer Tray */}
-      <svg className="absolute left-[70%] top-[34%] w-[22%] h-[24%] z-30 filter drop-shadow-[0_4px_6px_rgba(0,0,0,0.15)]" viewBox="0 0 50 50">
-        <rect x="5" y="10" width="40" height="32" rx="2" fill="#cbd5e1" opacity="0.8" />
-        <rect x="5" y="18" width="40" height="3" fill="#94a3b8" />
-        <rect x="5" y="28" width="40" height="3" fill="#94a3b8" />
-        <rect x="5" y="38" width="40" height="3" fill="#94a3b8" />
-      </svg>
-      
-      {/* Interactive Desk Lamp */}
-      <div 
-        onClick={() => {
-          setIsLampOn(!isLampOn);
-          playSound.detectiveScan();
-        }}
-        className="absolute left-[64%] top-[45%] w-[12%] h-[24%] z-30 cursor-pointer"
-      >
-        <svg className="w-full h-full filter drop-shadow-[0_3px_5px_rgba(0,0,0,0.15)]" viewBox="0 0 30 60">
-          <path d="M 15 45 L 15 15 M 15 15 L 10 10" stroke="#475569" strokeWidth="2.5" strokeLinecap="round" />
-          <ellipse cx="15" cy="48" rx="8" ry="2" fill="#334155" />
-          <path d="M 5 20 L 25 20 L 20 8 L 10 8 Z" fill="#dc2626" />
-        </svg>
-      </div>
-
-      {/* Lamp Light Glow Overlay */}
-      {isLampOn && (
-        <div 
-          className="absolute pointer-events-none z-20 opacity-30 bg-gradient-to-b from-yellow-300/80 to-transparent rounded-full blur-[8px]"
-          style={{
-            left: "58%",
-            top: "56%",
-            width: "24%",
-            height: "40%",
-            transform: "rotate(-10deg)"
-          }}
-        />
-      )}
-    </>
-  );
-};
+// Scene 3: Office — now the high-fidelity OfficeScene component.
 
 // Scene 4: Park Picnic Diorama Props with Interactive Micro-Animations
 const ParkProps: React.FC = () => {
@@ -786,7 +682,7 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
                 {/* Render vector diorama props */}
                 {selectedScene.id === "kitchen" && <KitchenScene onDecoy={handleDecoy} />}
                 {selectedScene.id === "beach" && <BeachScene onDecoy={handleDecoy} />}
-                {selectedScene.id === "office" && <OfficeProps />}
+                {selectedScene.id === "office" && <OfficeScene onDecoy={handleDecoy} />}
                 {selectedScene.id === "park" && <ParkProps />}
                 {selectedScene.id === "school" && <SchoolProps />}
               </div>
@@ -908,15 +804,16 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
                           zIndex: isSelected ? 50 : 20,
                           ...(clueArt
                             ? {
-                                // 200 scene units wide out of 1200x900, centred on
-                                // the anchor, so the art scales with the frame.
+                                // the clue's own slot in scene units, as a share
+                                // of the 1200x900 frame, centred on its anchor so
+                                // the art scales with the frame.
                                 // The box is inert: an HTML div takes pointer
                                 // events across its whole rectangle whether or not
                                 // anything is drawn there, and at this size it
                                 // would swallow every decoy underneath it. Only
                                 // the painted litter inside takes them back.
-                                width: "16.667%",
-                                height: "22.222%",
+                                width: `${((CLUE_BOX[item.id] ?? DEFAULT_CLUE_BOX).w / 1200) * 100}%`,
+                                height: `${((CLUE_BOX[item.id] ?? DEFAULT_CLUE_BOX).h / 900) * 100}%`,
                                 transform: "translate(-50%, -50%)",
                                 pointerEvents: "none" as const,
                               }

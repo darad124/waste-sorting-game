@@ -343,3 +343,74 @@ body,
   }
   #bc-parasol, #bc-canopy, #bc-parasolShadow, #bc-bigWave, #bc-crab { transition: none !important; }
 }
+
+/* ==================================================================== *
+ *  Office Desk scene
+ *
+ *  A working desk at mid-morning. Nothing here is dramatic: a cursor, a
+ *  plant in the draught, dust in the window light, one LED.
+ * ==================================================================== */
+
+@keyframes of-caret { 0%, 46% { opacity: 1; } 50%, 96% { opacity: 0; } 100% { opacity: 1; } }
+.of-caret { animation: of-caret 1.06s steps(1, end) infinite; }
+
+@keyframes of-led { 0%, 72% { opacity: .3; } 80% { opacity: 1; } 93% { opacity: .4; } 100% { opacity: .3; } }
+.of-led { animation: of-led 4.3s ease-in-out infinite; }
+
+@keyframes of-leafDrift { 0%, 100% { transform: rotate(-1.2deg); } 50% { transform: rotate(1.7deg); } }
+.of-plant { transform-origin: 159px 502px; animation: of-leafDrift 9.3s ease-in-out infinite; }
+
+@keyframes of-mote {
+  0%   { transform: translate(0, 0); opacity: 0; }
+  16%  { opacity: .85; }
+  84%  { opacity: .6; }
+  100% { transform: translate(78px, 206px); opacity: 0; }
+}
+.of-mote { animation: of-mote linear infinite; }
+
+/* The patch of daylight breathes. The class sits on the PATHS, not on a
+   wrapper: an opacity below 1 on a parent creates a stacking context, and a
+   stacking context isolates blending — the shaft screens onto the desk, so
+   wrapped it would blend against nothing and vanish. */
+@keyframes of-shaftBreathe { 0%, 100% { opacity: .5; } 50% { opacity: .72; } }
+.of-shaft { animation: of-shaftBreathe 14.3s ease-in-out infinite; }
+
+@keyframes of-steam {
+  0%   { opacity: 0; transform: translate(0, 0) scale(.6); }
+  22%  { opacity: .4; }
+  100% { opacity: 0; transform: translate(14px, -92px) scale(1.9); }
+}
+.of-steam { animation: of-steam 6.7s ease-out infinite; }
+
+/* ── the three toys ──────────────────────────────────────────────────
+   Two of them are the scene's light sources, so they relight the desk
+   rather than just animating. The lamp starts OFF, as it would in a room
+   this bright — switching it on lays a warm pool over the daylight. */
+#of-screenOn, #of-screenBloom { transition: opacity .4s ease; }
+.of-monitor-off #of-screenOn,
+.of-monitor-off #of-screenBloom { opacity: 0; }
+
+#of-lampPool, #of-lampBulb, #of-lampBloom, #of-lampShadeLit {
+  opacity: 0;
+  transition: opacity .35s ease;
+}
+.of-lamp-on #of-lampPool,
+.of-lamp-on #of-lampBulb,
+.of-lamp-on #of-lampBloom,
+.of-lamp-on #of-lampShadeLit { opacity: 1; }
+
+@keyframes of-nudge {
+  0%, 100% { transform: rotate(0); }
+  22%      { transform: rotate(3.2deg); }
+  55%      { transform: rotate(-2.3deg); }
+  80%      { transform: rotate(1.1deg); }
+}
+.of-plant-nudged { animation: of-nudge 1.1s cubic-bezier(.36, .07, .19, .97); }
+
+@media (prefers-reduced-motion: reduce) {
+  .of-caret, .of-led, .of-plant, .of-mote, .of-shaft, .of-steam, .of-plant-nudged {
+    animation: none !important;
+  }
+  #of-screenOn, #of-screenBloom, #of-lampPool, #of-lampBulb,
+  #of-lampBloom, #of-lampShadeLit { transition: none !important; }
+}
