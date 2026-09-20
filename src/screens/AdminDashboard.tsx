@@ -32,6 +32,10 @@ interface PlayerRow {
   id: string;
   age_range: string | null;
 }
+interface VisitRow {
+  player_id: string;
+  created_at: string;
+}
 
 const MODE_LABELS: Record<string, string> = {
   arcade: "Arcade Levels",
@@ -141,6 +145,7 @@ const Dashboard: React.FC<{ onSignOut: () => void }> = ({ onSignOut }) => {
   const [stats, setStats] = useState<StatRow[]>([]);
   const [feedback, setFeedback] = useState<FeedbackRow[]>([]);
   const [players, setPlayers] = useState<PlayerRow[]>([]);
+  const [visits, setVisits] = useState<VisitRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [modeFilter, setModeFilter] = useState<string>("all");
@@ -168,17 +173,19 @@ const Dashboard: React.FC<{ onSignOut: () => void }> = ({ onSignOut }) => {
         return;
       }
 
-      const [s, f, p] = await Promise.all([
+      const [s, f, p, v] = await Promise.all([
         supabase.from("feedback_stats").select("*"),
         supabase.from("feedback").select("*").order("created_at", { ascending: false }).limit(500),
         supabase.from("players").select("id, age_range"),
+        supabase.from("visits").select("player_id, created_at").order("created_at", { ascending: false }).limit(5000),
       ]);
-      if (s.error || f.error || p.error) {
-        setError((s.error || f.error || p.error)?.message ?? "Query failed");
+      if (s.error || f.error || p.error || v.error) {
+        setError((s.error || f.error || p.error || v.error)?.message ?? "Query failed");
       } else {
         setStats((s.data as StatRow[]) ?? []);
         setFeedback((f.data as FeedbackRow[]) ?? []);
         setPlayers((p.data as PlayerRow[]) ?? []);
+        setVisits((v.data as VisitRow[]) ?? []);
       }
       setLoading(false);
     })();
@@ -196,6 +203,29 @@ const Dashboard: React.FC<{ onSignOut: () => void }> = ({ onSignOut }) => {
       players: players.length,
     };
   }, [stats, players]);
+
+  const traffic = useMemo(() => {
+    const uniqueVisitors = new Set(visits.map((v) => v.player_id)).size;
+    const sessions = visits.length;
+    const responders = new Set(feedback.map((f) => f.player_id)).size;
+    const conversion = uniqueVisitors ? Math.round((responders / uniqueVisitors) * 100) : 0;
+
+    // Last 14 days of sessions, oldest -> newest.
+    const days: { label: string; count: number }[] = [];
+    const byDay: Record<string, number> = {};
+    for (const v of visits) {
+      const d = v.created_at.slice(0, 10);
+      byDay[d] = (byDay[d] ?? 0) + 1;
+    }
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const key = d.toISOString().slice(0, 10);
+      days.push({ label: key.slice(5), count: byDay[key] ?? 0 });
+    }
+    const maxDay = Math.max(1, ...days.map((d) => d.count));
+    return { uniqueVisitors, sessions, responders, conversion, days, maxDay };
+  }, [visits, feedback]);
 
   // Enjoyment per arcade level
   const perLevel = useMemo(
@@ -326,12 +356,14 @@ const Dashboard: React.FC<{ onSignOut: () => void }> = ({ onSignOut }) => {
         )}
 
         {/* KPI row */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {[
-            { label: "Total responses", value: totals.responses, accent: "text-slate-900" },
+            { label: "Unique visitors", value: traffic.uniqueVisitors, accent: "text-slate-900" },
+            { label: "Sessions", value: traffic.sessions, accent: "text-slate-900" },
+            { label: "Responses", value: totals.responses, accent: "text-slate-900" },
             { label: "Enjoyment rate", value: `${totals.pct}%`, accent: totals.pct >= 60 ? "text-emerald-600" : "text-amber-600" },
-            { label: "Players", value: totals.players, accent: "text-slate-900" },
-            { label: "Written comments", value: totals.comments, accent: "text-slate-900" },
+            { label: "Feedback rate", value: `${traffic.conversion}%`, accent: "text-slate-900" },
+            { label: "Comments", value: totals.comments, accent: "text-slate-900" },
           ].map((k) => (
             <div key={k.label} className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
               <div className={`text-2xl font-black ${k.accent ?? "text-slate-900"}`}>{k.value}</div>
@@ -341,6 +373,29 @@ const Dashboard: React.FC<{ onSignOut: () => void }> = ({ onSignOut }) => {
             </div>
           ))}
         </div>
+
+        <Card title="Sessions — last 14 days">
+          {traffic.sessions === 0 ? (
+            <p className="text-sm text-slate-400">No visits recorded yet.</p>
+          ) : (
+            <div className="flex items-end gap-1.5 h-40">
+              {traffic.days.map((d) => (
+                <div key={d.label} className="flex-1 flex flex-col items-center gap-1 min-w-0">
+                  <div className="w-full flex items-end justify-center" style={{ height: "100%" }}>
+                    <div
+                      title={`${d.label}: ${d.count}`}
+                      className="w-full max-w-[24px] rounded-t bg-emerald-500 transition-all"
+                      style={{ height: `${(d.count / traffic.maxDay) * 100}%`, minHeight: d.count ? 4 : 0 }}
+                    />
+                  </div>
+                  <span className="text-[9px] text-slate-400 tabular-nums rotate-0 truncate w-full text-center">
+                    {d.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
 
         <Card title="Enjoyment by arcade level">
           {perLevel.length === 0 ? (

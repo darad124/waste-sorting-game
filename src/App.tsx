@@ -12,6 +12,7 @@ import { TriviaScreen } from "./screens/TriviaScreen";
 import { ContaminationHuntScreen } from "./screens/ContaminationHuntScreen";
 import { backgroundMusic } from "./utils/audio";
 import { parseShareQuery } from "./utils/share";
+import { logVisit } from "./api/analytics";
 
 const AdminDashboard = lazy(() => import("./screens/AdminDashboard"));
 
@@ -36,6 +37,11 @@ function App() {
     const onHash = () => setAdmin(isAdminRoute());
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
+  }, []);
+
+  // Record a site visit once per session (skips the admin route).
+  useEffect(() => {
+    if (!isAdminRoute()) logVisit();
   }, []);
 
   const initialShareTarget = parseShareQuery(new URLSearchParams(window.location.search).get("share"));
