@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { playSound } from "../../utils/audio";
 
 /* ==================================================================== *
  *  Kitchen Mess — high-fidelity scene
@@ -14,12 +15,50 @@ import React from "react";
  *  KITCHEN_CLUE_ART below and are positioned by the screen.
  * ==================================================================== */
 
-export const KitchenScene: React.FC = () => (
+export const KitchenScene: React.FC = () => {
+  // Three props the player can poke at. They reward looking closely, which is
+  // the habit a hidden-object scene wants to build.
+  const [waterOn, setWaterOn] = useState(false);
+  const [toasting, setToasting] = useState(false);
+  const [windowOpen, setWindowOpen] = useState(false);
+  const popTimer = useRef<number | null>(null);
+
+  useEffect(() => () => {
+    if (popTimer.current) window.clearTimeout(popTimer.current);
+  }, []);
+
+  const toast = () => {
+    if (toasting) return;
+    setToasting(true);
+    playSound.detectiveScan();
+    popTimer.current = window.setTimeout(() => {
+      setToasting(false);
+      playSound.detectiveFound();
+    }, 2600);
+  };
+
+  const prop = (label: string, onActivate: () => void) => ({
+    role: "button" as const,
+    tabIndex: 0,
+    "aria-label": label,
+    style: { cursor: "pointer" as const },
+    onClick: (e: React.MouseEvent) => {
+      e.stopPropagation();
+      onActivate();
+    },
+    onKeyDown: (e: React.KeyboardEvent) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        onActivate();
+      }
+    },
+  });
+
+  return (
   <svg
-    className="absolute inset-0 w-full h-full"
+    className={`absolute inset-0 w-full h-full ${windowOpen ? "kt-open" : ""}`}
     viewBox="0 0 1200 900"
     preserveAspectRatio="xMidYMid slice"
-    aria-hidden
   >
 <defs>
 
@@ -207,8 +246,11 @@ export const KitchenScene: React.FC = () => (
 {/* ambient occlusion where the wall meets the worktop */}
 <rect x="0" y="524" width="1200" height="56" fill="#2A1B10" opacity=".22"/>
 
-{/* ══════════ 2. WINDOW — the light source ══════════ */}
-<g>
+{/* ══════════ 2. WINDOW — the light source. Click to open. ══════════ */}
+<g {...prop(windowOpen ? "Close the window" : "Open the window", () => {
+  setWindowOpen((o) => !o);
+  playSound.detectiveScan();
+})}>
   <rect x="80" y="76" width="332" height="332" rx="10" fill="#BCC7D6"/>
   <rect x="88" y="84" width="316" height="316" rx="8" fill="#EEF3F8"/>
   <g clipPath="url(#kt-windowClip)">
@@ -222,8 +264,37 @@ export const KitchenScene: React.FC = () => (
       <circle cx="196" cy="126" r="28" fill="#FFFFFF" opacity=".5"/>
     </g>
   </g>
-  <path d="M246 92 V392 M96 242 H396" stroke="#F8FBFD" strokeWidth="13"/>
-  <path d="M246 92 V392 M96 242 H396" stroke="#B4C2D2" strokeWidth="3" opacity=".65"/>
+  {/* opening revealed once the sash is up: unglazed, so brighter and softer */}
+  {windowOpen && (
+    <g clipPath="url(#kt-windowClip)">
+      <rect x="96" y="250" width="300" height="142" fill="#FBFFF4" opacity=".5"/>
+      <rect x="96" y="250" width="300" height="12" fill="#5C6B54" opacity=".28"/>
+    </g>
+  )}
+
+  {/* upper sash — fixed */}
+  <path d="M246 92 V242" stroke="#F8FBFD" strokeWidth="13"/>
+  <path d="M246 92 V242" stroke="#B4C2D2" strokeWidth="3" opacity=".65"/>
+  <path d="M104 100 L180 100 L124 230 L96 230 Z" fill="#FFFFFF" opacity=".28"/>
+
+  {/* lower sash — slides up when opened */}
+  <g
+    style={{
+      transform: windowOpen ? "translateY(-104px)" : "translateY(0px)",
+      transition: "transform .6s cubic-bezier(.22,1,.36,1)",
+    }}
+  >
+    <g clipPath="url(#kt-windowClip)">
+      <rect x="96" y="248" width="300" height="146" fill="#DCEAF4" opacity=".42"/>
+      <path d="M112 262 L188 262 L130 388 L100 388 Z" fill="#FFFFFF" opacity=".3"/>
+    </g>
+    <path d="M246 242 V392 M96 242 H396" stroke="#F8FBFD" strokeWidth="13"/>
+    <path d="M246 242 V392 M96 242 H396" stroke="#B4C2D2" strokeWidth="3" opacity=".65"/>
+    <rect x="92" y="232" width="308" height="9" rx="4" fill="#E8EFF6"/>
+    {/* the sash throws a shadow down into the opening */}
+    <rect x="96" y="392" width="300" height="10" fill="#2E3A2A" opacity=".2"/>
+  </g>
+
   <rect x="80" y="396" width="332" height="18" rx="4" fill="#D2DBE7"/>
   <rect x="80" y="396" width="332" height="5" rx="2.5" fill="#FFFFFF" opacity=".85"/>
   <rect x="56" y="52" width="380" height="380" rx="22" fill="#FFF6DA" opacity=".26" filter="url(#kt-glowSoft)"/>
@@ -367,7 +438,10 @@ export const KitchenScene: React.FC = () => (
   <ellipse cx="170" cy="596" rx="32" ry="9" fill="#2E2A4A" opacity=".22"/>
   <ellipse cx="158" cy="594" rx="21" ry="6.4" fill="#2A1B10" opacity=".34"/>
 
-  <g filter="url(#kt-dropSm)">
+  <g filter="url(#kt-dropSm)" {...prop(waterOn ? "Turn the tap off" : "Turn the tap on", () => {
+    setWaterOn((w) => !w);
+    playSound.detectiveScan();
+  })}>
     {/* collar */}
     <ellipse cx="158" cy="592" rx="19" ry="5.8" fill="#5E6D82"/>
     <ellipse cx="158" cy="588" rx="19" ry="5.8" fill="#AFC0D0"/>
@@ -413,15 +487,42 @@ export const KitchenScene: React.FC = () => (
 
     {/* lever, off the side of the body, low */}
     <ellipse cx="168" cy="566" rx="7.4" ry="6.6" fill="#93A5B8"/>
-    <path d="M170 562 L192 551" stroke="#AFC0D0" strokeWidth="8" strokeLinecap="round"/>
-    <path d="M171 560 L190 551" stroke="#DEE8F1" strokeWidth="2.2" strokeLinecap="round" opacity=".8"/>
-    <ellipse cx="193" cy="550" rx="5.2" ry="4.4" fill="#5C6C7E"/>
+    <g
+      style={{
+        transformOrigin: "168px 566px",
+        transform: waterOn ? "rotate(-34deg)" : "rotate(0deg)",
+        transition: "transform .38s cubic-bezier(.34,1.5,.64,1)",
+      }}
+    >
+      <path d="M170 562 L192 551" stroke="#AFC0D0" strokeWidth="8" strokeLinecap="round"/>
+      <path d="M171 560 L190 551" stroke="#DEE8F1" strokeWidth="2.2" strokeLinecap="round" opacity=".8"/>
+      <ellipse cx="193" cy="550" rx="5.2" ry="4.4" fill="#5C6C7E"/>
+    </g>
   </g>
 
   {/* shadow the hovering spout casts on the water */}
   <ellipse cx="149" cy="656" rx="14" ry="5.5" fill="#0F1820" opacity=".3"/>
 
-  <circle className="drip" cx="148" cy="554" r="4.4" fill="#C2E3F2" opacity=".9"/>
+  {!waterOn && (
+    <circle className="drip" cx="148" cy="554" r="4.4" fill="#C2E3F2" opacity=".9"/>
+  )}
+
+  {/* running water: column, inner glints, and the splash where it lands */}
+  {waterOn && (
+    <g className="kt-water">
+      <path d="M139 548 C137 600, 140 646, 143 684 L158 684 C161 646, 164 600, 162 548 Z"
+            fill="#BCE3F4" opacity=".62"/>
+      <path d="M143 550 C141 600, 144 644, 146 682" fill="none"
+            stroke="#FFFFFF" strokeWidth="3" opacity=".7" className="kt-glint"/>
+      <path d="M156 552 C157 600, 155 644, 153 680" fill="none"
+            stroke="#7FC4E4" strokeWidth="2.2" opacity=".55" className="kt-glint kt-glint--b"/>
+      <ellipse cx="150" cy="686" rx="26" ry="9" fill="#DCF1FA" opacity=".5"/>
+      <ellipse className="kt-splash" cx="150" cy="686" rx="20" ry="7"
+               fill="none" stroke="#EAF7FD" strokeWidth="3"/>
+      <ellipse className="kt-splash kt-splash--b" cx="150" cy="686" rx="20" ry="7"
+               fill="none" stroke="#EAF7FD" strokeWidth="2.4"/>
+    </g>
+  )}
 </g>
 
 {/* ══════════ 7. CLUTTER — a hidden-object scene needs things to hide among ══════════ */}
@@ -498,14 +599,36 @@ export const KitchenScene: React.FC = () => (
 {/* Toaster */}
 <ellipse cx="900" cy="700" rx="110" ry="15" fill="url(#kt-castShadow)"/>
 <ellipse cx="876" cy="698" rx="80" ry="12" fill="url(#kt-occl)"/>
-<g filter="url(#kt-drop)">
+<g filter="url(#kt-drop)" {...prop("Pop the toast", toast)}>
+  {/* slices sit BEHIND the body, so they are hidden until they rise */}
+  <g
+    style={{
+      transform: toasting ? "translateY(-56px)" : "translateY(0px)",
+      transition: "transform .52s cubic-bezier(.34,1.56,.64,1)",
+    }}
+  >
+    <path d="M832 592 v-34 a19 17 0 0 1 38 0 v34 Z" fill="url(#kt-bread)"/>
+    <path d="M832 592 v-34 a19 17 0 0 1 38 0 q-14 4 -18 14 q-4 10 -4 20 Z" fill="#E8BE82" opacity=".5"/>
+    <path d="M840 566 q10 -7 22 0" fill="none" stroke="#8A5726" strokeWidth="3" opacity=".45"/>
+    <path d="M910 592 v-34 a19 17 0 0 1 38 0 v34 Z" fill="#B87A38"/>
+    <path d="M910 592 v-34 a19 17 0 0 1 38 0 q-14 4 -18 14 q-4 10 -4 20 Z" fill="#D69A55" opacity=".5"/>
+  </g>
   <path d="M800 548 q0 -16 18 -16 h150 q18 0 18 16 v124 q0 22 -22 22 h-142 q-22 0 -22 -22 Z" fill="url(#kt-chrome)"/>
   <rect x="828" y="524" width="46" height="10" rx="5" fill="#33415A"/>
   <rect x="906" y="524" width="46" height="10" rx="5" fill="#33415A"/>
-  <path d="M836 524 h30 v-20 q0 -6 -8 -6 h-14 q-8 0 -8 6 Z" fill="#D6A268"/>
-  <rect x="978" y="574" width="16" height="36" rx="8" fill="#48586F"/>
+  <rect
+    x="978" y="574" width="16" height="36" rx="8" fill="#48586F"
+    style={{
+      transform: toasting ? "translateY(26px)" : "translateY(0px)",
+      transition: "transform .3s cubic-bezier(.22,1,.36,1)",
+    }}
+  />
   <circle cx="828" cy="650" r="10" fill="#33415A"/>
-  <circle cx="828" cy="650" r="4.5" fill="#E07A5F"/>
+  <circle cx="828" cy="650" r="4.5" fill={toasting ? "#F2A03C" : "#E07A5F"} />
+  {toasting && <circle cx="828" cy="650" r="9" fill="#F2A03C" opacity=".35"/>}
+  {/* the elements glow through the slots while it runs */}
+  {toasting && <rect x="830" y="526" width="42" height="6" rx="3" fill="#F2703C" opacity=".8"/>}
+  {toasting && <rect x="908" y="526" width="42" height="6" rx="3" fill="#F2703C" opacity=".8"/>}
   {/* the window, reflected in the chrome — this is what sells metal */}
   <path d="M818 552 h38 v112 h-38 Z" fill="#FFFFFF" opacity=".44"/>
   <path d="M825 556 h10 v104 h-10 Z" fill="#FFFFFF" opacity=".72"/>
@@ -607,4 +730,5 @@ export const KitchenScene: React.FC = () => (
 <rect width="1200" height="900" fill="url(#kt-vig)"/>
 <rect width="1200" height="900" filter="url(#kt-filmGrain)" opacity=".34" style={{ mixBlendMode: "overlay" }}/>
   </svg>
-);
+  );
+};

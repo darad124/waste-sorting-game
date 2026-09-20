@@ -173,3 +173,22 @@ body,
 @media (prefers-reduced-motion: reduce) {
   .steam-a, .steam-b, .mote, .shaft, .leaf, .towel, .drip, .ripple { animation: none; }
 }
+
+/* Kitchen — interactive props */
+@keyframes kt-glint { 0%{ stroke-dashoffset: 0 } 100%{ stroke-dashoffset: -60 } }
+.kt-glint { stroke-dasharray: 26 16; animation: kt-glint .5s linear infinite; }
+.kt-glint--b { animation-duration: .68s; stroke-dasharray: 18 22; }
+
+@keyframes kt-splash { 0%{ transform: scale(.35); opacity:.85 }
+                       100%{ transform: scale(1.5); opacity:0 } }
+.kt-splash { transform-origin: 150px 686px; animation: kt-splash .9s ease-out infinite; }
+.kt-splash--b { animation-delay: .45s; }
+
+/* Opening the window lets more light and air in */
+.kt-open .shaft { animation-duration: 7s; }
+.kt-open .leaf { animation-duration: 3.4s; }
+.kt-open .mote { animation-duration: 8s !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  .kt-glint, .kt-splash { animation: none; }
+}
