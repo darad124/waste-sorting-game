@@ -698,15 +698,14 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
   const say = (text: string, tone: "good" | "bad" | "info") =>
     setToast((prev) => ({ id: (prev?.id ?? 0) + 1, text, tone }));
 
-  /** Tapping something that belongs in the kitchen costs time. That penalty is
-   *  what turns "spot the highlighted thing" into an actual judgement. */
+  /** Checking something that turns out to belong here is free: it is how you
+   *  learn what does and does not count as waste, so it should not be
+   *  punished. It still tells you, and the clock is still running. */
   const handleDecoy = (label: string) => {
     if (gameState !== "play") return;
     setDecoyTaps((n) => n + 1);
-    setStreak(0);
-    setTimeLeft((t) => Math.max(1, t - 4));
-    playSound.wrong();
-    say(`The ${label} isn't waste — it lives here. -4s`, "bad");
+    playSound.detectiveScan();
+    say(`The ${label} isn't waste — it lives here.`, "info");
   };
 
   const useHint = () => {
@@ -766,7 +765,7 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
   const cleared = !!selectedScene && foundIds.length === selectedScene.items.length;
   const timeBonus = cleared ? timeLeft * 5 : 0;
   const totalPoints = Math.round(score * purity) + timeBonus;
-  const attempts = foundIds.length + wrongPicks + decoyTaps;
+  const attempts = foundIds.length + wrongPicks;
   const accuracy = attempts > 0 ? Math.round((foundIds.length / attempts) * 100) : 0;
 
   useEffect(() => {
@@ -1152,10 +1151,8 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
                 </div>
               </div>
               <div className="rounded-xl bg-white/50 border border-slate-950/5 py-2">
-                <div className="text-[8px] font-black uppercase tracking-wider text-slate-500">False alarms</div>
-                <div className={`text-sm font-black ${decoyTaps ? "text-amber-700" : "text-emerald-700"}`}>
-                  {decoyTaps}
-                </div>
+                <div className="text-[8px] font-black uppercase tracking-wider text-slate-500">Things checked</div>
+                <div className="text-sm font-black text-slate-700">{decoyTaps}</div>
               </div>
             </div>
 
