@@ -608,6 +608,21 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
   const [activeItemId, setActiveItemId] = useState<string | null>(null);
   const [shakingItemId, setShakingItemId] = useState<string | null>(null);
   const [wrongAttempts, setWrongAttempts] = useState<{ itemId: string; category: WasteCategory }[]>([]);
+
+  // ── The loop ──
+  // Three things make this a game rather than a checklist:
+  //   1. not everything in the scene is waste, so looking has to mean judging;
+  //   2. a wrong bin contaminates that bin, and contamination is scored at the
+  //      end, so one careless drop costs more than the item was worth;
+  //   3. clean finds in a row compound, so caution pays.
+  const [score, setScore] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [bestStreak, setBestStreak] = useState(0);
+  const [contaminated, setContaminated] = useState<WasteCategory[]>([]);
+  const [wrongPicks, setWrongPicks] = useState(0);
+  const [decoyTaps, setDecoyTaps] = useState(0);
+  const [toast, setToast] = useState<{ id: number; text: string; tone: "good" | "bad" | "info" } | null>(null);
+  const toastId = useRef(0);
   
   const [timeLeft, setTimeLeft] = useState(90);
   const [gameState, setGameState] = useState<"select" | "play" | "results">("select");
@@ -649,25 +664,59 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
     setFoundIds([]);
     setActiveItemId(null);
     setWrongAttempts([]);
+    setScore(0);
+    setStreak(0);
+    setBestStreak(0);
+    setContaminated([]);
+    setWrongPicks(0);
+    setDecoyTaps(0);
+    setToast(null);
     setGameState("play");
     playSound.detectiveScan();
   };
 
+  const say = (text: string, tone: "good" | "bad" | "info") => {
+    const id = ++toastId.current;
+    setToast({ id, text, tone });
+    window.setTimeout(() => {
+      setToast((t) => (t && t.id === id ? null : t));
+    }, 1700);
+  };
+
+  /** Tapping something that belongs in the kitchen costs time. That penalty is
+   *  what turns "spot the highlighted thing" into an actual judgement. */
+  const handleDecoy = (label: string) => {
+    if (gameState !== "play") return;
+    setDecoyTaps((n) => n + 1);
+    setStreak(0);
+    setTimeLeft((t) => Math.max(1, t - 4));
+    playSound.wrong();
+    say(`The ${label} isn't waste — it lives here. -4s`, "bad");
+  };
+
   const handleSelectCategory = (item: DetectiveItem, category: WasteCategory) => {
     if (item.category === category) {
-      // Correct sorting!
+      const nextStreak = streak + 1;
+      const bonus = Math.min(200, (nextStreak - 1) * 50);
+      setStreak(nextStreak);
+      setBestStreak((b) => Math.max(b, nextStreak));
+      setScore((sc) => sc + 150 + bonus);
       setFoundIds((prev) => [...prev, item.id]);
       setActiveItemId(null);
       playSound.detectiveFound();
-      // Unlock in Encyclopedia
+      say(bonus > 0 ? `+${150 + bonus}  ${nextStreak}x clean run` : "+150", "good");
       useGameStore.getState().unlockEncyclopediaItem(item.itemId);
     } else {
-      // Wrong sorting!
+      // A wrong bin does not just fail — it contaminates that bin, and every
+      // contaminated bin is scored against you at the end.
       setShakingItemId(item.id);
       setTimeout(() => setShakingItemId(null), 400);
       playSound.wrong();
-      
-      // Save mistake record
+      setStreak(0);
+      setWrongPicks((n) => n + 1);
+      setContaminated((c) => (c.includes(category) ? c : [...c, category]));
+      say(`${CATEGORY_META[category].label} bin contaminated`, "bad");
+
       if (!wrongAttempts.some(att => att.itemId === item.itemId)) {
         setWrongAttempts((prev) => [...prev, { itemId: item.itemId, category }]);
       }
@@ -680,10 +729,12 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
     setGameState("select");
   };
 
-  const totalPoints = foundIds.length * 150;
-  const accuracy = selectedScene 
-    ? Math.round((foundIds.length / (foundIds.length + wrongAttempts.length || 1)) * 100) 
-    : 0;
+  // Every contaminated bin takes a bite out of the whole haul, so one careless
+  // drop can cost more than the item it was made on.
+  const purity = Math.max(0.4, 1 - 0.12 * contaminated.length);
+  const totalPoints = Math.round(score * purity);
+  const attempts = foundIds.length + wrongPicks + decoyTaps;
+  const accuracy = attempts > 0 ? Math.round((foundIds.length / attempts) * 100) : 0;
 
   useEffect(() => {
     if (gameState === "results" && canPrompt("detective", null)) {
@@ -750,23 +801,73 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
         {gameState === "play" && selectedScene && (
           <div className="w-full h-full flex flex-col relative justify-between max-w-xl mx-auto">
             {/* Top Indicator */}
-            <div className="text-slate-800 text-xs font-black text-center mb-2 px-3 py-1 bg-white/50 border border-slate-950/5 rounded-full inline-block mx-auto">
-              Found {foundIds.length} / {selectedScene.items.length} items
+            <div className="mb-2 w-full max-w-[calc(42vh*4/3)] mx-auto flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span className="text-slate-800 text-[11px] font-black px-2.5 py-1 bg-white/60 border border-slate-950/5 rounded-full">
+                  {foundIds.length}/{selectedScene.items.length}
+                </span>
+                <span className="text-slate-900 text-sm font-black tabular-nums">
+                  {score.toLocaleString()}
+                </span>
+                {streak > 1 && (
+                  <span className="text-[10px] font-black uppercase tracking-wider text-amber-700 bg-amber-300/50 border border-amber-500/30 px-2 py-0.5 rounded-full">
+                    {streak}x clean
+                  </span>
+                )}
+              </div>
+
+              {/* Bin purity — one pip per bin, dirtied by a wrong drop */}
+              <div className="flex items-center gap-1.5">
+                <span className="text-[8px] font-black uppercase tracking-wider text-slate-500 mr-0.5">Bins</span>
+                {(["recyclable", "organic", "hazardous", "eWaste", "general"] as WasteCategory[]).map((cat) => {
+                  const dirty = contaminated.includes(cat);
+                  return (
+                    <span
+                      key={cat}
+                      title={dirty ? `${CATEGORY_META[cat].label}: contaminated` : `${CATEGORY_META[cat].label}: clean`}
+                      className={`w-2.5 h-2.5 rounded-full border transition-colors ${
+                        dirty ? "bg-rose-500 border-rose-700" : "bg-emerald-400 border-emerald-600/50"
+                      }`}
+                    />
+                  );
+                })}
+              </div>
             </div>
 
             {/* Scene Canvas Container */}
-            <div className="w-full aspect-[4/3] max-h-[42vh] relative rounded-3xl overflow-visible border border-slate-950/10 shadow-premium bg-slate-50 shrink-0">
+            <div className="w-full max-w-[calc(42vh*4/3)] mx-auto aspect-[4/3] relative rounded-3xl overflow-visible border border-slate-950/10 shadow-premium bg-slate-50 shrink-0">
               <div className="absolute inset-0 rounded-3xl overflow-hidden bg-slate-50">
                 {/* Pattern Background matching scene */}
                 <div className={`absolute inset-0 ${selectedScene.bgDecorationClass}`} />
 
                 {/* Render vector diorama props */}
-                {selectedScene.id === "kitchen" && <KitchenScene />}
+                {selectedScene.id === "kitchen" && <KitchenScene onDecoy={handleDecoy} />}
                 {selectedScene.id === "beach" && <BeachProps />}
                 {selectedScene.id === "office" && <OfficeProps />}
                 {selectedScene.id === "park" && <ParkProps />}
                 {selectedScene.id === "school" && <SchoolProps />}
               </div>
+
+              {/* Feedback, so every action says what it cost or earned */}
+              <AnimatePresence>
+                {toast && (
+                  <motion.div
+                    key={toast.id}
+                    initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    className={`absolute inset-x-3 top-3 z-[60] pointer-events-none text-center text-[11px] font-black px-3 py-1.5 rounded-xl border shadow-premium ${
+                      toast.tone === "good"
+                        ? "bg-emerald-50/95 text-emerald-800 border-emerald-500/30"
+                        : toast.tone === "bad"
+                          ? "bg-rose-50/95 text-rose-800 border-rose-500/30"
+                          : "bg-white/95 text-slate-800 border-slate-950/10"
+                    }`}
+                  >
+                    {toast.text}
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               {/* Tappable hidden objects */}
               {selectedScene.items.map((item) => {
@@ -945,12 +1046,37 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
               <div className="flex flex-col items-center">
                 <span className="text-[9px] text-slate-600 font-black uppercase tracking-wider">Score</span>
                 <span className="text-xl font-black text-slate-900 mt-0.5">+{totalPoints} XP</span>
+                {contaminated.length > 0 && (
+                  <span className="text-[9px] font-bold text-rose-700 mt-0.5">
+                    {score.toLocaleString()} × {Math.round(purity * 100)}% purity
+                  </span>
+                )}
               </div>
               <div className="flex flex-col items-center border-l border-slate-950/10">
                 <span className="text-[9px] text-slate-600 font-black uppercase tracking-wider">Accuracy</span>
                 <span className={`text-xl font-black mt-0.5 ${accuracy >= 80 ? "text-emerald-700" : "text-amber-700"}`}>
                   {accuracy}%
                 </span>
+              </div>
+            </div>
+
+            {/* What the round actually cost */}
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <div className="rounded-xl bg-white/50 border border-slate-950/5 py-2">
+                <div className="text-[8px] font-black uppercase tracking-wider text-slate-500">Best run</div>
+                <div className="text-sm font-black text-slate-900">{bestStreak}x</div>
+              </div>
+              <div className="rounded-xl bg-white/50 border border-slate-950/5 py-2">
+                <div className="text-[8px] font-black uppercase tracking-wider text-slate-500">Bins spoiled</div>
+                <div className={`text-sm font-black ${contaminated.length ? "text-rose-700" : "text-emerald-700"}`}>
+                  {contaminated.length}
+                </div>
+              </div>
+              <div className="rounded-xl bg-white/50 border border-slate-950/5 py-2">
+                <div className="text-[8px] font-black uppercase tracking-wider text-slate-500">False alarms</div>
+                <div className={`text-sm font-black ${decoyTaps ? "text-amber-700" : "text-emerald-700"}`}>
+                  {decoyTaps}
+                </div>
               </div>
             </div>
 

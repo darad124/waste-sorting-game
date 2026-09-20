@@ -15,7 +15,24 @@ import { playSound } from "../../utils/audio";
  *  KITCHEN_CLUE_ART below and are positioned by the screen.
  * ==================================================================== */
 
-export const KitchenScene: React.FC = () => {
+/** Things in the kitchen that are genuinely confusable with litter but are not
+ *  waste. Tapping one is a real mistake — that judgement is the game. */
+const DECOYS: { label: string; x: number; y: number; w: number; h: number }[] = [
+  { label: "sponge",      x: 238, y: 582, w: 68,  h: 44 },
+  { label: "mug",         x: 248, y: 726, w: 88,  h: 92 },
+  { label: "loaf",        x: 606, y: 716, w: 190, h: 98 },
+  { label: "clean plates", x: 648, y: 600, w: 138, h: 74 },
+  { label: "fruit bowl",  x: 982, y: 596, w: 200, h: 118 },
+  { label: "tea towels",  x: 1016, y: 726, w: 150, h: 98 },
+  { label: "kettle",      x: 298, y: 528, w: 146, h: 158 },
+];
+
+interface KitchenSceneProps {
+  /** Called when the player taps something that is not litter. */
+  onDecoy?: (label: string) => void;
+}
+
+export const KitchenScene: React.FC<KitchenSceneProps> = ({ onDecoy }) => {
   // Three props the player can poke at. They reward looking closely, which is
   // the habit a hidden-object scene wants to build.
   const [waterOn, setWaterOn] = useState(false);
@@ -42,7 +59,7 @@ export const KitchenScene: React.FC = () => {
     role: "button" as const,
     tabIndex: 0,
     "aria-label": label,
-    style: { cursor: "pointer" as const },
+    style: { cursor: "pointer" as const, pointerEvents: "auto" as const },
     onClick: (e: React.MouseEvent) => {
       e.stopPropagation();
       onActivate();
@@ -60,6 +77,8 @@ export const KitchenScene: React.FC = () => {
     className={`absolute inset-0 w-full h-full ${windowOpen ? "kt-open" : ""}`}
     viewBox="0 0 1200 900"
     preserveAspectRatio="xMidYMid slice"
+    // the backdrop is inert; only the three props below opt back in
+    style={{ pointerEvents: "none" }}
   >
 <defs>
 
@@ -252,6 +271,7 @@ export const KitchenScene: React.FC = () => {
   setWindowOpen((o) => !o);
   playSound.detectiveScan();
 })}>
+  <rect x="76" y="72" width="340" height="346" fill="transparent" />
   <rect x="80" y="76" width="332" height="332" rx="10" fill="#BCC7D6"/>
   <rect x="88" y="84" width="316" height="316" rx="8" fill="#EEF3F8"/>
   <g clipPath="url(#kt-windowClip)">
@@ -443,6 +463,8 @@ export const KitchenScene: React.FC = () => {
     setWaterOn((w) => !w);
     playSound.detectiveScan();
   })}>
+    {/* invisible touch target — the tube itself is only a few pixels wide */}
+    <rect x="112" y="436" width="108" height="176" fill="transparent" />
     {/* collar */}
     <ellipse cx="158" cy="592" rx="19" ry="5.8" fill="#5E6D82"/>
     <ellipse cx="158" cy="588" rx="19" ry="5.8" fill="#AFC0D0"/>
@@ -601,6 +623,7 @@ export const KitchenScene: React.FC = () => {
 <ellipse cx="900" cy="700" rx="110" ry="15" fill="url(#kt-castShadow)"/>
 <ellipse cx="876" cy="698" rx="80" ry="12" fill="url(#kt-occl)"/>
 <g filter="url(#kt-drop)" {...prop("Pop the toast", toast)}>
+  <rect x="794" y="512" width="200" height="190" fill="transparent" />
   {/* slices sit BEHIND the body, so they are hidden until they rise */}
   <g
     style={{
@@ -721,6 +744,36 @@ export const KitchenScene: React.FC = () => {
   <path d="M1200 44 q-96 6 -138 74 q-22 36 12 42 q56 8 96 -46 Z" fill="#1D3220" opacity=".78"/>
   <path d="M1240 900 v-120 q-70 10 -96 120 Z" fill="#241408" opacity=".7"/>
 </g>
+
+{/* Decoy hit areas: invisible, above the props, below the grade. */}
+{onDecoy && (
+  <g>
+    {DECOYS.map((d) => (
+      <rect
+        key={d.label}
+        x={d.x}
+        y={d.y}
+        width={d.w}
+        height={d.h}
+        fill="transparent"
+        role="button"
+        tabIndex={0}
+        aria-label={`Inspect the ${d.label}`}
+        style={{ pointerEvents: "auto", cursor: "pointer" }}
+        onClick={(e) => {
+          e.stopPropagation();
+          onDecoy(d.label);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onDecoy(d.label);
+          }
+        }}
+      />
+    ))}
+  </g>
+)}
 
 {/* ══════════ 11. GRADE ══════════ */}
 <rect width="1200" height="900" fill="#FFD98A" opacity=".07" style={{ mixBlendMode: "overlay" }}/>
