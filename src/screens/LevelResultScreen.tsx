@@ -5,6 +5,9 @@ import { ProgressStars } from "../components/ProgressStars";
 import { playSound } from "../utils/audio";
 import { ItemSVG } from "../components/ItemSVG";
 import { ShareButton } from "../components/ShareButton";
+import { FeedbackPrompt } from "../components/FeedbackPrompt";
+import { canPrompt } from "../utils/feedbackGate";
+import { AnimatePresence } from "framer-motion";
 
 interface LevelResultScreenProps {
   onNextLevel: (levelId: number) => void;
@@ -28,6 +31,7 @@ export const LevelResultScreen: React.FC<LevelResultScreenProps> = ({
   } = useGameStore();
 
   const [randomFact, setRandomFact] = useState<{ id: string; name: string; fact: string } | null>(null);
+  const [showFeedback, setShowFeedback] = useState(false);
 
   // Calculate results on mount
   const totalProcessed = correctCount + wrongCount;
@@ -63,6 +67,14 @@ export const LevelResultScreen: React.FC<LevelResultScreenProps> = ({
       });
     }
   }, [sortedItems]);
+
+  // Offer the feedback prompt shortly after results land (throttled).
+  useEffect(() => {
+    if (!currentLevel) return;
+    if (!canPrompt("arcade", currentLevel.id)) return;
+    const t = setTimeout(() => setShowFeedback(true), 1400);
+    return () => clearTimeout(t);
+  }, [currentLevel]);
 
   if (!currentLevel) return null;
 
@@ -166,6 +178,20 @@ export const LevelResultScreen: React.FC<LevelResultScreenProps> = ({
           </div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {showFeedback && (
+          <FeedbackPrompt
+            mode="arcade"
+            levelId={currentLevel.id}
+            contextLabel={currentLevel.name}
+            score={score}
+            accuracy={accuracy}
+            stars={stars}
+            onClose={() => setShowFeedback(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

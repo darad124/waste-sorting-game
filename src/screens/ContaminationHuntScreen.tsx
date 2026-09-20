@@ -9,6 +9,8 @@ import { ItemSVG } from "../components/ItemSVG";
 import { triggerConfetti } from "../components/ParticleEmitter";
 import { playSound } from "../utils/audio";
 import { ShareButton } from "../components/ShareButton";
+import { FeedbackPrompt } from "../components/FeedbackPrompt";
+import { canPrompt } from "../utils/feedbackGate";
 
 interface HuntRound {
   binCategory: WasteCategory;
@@ -114,6 +116,7 @@ export const ContaminationHuntScreen: React.FC<ContaminationHuntScreenProps> = (
   const [wrongAttempts, setWrongAttempts] = useState<{ itemId: string; explanation: string }[]>([]);
   const [shuffledItems, setShuffledItems] = useState<{ id: string; isImposter: boolean }[]>([]);
   const [showExplanation, setShowExplanation] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
 
   // Prepare items for the active round
   useEffect(() => {
@@ -200,6 +203,13 @@ export const ContaminationHuntScreen: React.FC<ContaminationHuntScreenProps> = (
   const isFinished = currentRoundIdx >= HUNTS.length;
   const accuracy = Math.round((HUNTS.length / (HUNTS.length + wrongCount || 1)) * 100);
   const totalPoints = HUNTS.length * 200;
+
+  useEffect(() => {
+    if (isFinished && canPrompt("hunt", null)) {
+      const t = setTimeout(() => setShowFeedback(true), 1200);
+      return () => clearTimeout(t);
+    }
+  }, [isFinished]);
 
   // Custom bin colors matching main game categories
   const getBinColors = (category: WasteCategory) => {
@@ -476,6 +486,19 @@ export const ContaminationHuntScreen: React.FC<ContaminationHuntScreenProps> = (
           </div>
         )}
       </div>
+
+      <AnimatePresence>
+        {showFeedback && (
+          <FeedbackPrompt
+            mode="hunt"
+            levelId={null}
+            contextLabel="Imposter Hunt"
+            score={totalPoints}
+            accuracy={accuracy}
+            onClose={() => setShowFeedback(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { useGameStore } from "./state/gameStore";
 import { HomeScreen } from "./screens/HomeScreen";
 import { LevelSelectScreen } from "./screens/LevelSelectScreen";
@@ -13,6 +13,11 @@ import { ContaminationHuntScreen } from "./screens/ContaminationHuntScreen";
 import { backgroundMusic } from "./utils/audio";
 import { parseShareQuery } from "./utils/share";
 
+const AdminDashboard = lazy(() => import("./screens/AdminDashboard"));
+
+const isAdminRoute = () =>
+  typeof window !== "undefined" && window.location.hash.replace(/^#/, "").startsWith("admin");
+
 type ScreenName =
   | "home"
   | "levels"
@@ -26,6 +31,13 @@ type ScreenName =
   | "contamination";
 
 function App() {
+  const [admin, setAdmin] = useState(isAdminRoute());
+  useEffect(() => {
+    const onHash = () => setAdmin(isAdminRoute());
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
+
   const initialShareTarget = parseShareQuery(new URLSearchParams(window.location.search).get("share"));
   const [screen, setScreen] = useState<ScreenName>(() => {
     if (!initialShareTarget) return "home";
@@ -148,6 +160,14 @@ function App() {
         );
     }
   };
+
+  if (admin) {
+    return (
+      <Suspense fallback={<div style={{padding: 24}}>Loading dashboard…</div>}>
+        <AdminDashboard />
+      </Suspense>
+    );
+  }
 
   return (
     <div className="app-shell w-screen bg-[#fde047] font-sans antialiased text-slate-800 overflow-hidden select-none relative flex flex-col">

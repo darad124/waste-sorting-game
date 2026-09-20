@@ -5,6 +5,8 @@ import { playSound } from "../utils/audio";
 import { ItemSVG } from "../components/ItemSVG";
 import { triggerConfetti } from "../components/ParticleEmitter";
 import { ShareButton } from "../components/ShareButton";
+import { FeedbackPrompt } from "../components/FeedbackPrompt";
+import { canPrompt } from "../utils/feedbackGate";
 
 interface TriviaQuestion {
   id: string;
@@ -390,6 +392,7 @@ export const TriviaScreen: React.FC<TriviaScreenProps> = ({ onBack }) => {
   const [streak, setStreak] = useState(0);
   const [comboText, setComboText] = useState<string | null>(null);
   const [isExtinguishing, setIsExtinguishing] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
 
   useEffect(() => {
     startNewRound();
@@ -487,6 +490,13 @@ export const TriviaScreen: React.FC<TriviaScreenProps> = ({ onBack }) => {
   const correctCount = userAnswers.filter(ans => ans.isCorrect).length;
   const isFinished = currentIndex >= questions.length;
   const activeQuestion = questions[currentIndex];
+
+  useEffect(() => {
+    if (isFinished && questions.length > 0 && canPrompt("trivia", null)) {
+      const t = setTimeout(() => setShowFeedback(true), 1200);
+      return () => clearTimeout(t);
+    }
+  }, [isFinished, questions.length]);
 
   return (
     <div className="flex flex-col min-h-full w-full relative bg-transparent overflow-y-auto no-scrollbar text-center select-none justify-between max-w-xl mx-auto py-2">
@@ -789,6 +799,19 @@ export const TriviaScreen: React.FC<TriviaScreenProps> = ({ onBack }) => {
           </div>
         )}
       </div>
+
+      <AnimatePresence>
+        {showFeedback && (
+          <FeedbackPrompt
+            mode="trivia"
+            levelId={null}
+            contextLabel="Yes/No Trivia"
+            score={points}
+            accuracy={questions.length ? Math.round((correctCount / questions.length) * 100) : null}
+            onClose={() => setShowFeedback(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

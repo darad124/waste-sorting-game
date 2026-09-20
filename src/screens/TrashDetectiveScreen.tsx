@@ -8,6 +8,8 @@ import { CATEGORY_META } from "../components/BinBadge";
 import { ItemSVG } from "../components/ItemSVG";
 import { playSound } from "../utils/audio";
 import { ShareButton } from "../components/ShareButton";
+import { FeedbackPrompt } from "../components/FeedbackPrompt";
+import { canPrompt } from "../utils/feedbackGate";
 
 interface DetectiveItem {
   id: string;
@@ -762,6 +764,7 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
   
   const [timeLeft, setTimeLeft] = useState(90);
   const [gameState, setGameState] = useState<"select" | "play" | "results">("select");
+  const [showFeedback, setShowFeedback] = useState(false);
   const timerRef = useRef<number | null>(null);
 
   // Spawner and game timer effects
@@ -834,6 +837,13 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
   const accuracy = selectedScene 
     ? Math.round((foundIds.length / (foundIds.length + wrongAttempts.length || 1)) * 100) 
     : 0;
+
+  useEffect(() => {
+    if (gameState === "results" && canPrompt("detective", null)) {
+      const t = setTimeout(() => setShowFeedback(true), 1200);
+      return () => clearTimeout(t);
+    }
+  }, [gameState]);
 
   return (
     <div className="flex flex-col h-full w-full relative bg-transparent overflow-hidden text-center select-none">
@@ -1129,6 +1139,19 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
           </div>
         )}
       </div>
+
+      <AnimatePresence>
+        {showFeedback && (
+          <FeedbackPrompt
+            mode="detective"
+            levelId={null}
+            contextLabel="Trash Detective"
+            score={totalPoints}
+            accuracy={accuracy}
+            onClose={() => setShowFeedback(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
