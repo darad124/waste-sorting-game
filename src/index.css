@@ -153,19 +153,38 @@ body,
 .ripple { transform-origin:152px 686px; animation: kt-ripple 6.3s ease-out infinite; }
 
 /* Litter sits in the picture, so it gets no chip — it lifts under the
-   pointer and takes an amber rim when selected. */
-.kitchen-clue {
+   pointer and takes an amber rim when selected.
+
+   The button fills a 200x200 window of scene units so the art can be drawn
+   at whatever size it needs, but that window is a sixth of the frame wide:
+   left clickable it swallows the decoys around it and the neighbouring
+   clues, and the player "finds" litter by clicking a hundred pixels away
+   from it. So the button itself takes no pointer events and the drawing
+   inside it takes them back — hits land on painted litter and nowhere
+   else. Events still bubble to the button's handler from there. */
+.detective-clue {
   background: none;
   border: none;
   padding: 0;
   cursor: pointer;
+  pointer-events: none;
   transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), filter 0.25s ease;
 }
-.kitchen-clue:hover {
+/* The root <svg> must stay inert too: pointer-events on an <svg> element
+   governs its whole viewport rectangle, not its drawing, so letting it
+   take events puts the 200x200 box straight back. The shapes inside take
+   them instead, and `visiblePainted` means a shape is only hit where it
+   actually paints — fill or stroke. */
+.detective-clue > svg { pointer-events: none; }
+.detective-clue > svg * {
+  pointer-events: visiblePainted;
+  cursor: pointer;
+}
+.detective-clue:hover {
   transform: translateY(-3px) scale(1.06);
   filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.9));
 }
-.kitchen-clue--active {
+.detective-clue--active {
   transform: translateY(-4px) scale(1.1);
   filter: drop-shadow(0 0 3px rgba(251, 191, 36, 1)) drop-shadow(0 0 11px rgba(251, 191, 36, 0.9));
 }
@@ -234,5 +253,93 @@ body,
   0%, 100% { filter: drop-shadow(0 0 2px rgba(56,189,248,.9)) drop-shadow(0 0 10px rgba(56,189,248,.7)); }
   50%      { filter: drop-shadow(0 0 4px rgba(56,189,248,1)) drop-shadow(0 0 20px rgba(56,189,248,.95)); }
 }
-.kitchen-clue--hinted { animation: kt-hint .6s ease-in-out infinite; }
-@media (prefers-reduced-motion: reduce) { .kitchen-clue--hinted { animation: none; } }
+.detective-clue--hinted { animation: kt-hint .6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .detective-clue--hinted { animation: none; } }
+
+/* ==================================================================== *
+ *  Beach Cleanup scene
+ *
+ *  Ambient periods are mutually prime-ish so nothing in the frame ever
+ *  visibly syncs up or loops. A beach is never still, but it is never
+ *  busy either: everything here is slow.
+ * ==================================================================== */
+
+/* the sea breathes rather than crashes */
+@keyframes bc-swellA { 0%, 100% { transform: translateX(0); }   50% { transform: translateX(-26px); } }
+@keyframes bc-swellB { 0%, 100% { transform: translateX(0); }   50% { transform: translateX(19px); } }
+.bc-swell-a { animation: bc-swellA 11.3s ease-in-out infinite; }
+.bc-swell-b { animation: bc-swellB 8.7s ease-in-out infinite; }
+
+/* the wash runs up the sand and drains back */
+@keyframes bc-wash {
+  0%   { transform: translateY(26px) scaleY(.82); opacity: 0; }
+  18%  { opacity: .95; }
+  46%  { transform: translateY(-14px) scaleY(1.06); opacity: .92; }
+  82%  { transform: translateY(20px) scaleY(.86); opacity: .34; }
+  100% { transform: translateY(26px) scaleY(.82); opacity: 0; }
+}
+.bc-wash { animation: bc-wash 9.4s cubic-bezier(.4, 0, .5, 1) infinite; }
+
+/* the sun path on the water: each glint is its own little star */
+@keyframes bc-glint {
+  0%, 100% { opacity: 0; transform: scaleX(.4); }
+  50%      { opacity: 1; transform: scaleX(1); }
+}
+.bc-glint { animation: bc-glint ease-in-out infinite; }
+
+/* clouds crossing in a quarter of an hour */
+@keyframes bc-cloudDrift { from { transform: translateX(0); } to { transform: translateX(120px); } }
+.bc-cloud-a { animation: bc-cloudDrift 190s linear infinite alternate; }
+.bc-cloud-b { animation: bc-cloudDrift 260s linear infinite alternate-reverse; }
+
+/* marram grass in the onshore breeze */
+@keyframes bc-sway   { 0%, 100% { transform: rotate(-2.2deg); } 50% { transform: rotate(3deg); } }
+@keyframes bc-swayFg { 0%, 100% { transform: rotate(-1.4deg); } 50% { transform: rotate(2deg); } }
+.bc-grass    { animation: bc-sway 7.9s ease-in-out infinite; }
+.bc-grass-fg { animation: bc-swayFg 9.7s ease-in-out infinite; }
+
+/* gulls working the updraft, out over the water.
+   The glide is a CSS transform, and a CSS transform REPLACES an element's
+   transform attribute rather than composing with it — so the position
+   lives on an outer group in the markup that this never touches. */
+@keyframes bc-gullPath {
+  0%   { transform: translate(0, 0); }
+  50%  { transform: translate(-300px, 26px); }
+  100% { transform: translate(0, 0); }
+}
+@keyframes bc-gullFlap { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(.66); } }
+.bc-gull      { animation: bc-gullPath 86s ease-in-out infinite; }
+.bc-gull-wing { animation: bc-gullFlap 4.6s ease-in-out infinite; transform-origin: center; }
+
+/* the towel corner the breeze keeps lifting */
+@keyframes bc-towelLift { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-3.4deg); } }
+.bc-towel-corner { transform-origin: 470px 742px; animation: bc-towelLift 8.3s ease-in-out infinite; }
+
+/* the parasol's fringe */
+@keyframes bc-fringe { 0%, 100% { transform: skewX(-1.6deg); } 50% { transform: skewX(2.2deg); } }
+.bc-fringe { transform-origin: 330px 366px; animation: bc-fringe 6.7s ease-in-out infinite; }
+
+/* ── the three toys ──────────────────────────────────────────────────
+   Driven by a class on the root <svg>, so React owns the state and CSS
+   owns the motion. */
+#bc-parasol       { transition: transform .62s cubic-bezier(.34, 1.3, .64, 1); transform-origin: 330px 700px; }
+#bc-canopy        { transition: transform .62s cubic-bezier(.34, 1.3, .64, 1); transform-origin: 330px 372px; }
+#bc-parasolShadow { transition: transform .62s cubic-bezier(.34, 1.3, .64, 1), opacity .62s ease;
+                    transform-origin: 236px 742px; }
+.bc-furled #bc-canopy        { transform: scaleX(.16) scaleY(1.24); }
+.bc-furled #bc-parasolShadow { transform: scaleX(.2); opacity: .34; }
+
+#bc-bigWave { transition: transform 2.1s cubic-bezier(.22, .9, .3, 1), opacity 2.1s ease;
+              opacity: 0; transform: translateY(40px) scaleY(.7); }
+.bc-surging #bc-bigWave { transform: translateY(-38px) scaleY(1.18); opacity: .95; }
+
+#bc-crab { transition: transform 1.25s cubic-bezier(.5, .02, .42, 1); }
+.bc-hidden-crab #bc-crab { transform: translate(96px, -26px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .bc-swell-a, .bc-swell-b, .bc-wash, .bc-glint, .bc-cloud-a, .bc-cloud-b,
+  .bc-grass, .bc-grass-fg, .bc-gull, .bc-gull-wing, .bc-towel-corner, .bc-fringe {
+    animation: none !important;
+  }
+  #bc-parasol, #bc-canopy, #bc-parasolShadow, #bc-bigWave, #bc-crab { transition: none !important; }
+}

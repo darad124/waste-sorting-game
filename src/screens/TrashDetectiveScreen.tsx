@@ -12,6 +12,14 @@ import { FeedbackPrompt } from "../components/FeedbackPrompt";
 import { canPrompt } from "../utils/feedbackGate";
 import { KitchenScene } from "../components/detective/KitchenScene";
 import { KITCHEN_CLUE_ART } from "../components/detective/kitchenClues";
+import { BeachScene } from "../components/detective/BeachScene";
+import { BEACH_CLUE_ART } from "../components/detective/beachClues";
+
+/** Clue art for every scene that has been rebuilt to the high-fidelity
+ *  standard, keyed by clue id. Ids are unique across scenes, so one lookup
+ *  serves them all and the remaining dioramas simply fall through to the
+ *  generic ItemSVG chip. */
+const CLUE_ART: Record<string, React.ReactNode> = { ...KITCHEN_CLUE_ART, ...BEACH_CLUE_ART };
 
 interface DetectiveItem {
   id: string;
@@ -56,11 +64,18 @@ const SCENES: SceneConfig[] = [
     colorClass: "from-blue-100 to-cyan-100 border-blue-200/60 hover:border-blue-400",
     bgDecorationClass: "bg-[radial-gradient(#0284c7_1.5px,transparent_1.5px)] [background-size:24px_24px] opacity-10",
     items: [
-      { id: "b1", itemId: "plastic_bottle", name: "Plastic Water Bottle", category: "recyclable", top: "48%", left: "22%" },
-      { id: "b2", itemId: "soda_can", name: "Aluminum Soda Can", category: "recyclable", top: "72%", left: "42%" },
-      { id: "b3", itemId: "paint_can", name: "Paint Can", category: "hazardous", top: "36%", left: "74%" },
-      { id: "b4", itemId: "face_mask", name: "Disposable Face Mask", category: "general", top: "78%", left: "14%" },
-      { id: "b5", itemId: "chip_bag", name: "Potato Chip Bag", category: "general", top: "62%", left: "84%" },
+      // Seated on the authored artwork: each figure is the centre of that
+      // piece's drawing, as a percentage of the 1200x900 scene.
+      { id: "b1", itemId: "plastic_bottle", name: "Plastic Water Bottle", category: "recyclable", top: "73%", left: "39%" },
+      { id: "b2", itemId: "soda_can", name: "Aluminum Soda Can", category: "recyclable", top: "68.4%", left: "76.8%" },
+      { id: "b3", itemId: "paint_can", name: "Paint Can", category: "hazardous", top: "63.4%", left: "48.4%" },
+      { id: "b4", itemId: "face_mask", name: "Disposable Face Mask", category: "general", top: "75%", left: "14.6%" },
+      // Was a chip bag. A crumpled foil packet has no canonical silhouette —
+      // every one is a different shape — so at this size it never stopped
+      // reading as something else. A foam cup is a truncated cone, and it is
+      // the better lesson besides: it is the one piece of litter here that
+      // most people would wrongly put in the recycling.
+      { id: "b5", itemId: "styrofoam_cup", name: "Styrofoam Coffee Cup", category: "general", top: "88.8%", left: "66.8%" },
     ]
   },
   {
@@ -119,120 +134,7 @@ const CATEGORY_GLOW: Record<WasteCategory, string> = {
 
 // Scene 1: Kitchen — now the high-fidelity KitchenScene component.
 
-// Scene 2: Beach Diorama Props with Interactive Micro-Animations
-const BeachProps: React.FC = () => {
-  const [umbrellaRot, setUmbrellaRot] = useState(0);
-  const [isCrabPeeking, setIsCrabPeeking] = useState(false);
-  const [ballBounce, setBallBounce] = useState(false);
-
-  const handleUmbrellaClick = () => {
-    setUmbrellaRot(prev => prev + 360);
-    playSound.detectiveScan();
-  };
-
-  const handleBallClick = () => {
-    if (ballBounce) return;
-    setBallBounce(true);
-    playSound.detectiveFound();
-    setTimeout(() => setBallBounce(false), 850);
-  };
-
-  return (
-    <>
-      {/* Sunny Sky */}
-      <div className="absolute inset-x-0 top-0 h-[38%] bg-gradient-to-b from-[#7dd3fc] to-[#bae6fd] z-0">
-        {/* Cloud */}
-        <svg className="absolute left-[15%] top-[15%] w-14 h-6 text-white/70" viewBox="0 0 50 20">
-          <path d="M 5 15 A 8 8 0 0 1 20 10 A 10 10 0 0 1 38 12 A 7 7 0 0 1 45 15 Z" fill="currentColor" />
-        </svg>
-      </div>
-      
-      {/* Ocean waves */}
-      <div className="absolute inset-x-0 top-[38%] h-[22%] bg-gradient-to-b from-[#0284c7] to-[#0369a1] z-0 overflow-hidden">
-        <svg className="w-full h-full opacity-40 text-sky-100" viewBox="0 0 100 20" preserveAspectRatio="none">
-          <path d="M 0 10 Q 25 5 50 10 Q 75 15 100 10 L 100 20 L 0 20 Z" fill="currentColor" />
-        </svg>
-      </div>
-      
-      {/* Sandy beach floor */}
-      <div className="absolute inset-x-0 bottom-0 h-[42%] bg-[#fef08a] z-0 shadow-[inset_0_4px_6px_rgba(0,0,0,0.15)] border-t-2 border-amber-300">
-        {/* Sandy details */}
-        <div className="absolute inset-0 opacity-10" style={{
-          backgroundImage: "radial-gradient(#b45309 1px, transparent 1px)",
-          backgroundSize: "8px 8px"
-        }} />
-      </div>
-
-      {/* Beach Towel */}
-      <svg className="absolute left-[10%] top-[54%] w-[28%] h-[30%] z-10 filter drop-shadow-[0_3px_5px_rgba(0,0,0,0.18)]" viewBox="0 0 60 50">
-        <rect x="5" y="10" width="50" height="30" rx="3" fill="#3b82f6" transform="rotate(-10 30 25)" />
-        <line x1="12" y1="5" x2="22" y2="45" stroke="#fef08a" strokeWidth="4.5" opacity="0.3" />
-        <line x1="38" y1="5" x2="48" y2="45" stroke="#fef08a" strokeWidth="4.5" opacity="0.3" />
-      </svg>
-      
-      {/* Sandcastle with peeking Crab */}
-      <div 
-        onClick={() => {
-          setIsCrabPeeking(!isCrabPeeking);
-          playSound.detectiveScan();
-        }}
-        className="absolute left-[40%] top-[42%] w-[20%] h-[26%] z-30 cursor-pointer"
-      >
-        <AnimatePresence>
-          {isCrabPeeking && (
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: -8, opacity: 1 }}
-              exit={{ y: 20, opacity: 0 }}
-              className="absolute left-[30%] top-[-8%] text-xs pointer-events-none z-10"
-            >
-              🦀
-            </motion.div>
-          )}
-        </AnimatePresence>
-        <svg className="w-full h-full filter drop-shadow-[0_4px_6px_rgba(0,0,0,0.15)]" viewBox="0 0 50 60">
-          <rect x="15" y="20" width="20" height="35" fill="#ca8a04" opacity="0.8" />
-          <rect x="8" y="32" width="34" height="23" fill="#b45309" opacity="0.75" />
-          <polygon points="10,20 15,10 20,20" fill="#eab308" />
-          <polygon points="30,20 35,10 40,20" fill="#eab308" />
-        </svg>
-      </div>
-      
-      {/* Interactive Beach Umbrella */}
-      <div 
-        onClick={handleUmbrellaClick}
-        className="absolute left-[64%] top-[22%] w-[26%] h-[48%] z-10 cursor-pointer"
-      >
-        <svg className="w-full h-full filter drop-shadow-[0_4px_6px_rgba(0,0,0,0.15)]" viewBox="0 0 60 80">
-          <line x1="30" y1="10" x2="30" y2="78" stroke="#64748b" strokeWidth="3" />
-          <motion.g 
-            animate={{ rotate: umbrellaRot }} 
-            transition={{ type: "spring", damping: 15 }}
-            style={{ originX: "30px", originY: "40px" }}
-          >
-            <path d="M 5 40 Q 30 10 55 40 Z" fill="#ef4444" />
-            <path d="M 12 40 Q 30 18 48 40" fill="#ffffff" opacity="0.8" />
-          </motion.g>
-        </svg>
-      </div>
-
-      {/* Interactive Beach Ball */}
-      <motion.div
-        onClick={handleBallClick}
-        animate={ballBounce ? { y: [0, -35, 0], rotate: [0, 180, 360] } : {}}
-        transition={{ duration: 0.8 }}
-        className="absolute left-[70%] top-[72%] w-[12%] h-[15%] z-20 cursor-pointer"
-      >
-        <svg className="w-full h-full filter drop-shadow-[0_3px_5px_rgba(0,0,0,0.15)]" viewBox="0 0 40 40">
-          <circle cx="20" cy="20" r="18" fill="#f43f5e" />
-          <path d="M 20 2 C 10 2 10 38 20 38 C 30 38 30 2 20 2 Z" fill="#eab308" />
-          <path d="M 2 20 C 2 10 38 10 38 20 C 38 30 2 30 2 20 Z" fill="#3b82f6" />
-          <circle cx="20" cy="20" r="4" fill="#ffffff" />
-        </svg>
-      </motion.div>
-    </>
-  );
-};
+// Scene 2: Beach — now the high-fidelity BeachScene component.
 
 // Scene 3: Office Diorama Props with Interactive Micro-Animations
 const OfficeProps: React.FC = () => {
@@ -883,7 +785,7 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
 
                 {/* Render vector diorama props */}
                 {selectedScene.id === "kitchen" && <KitchenScene onDecoy={handleDecoy} />}
-                {selectedScene.id === "beach" && <BeachProps />}
+                {selectedScene.id === "beach" && <BeachScene onDecoy={handleDecoy} />}
                 {selectedScene.id === "office" && <OfficeProps />}
                 {selectedScene.id === "park" && <ParkProps />}
                 {selectedScene.id === "school" && <SchoolProps />}
@@ -903,7 +805,7 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
                   const left = Math.max(8, Math.min(cx - W / 2, frameBox.w - W - 8));
                   const below = cy < frameBox.h * 0.55;
                   const caret = Math.max(20, Math.min(cx - left, W - 20));
-                  const art = KITCHEN_CLUE_ART[activeItem.id];
+                  const art = CLUE_ART[activeItem.id];
 
                   return (
                     <motion.div
@@ -993,7 +895,7 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
                 const isFound = foundIds.includes(item.id);
                 const isSelected = activeItemId === item.id;
                 const isShaking = shakingItemId === item.id;
-                const clueArt = KITCHEN_CLUE_ART[item.id];
+                const clueArt = CLUE_ART[item.id];
 
                 return (
                   <AnimatePresence key={item.id}>
@@ -1007,10 +909,16 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
                           ...(clueArt
                             ? {
                                 // 200 scene units wide out of 1200x900, centred on
-                                // the anchor, so the art scales with the frame
+                                // the anchor, so the art scales with the frame.
+                                // The box is inert: an HTML div takes pointer
+                                // events across its whole rectangle whether or not
+                                // anything is drawn there, and at this size it
+                                // would swallow every decoy underneath it. Only
+                                // the painted litter inside takes them back.
                                 width: "16.667%",
                                 height: "22.222%",
                                 transform: "translate(-50%, -50%)",
+                                pointerEvents: "none" as const,
                               }
                             : {}),
                         }}
@@ -1037,8 +945,8 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
                           }}
                           className={
                             clueArt
-                              ? `kitchen-clue relative w-full h-full ${isSelected ? "kitchen-clue--active" : ""} ${
-                                  hintedId === item.id ? "kitchen-clue--hinted" : ""
+                              ? `detective-clue relative w-full h-full ${isSelected ? "detective-clue--active" : ""} ${
+                                  hintedId === item.id ? "detective-clue--hinted" : ""
                                 }`
                               : `w-8.5 h-8.5 sm:w-11 sm:h-11 flex items-center justify-center rounded-lg sm:rounded-xl transition-all duration-300 relative ${
                                   isSelected
