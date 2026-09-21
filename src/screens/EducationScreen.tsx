@@ -67,7 +67,11 @@ export const EducationScreen: React.FC<EducationScreenProps> = ({
           {uniqueMistakes.length > 0 ? (
             uniqueMistakes.map((record, index) => {
               const item = record.item;
-              const chosenMeta = CATEGORY_META[record.chosenCategory];
+              // null means the item fell past the bins. Naming a bin here
+              // would be telling the player they chose something they did not.
+              const chosenMeta = record.chosenCategory
+                ? CATEGORY_META[record.chosenCategory]
+                : null;
               const correctMeta = CATEGORY_META[item.category];
 
               return (
@@ -82,16 +86,20 @@ export const EducationScreen: React.FC<EducationScreenProps> = ({
                     </div>
                     <div>
                       <h4 className="text-sm font-extrabold text-slate-900 leading-tight">{item.name}</h4>
-                      <span className="text-[10px] text-slate-600 font-black uppercase tracking-wider">Incorrectly Sorted</span>
+                      <span className="text-[10px] text-slate-600 font-black uppercase tracking-wider">
+                        {chosenMeta ? "Incorrectly Sorted" : "Never Sorted"}
+                      </span>
                     </div>
                   </div>
 
                   {/* Compare choice vs correct */}
                   <div className="grid grid-cols-2 gap-2 text-[11px] leading-tight">
                     <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-600/20 flex flex-col gap-0.5">
-                      <span className="text-rose-800 font-black uppercase text-[9px] tracking-wider opacity-85">Your Choice</span>
-                      <span className="text-rose-700 font-extrabold line-through">
-                        {chosenMeta.emoji} {chosenMeta.label}
+                      <span className="text-rose-800 font-black uppercase text-[9px] tracking-wider opacity-85">
+                        {chosenMeta ? "Your Choice" : "What Happened"}
+                      </span>
+                      <span className={`text-rose-700 font-extrabold ${chosenMeta ? "line-through" : ""}`}>
+                        {chosenMeta ? `${chosenMeta.emoji} ${chosenMeta.label}` : "⚠️ Missed it"}
                       </span>
                     </div>
 

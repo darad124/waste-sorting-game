@@ -7,6 +7,7 @@ import { ItemSVG } from "../components/ItemSVG";
 import { ShareButton } from "../components/ShareButton";
 import { FeedbackPrompt } from "../components/FeedbackPrompt";
 import { canPrompt } from "../utils/feedbackGate";
+import { starsFor } from "../data/levels";
 import { AnimatePresence } from "framer-motion";
 
 interface LevelResultScreenProps {
@@ -35,14 +36,15 @@ export const LevelResultScreen: React.FC<LevelResultScreenProps> = ({
 
   // Calculate results on mount
   const totalProcessed = correctCount + wrongCount;
-  const accuracy = totalProcessed > 0 ? Math.round((correctCount / totalProcessed) * 100) : 0;
+  // The ratio is what decides the stars; the rounded percent is only ever
+  // displayed. Rounding first is what made this screen disagree with the
+  // score the store had already saved.
+  const accuracyRatio = totalProcessed > 0 ? correctCount / totalProcessed : 0;
+  const accuracy = Math.round(accuracyRatio * 100);
   const speedBonus = timeRemaining * 15;
 
-  // Calculate stars
-  let stars = 0;
-  if (accuracy >= 95) stars = 3;
-  else if (accuracy >= 85) stars = 2;
-  else if (accuracy >= 80) stars = 1;
+  // currentLevel is null-guarded below, after the hooks; 0 is never rendered.
+  const stars = currentLevel ? starsFor(accuracyRatio, currentLevel.passAccuracy) : 0;
 
   useEffect(() => {
     // Play celebratory chime
