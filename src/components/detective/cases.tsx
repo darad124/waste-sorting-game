@@ -47,14 +47,29 @@ export interface DetectiveCase {
 
 /** React.lazy wants a default export; the scenes are named, like everything
  *  else in this codebase. This keeps one import expression per scene so the
- *  bundler can still see it statically. */
+ *  bundler can still see it statically.
+ *
+ *  The retry is not defensive padding. A dynamic import is a network request
+ *  for a file named after its own content hash, and it fails for real reasons:
+ *  a dropped connection, or — far more often — a deploy that happened while
+ *  this tab was open, after which the browser is still holding an index.html
+ *  that names chunks the server no longer has. One retry clears the transient
+ *  case. The rest is the caller's to handle, and it must handle it: an
+ *  unhandled rejection here leaves the round stuck on its loading screen for
+ *  ever, because the code that would have started the round never runs. */
 const lazyScene = <K extends string>(
   load: () => Promise<Record<K, React.FC<{ onDecoy?: (note: string) => void }>>>,
   key: K
-) => ({
-  Scene: React.lazy(() => load().then((m) => ({ default: m[key] }))),
-  preload: load,
-});
+) => {
+  const loadOnce = () =>
+    load().catch(() => new Promise<Record<K, React.FC<{ onDecoy?: (note: string) => void }>>>(
+      (resolve, reject) => { setTimeout(() => load().then(resolve, reject), 350); },
+    ));
+  return {
+    Scene: React.lazy(() => loadOnce().then((m) => ({ default: m[key] }))),
+    preload: loadOnce,
+  };
+};
 
 export const CASES: DetectiveCase[] = [
   {
