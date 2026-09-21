@@ -17,9 +17,9 @@ export function laneMarkup(p: string, item: OutlastItem): string {
   return `
     <defs>
       <radialGradient id="${p}castG">
-        <stop offset="0" stop-color="#000000" stop-opacity=".62"/>
-        <stop offset=".5" stop-color="#000000" stop-opacity=".34"/>
-        <stop offset="1" stop-color="#000000" stop-opacity="0"/>
+        <stop offset="0" stop-color="#8A6A32" stop-opacity=".40"/>
+        <stop offset=".5" stop-color="#8A6A32" stop-opacity=".22"/>
+        <stop offset="1" stop-color="#8A6A32" stop-opacity="0"/>
       </radialGradient>
       <radialGradient id="${p}causticG">
         <stop offset="0" stop-color="#D6F5CB" stop-opacity=".55"/>
@@ -33,7 +33,7 @@ export function laneMarkup(p: string, item: OutlastItem): string {
     <ellipse id="${p}cast" cx="${b.cx + 28}" cy="${cy + 3}"
              rx="${Math.round(b.rx * 1.3)}" ry="15" fill="url(#${p}castG)"/>
     <ellipse id="${p}contact" cx="${b.cx + 2}" cy="${cy}"
-             rx="${b.rx}" ry="9" fill="#04070A" opacity=".85"/>
+             rx="${b.rx}" ry="9" fill="#6B5124" opacity=".5"/>
     ${caustic}
     <g id="${p}body" ${bodyAttrs(p, item)}>
       <g transform="translate(150 ${cy}) scale(${item.scale ?? 1}) translate(-150 ${-cy})">

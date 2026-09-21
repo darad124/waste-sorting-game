@@ -225,7 +225,7 @@ export const OutlastScreen: React.FC<OutlastScreenProps> = ({ onBack }) => {
   const note = pair.length === 2 && winner ? noteFor(pair[0].id, pair[1].id, winner.id) : "";
 
   return (
-    <div className={`ol-root ${phase === "settled" ? "ol-panel" : ""}`}>
+    <div className="ol-root">
       <div className="ol-bar">
         <button onClick={onBack} className="ol-back" aria-label="Back">
           <ArrowLeft size={16} />
@@ -277,24 +277,73 @@ export const OutlastScreen: React.FC<OutlastScreenProps> = ({ onBack }) => {
           {phase === "ask" && seen === 0 && (
             <span className="ol-hint ol-cond">{OUTLAST_CONDITIONS}</span>
           )}
-          {phase === "settled" && wasRight && (
-            <button className="ol-next" onClick={deal}>Next</button>
-          )}
         </div>
       </div>
 
+      {/* One panel, in the middle of the screen. The race has finished by the
+          time it arrives, so there is nothing left to watch behind it — and
+          the middle is where the eye already is. */}
       <AnimatePresence>
-        {phase === "settled" && note && (
-          <motion.div
-            className="ol-note"
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 20, opacity: 0 }}
-            transition={{ duration: 0.28 }}
-          >
-            <span className="ol-note-k">Did you know</span>
-            <p>{note}</p>
-          </motion.div>
+        {phase === "settled" && (
+          <>
+            <motion.div
+              key="scrim"
+              className="ol-scrim"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+            />
+            <div className="ol-centre" key="centre">
+              {runOver ? (
+                <motion.div
+                  className="ol-over"
+                  initial={{ y: 18, opacity: 0, scale: 0.97 }}
+                  animate={{ y: 0, opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3, delay: 0.1 }}
+                >
+                  <div className="ol-over-top">
+                    <div className="ol-over-row">
+                      <div>
+                        <div className="ol-over-k">This run</div>
+                        <div className="ol-over-v">{streak}</div>
+                      </div>
+                      <div>
+                        <div className="ol-over-k">Best</div>
+                        <div className="ol-over-v">{best}</div>
+                      </div>
+                    </div>
+                    <p className="ol-over-line">{runSummary(streak)}</p>
+                  </div>
+                  {note && (
+                    <p className="ol-over-note">
+                      <b>Did you know</b>
+                      {note}
+                    </p>
+                  )}
+                  <div className="ol-over-actions">
+                    <button className="ol-again" onClick={restart}>
+                      <RotateCcw size={14} /> Go again
+                    </button>
+                    <ShareButton target={{ kind: "mode", id: "contamination" }} />
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.div
+                  className="ol-note"
+                  initial={{ y: 18, opacity: 0, scale: 0.97 }}
+                  animate={{ y: 0, opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3, delay: 0.1 }}
+                >
+                  <span className="ol-note-k">Did you know</span>
+                  <p>{note}</p>
+                  <button className="ol-note-go" onClick={deal}>Next pair</button>
+                </motion.div>
+              )}
+            </div>
+          </>
         )}
       </AnimatePresence>
 
@@ -307,37 +356,6 @@ export const OutlastScreen: React.FC<OutlastScreenProps> = ({ onBack }) => {
             exit={{ scale: 1.25, opacity: 0 }}
           >
             {milestone} in a row
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {runOver && (
-          <motion.div
-            className="ol-over"
-            initial={{ y: 40, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.35, duration: 0.3 }}
-          >
-            <div className="ol-over-top">
-              <div className="ol-over-row">
-                <div>
-                  <div className="ol-over-k">This run</div>
-                  <div className="ol-over-v">{streak}</div>
-                </div>
-                <div>
-                  <div className="ol-over-k">Best</div>
-                  <div className="ol-over-v">{best}</div>
-                </div>
-              </div>
-              <p className="ol-over-line">{runSummary(streak)}</p>
-            </div>
-            <div className="ol-over-actions">
-              <button className="ol-again" onClick={restart}>
-                <RotateCcw size={14} /> Go again
-              </button>
-              <ShareButton target={{ kind: "mode", id: "contamination" }} />
-            </div>
           </motion.div>
         )}
       </AnimatePresence>
