@@ -102,9 +102,13 @@ export const parseShareQuery = (value: string | null): ShareTarget | null => {
 export const getSocialShareUrl = (
   platform: "x" | "facebook" | "whatsapp" | "linkedin" | "telegram",
   target: ShareTarget,
+  /** Overrides the mode's stock line. Outlast passes the fact the player has
+   *  just been shown, because that — not "come and play this mode" — is the
+   *  thing somebody actually forwards to a friend. */
+  overrideText?: string,
 ): string => {
   const shareUrl = getShareUrl(target);
-  const text = getShareText(target);
+  const text = overrideText ?? getShareText(target);
 
   switch (platform) {
     case "x":

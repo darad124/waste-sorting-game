@@ -366,7 +366,10 @@ export const OutlastScreen: React.FC<OutlastScreenProps> = ({ onBack }) => {
                     <button className="ol-again" onClick={restart}>
                       <RotateCcw size={14} /> Go again
                     </button>
-                    <ShareButton target={{ kind: "mode", id: "contamination" }} />
+                    <ShareButton
+                      target={{ kind: "mode", id: "contamination" }}
+                      text={`I got ${streak} in a row on EcoSort Outlast. ${note?.text ?? ""}`.trim()}
+                    />
                   </div>
                 </motion.div>
               ) : (
@@ -382,7 +385,20 @@ export const OutlastScreen: React.FC<OutlastScreenProps> = ({ onBack }) => {
                     {noteSubject && <em>{noteSubject}</em>}
                   </span>
                   <p>{note?.text}</p>
-                  <button className="ol-note-go" onClick={deal}>Next pair</button>
+                  <div className="ol-note-actions">
+                    <button className="ol-note-go" onClick={deal}>Next pair</button>
+                    {/* Shares the FACT, not "come and play this mode" — the
+                        fact is the thing somebody actually forwards.
+                        Compact, because the primary action here is Next pair,
+                        and the full-width variant is a black slab that fights
+                        the card it is sitting on. */}
+                    <ShareButton
+                      compact
+                      target={{ kind: "mode", id: "contamination" }}
+                      label="Share this fact"
+                      text={note ? `${noteSubject ? noteSubject + ": " : ""}${note.text}` : undefined}
+                    />
+                  </div>
                 </motion.div>
               )}
             </div>

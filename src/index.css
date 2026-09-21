@@ -751,6 +751,10 @@ body,
   content: "\00a0\00a0\00b7\00a0\00a0"; color: rgba(169,109,18,.45);
 }
 .ol-note p { margin: 0; font-size: 15px; line-height: 1.6; color: #453D30; }
+.ol-note-actions { margin-top: 16px; display: flex; gap: 10px; align-items: stretch; }
+.ol-note-actions .ol-note-go { margin-top: 0; flex: 1 1 auto; }
+.ol-note-actions > div { display: flex; }
+.ol-note-actions button[aria-haspopup="menu"] { height: 100%; border-radius: 999px; padding: 0 16px; }
 .ol-note-go {
   margin-top: 16px; width: 100%;
   background: #F0C74E; border: 0; color: #3A2F12;
