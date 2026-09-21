@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Outlast — the race</title>
+<!--
+  Outlast, step one: does watching the race feel good?
+
+  Two objects, one that goes and one that does not. Nothing else — no
+  streak, no scoring, no menu. If this is not satisfying to watch then the
+  mode is Trivia with pictures and we have found that out for the price of
+  one screen.
+
+  The timeline is LOGARITHMIC and has to be: a paper bag at one month and a
+  glass bottle at a million years cannot share a linear axis. Time runs from
+  about a week to two million years across seven seconds, which is roughly
+  eight decades, so every decade gets the same slice of the animation and
+  the early life of the bag is as watchable as the long silence afterwards.
+-->
+<style>
+  :root {
+    --bg: #14161A;
+    --bg2: #1E2228;
+    --ink: #F4F1EA;
+    --dim: #8B8F98;
+    --accent: #E8C15A;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+  #stage {
+    height: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: clamp(4px, 1.5vh, 10px);
+    padding: clamp(10px, 2.5vh, 20px) 16px clamp(14px, 3vh, 28px);
+    background:
+      radial-gradient(120% 80% at 50% 8%, #2A2F37 0%, #14161A 62%);
+  }
+
+  .clock { text-align: center; line-height: 1; }
+  .clock .n {
+    font-size: clamp(38px, min(9vw, 11vh), 96px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+  .clock .u {
+    font-size: clamp(11px, 2vw, 14px);
+    text-transform: uppercase; letter-spacing: 0.22em;
+    color: var(--dim); margin-top: 8px;
+  }
+
+  #race {
+    flex: 1 1 0; min-height: 0; width: 100%;
+    max-width: 900px;
+    display: grid; grid-template-columns: 1fr 1fr;
+    align-items: stretch;
+    gap: clamp(12px, 5vw, 60px);
+  }
+  /* min-height:0 on both is load-bearing: without it the grid row is sized by
+     its content, the SVG never agrees to shrink, and the bottle runs off the
+     bottom of any short viewport. */
+  .lane {
+    position: relative; min-height: 0;
+    display: flex; flex-direction: column; justify-content: flex-end;
+  }
+  .lane svg { flex: 1 1 0; min-height: 0; width: 100%; display: block; }
+
+  .tag {
+    text-align: center; margin-top: clamp(6px, 1.6vh, 14px);
+    font-size: clamp(11px, 2.2vw, 14px);
+    font-weight: 700; letter-spacing: 0.02em;
+  }
+  .tag .verdict {
+    display: block; margin-top: 5px;
+    font-size: clamp(10px, 1.9vw, 12px);
+    font-weight: 600; color: var(--dim);
+    opacity: 0; transition: opacity .5s ease;
+  }
+  .tag .verdict.show { opacity: 1; }
+  .tag .verdict.gone { color: #C98A72; }
+  .tag .verdict.here { color: var(--accent); }
+
+  .floor {
+    height: 1px; width: 100%;
+    background: linear-gradient(to right, transparent, #3A4048 18%, #3A4048 82%, transparent);
+    margin-top: 2px;
+  }
+
+  button {
+    margin-top: 4px;
+    background: none; border: 1px solid #3A4048; color: var(--dim);
+    font: inherit; font-size: 12px; font-weight: 700;
+    letter-spacing: .16em; text-transform: uppercase;
+    padding: 10px 22px; border-radius: 999px; cursor: pointer;
+    transition: color .2s, border-color .2s;
+  }
+  button:hover { color: var(--ink); border-color: #5A626C; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tag .verdict { transition: none; }
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <div class="clock">
+    <div class="n" id="num">1</div>
+    <div class="u" id="unit">day</div>
+  </div>
+
+  <div id="race">
+
+    <!-- ============================ PAPER BAG ============================ -->
+    <!--
+      A closed brown box is not a bag. Two things make it one and neither is
+      optional: you can see INTO it, and it has twisted paper handles. The
+      first version had neither and read as a cardboard slab.
+    -->
+    <div class="lane">
+      <svg viewBox="0 0 300 420" preserveAspectRatio="xMidYMax meet">
+        <defs>
+          <radialGradient id="caustic">
+            <stop offset="0"   stop-color="#D6F5CB" stop-opacity=".55"/>
+            <stop offset=".38" stop-color="#7EC478" stop-opacity=".30"/>
+            <stop offset=".72" stop-color="#4E8E4C" stop-opacity=".12"/>
+            <stop offset="1"   stop-color="#4E8E4C" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="cast">
+            <stop offset="0"   stop-color="#000000" stop-opacity=".62"/>
+            <stop offset=".5"  stop-color="#000000" stop-opacity=".34"/>
+            <stop offset="1"   stop-color="#000000" stop-opacity="0"/>
+          </radialGradient>
+          <linearGradient id="kraftFront" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0"   stop-color="#8A6231"/>
+            <stop offset=".16" stop-color="#C89B5E"/>
+            <stop offset=".46" stop-color="#DDB379"/>
+            <stop offset=".78" stop-color="#B98C52"/>
+            <stop offset="1"   stop-color="#8A6231"/>
+          </linearGradient>
+          <linearGradient id="kraftSide" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0"   stop-color="#5E4020"/>
+            <stop offset=".55" stop-color="#8A6434"/>
+            <stop offset="1"   stop-color="#6E4E27"/>
+          </linearGradient>
+          <linearGradient id="kraftRim" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0"   stop-color="#A87C46"/>
+            <stop offset=".32" stop-color="#EDC894"/>
+            <stop offset=".72" stop-color="#D0A469"/>
+            <stop offset="1"   stop-color="#9A7040"/>
+          </linearGradient>
+          <linearGradient id="bagMouth" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0"   stop-color="#1E1509"/>
+            <stop offset=".65" stop-color="#3A2A14"/>
+            <stop offset="1"   stop-color="#5A4322"/>
+          </linearGradient>
+          <linearGradient id="rotUp" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0"   stop-color="#2E2110"/>
+            <stop offset=".35" stop-color="#4A3317" stop-opacity=".85"/>
+            <stop offset=".75" stop-color="#6B4C22" stop-opacity=".35"/>
+            <stop offset="1"   stop-color="#6B4C22" stop-opacity="0"/>
+          </linearGradient>
+
+          <!-- The edges get chewed. Displacement alone reads as 'wobbly', so
+               it is paired with a noise mask that punches real holes. -->
+          <filter id="bagChew" x="-35%" y="-35%" width="170%" height="170%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.016"
+                          numOctaves="4" seed="11" result="n"/>
+            <feDisplacementMap id="bagDisp" in="SourceGraphic" in2="n" scale="0"
+                               xChannelSelector="R" yChannelSelector="G"/>
+          </filter>
+          <filter id="bagHoles" x="0" y="0" width="100%" height="100%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.038"
+                          numOctaves="4" seed="5"/>
+            <feComponentTransfer>
+              <feFuncR type="linear" slope="0" intercept="0"/>
+              <feFuncG type="linear" slope="0" intercept="0"/>
+              <feFuncB type="linear" slope="0" intercept="0"/>
+              <feFuncA id="bagHoleA" type="linear" slope="16" intercept="-16.5"/>
+            </feComponentTransfer>
+          </filter>
+          <mask id="bagMask">
+            <rect x="-40" y="-40" width="380" height="500" fill="#fff"/>
+            <rect x="-40" y="-40" width="380" height="500" filter="url(#bagHoles)"/>
+          </mask>
+        </defs>
+
+        <ellipse id="bagCast" cx="178" cy="403" rx="112" ry="15" fill="url(#cast)"/>
+        <ellipse id="bagShadow" cx="150" cy="400" rx="88" ry="9"
+                 fill="#04070A" opacity=".85"/>
+
+        <g id="bagBody" mask="url(#bagMask)" filter="url(#bagChew)">
+          <!-- the inside, seen over the front rim. Without this it is a box. -->
+          <path fill="url(#bagMouth)"
+                d="M62 100 L244 106 L240 142 L84 134 Z"/>
+          <path fill="#100B04" opacity=".8" d="M76 108 L238 114 L235 134 L90 127 Z"/>
+
+          <!-- the far rim, catching the light over the top -->
+          <path fill="url(#kraftRim)" d="M60 90 L246 96 L244 108 L62 102 Z"/>
+          <path fill="#EFCE9C" opacity=".55" d="M60 90 L246 96 L246 99 L60 93 Z"/>
+
+          <!-- the gusset, folded in down the left -->
+          <path fill="url(#kraftSide)"
+                d="M58 136 L60 396 Q74 403 88 399 L88 142 Z"/>
+          <!-- the front panel, bowing very slightly because it is not empty -->
+          <path fill="url(#kraftFront)"
+                d="M88 142 L238 148 Q244 272 240 396 Q166 406 88 399 Z"/>
+          <!-- the front rim: a paper bag is folded over at the top -->
+          <path fill="url(#kraftRim)"
+                d="M56 130 L242 136 L241 154 L88 147 L58 143 Z"/>
+          <path fill="#7E5A2E" opacity=".45" d="M56 130 L88 136 L88 147 L58 143 Z"/>
+          <path fill="#F0D0A0" opacity=".45" d="M56 130 L242 136 L242 140 L56 134 Z"/>
+
+          <!-- twisted paper handles: the single most identifying feature -->
+          <path fill="none" stroke="#5E4020" stroke-width="10" stroke-linecap="round"
+                d="M88 134 C92 56 148 50 152 132"/>
+          <path fill="none" stroke="#C99A5C" stroke-width="6" stroke-linecap="round"
+                d="M88 134 C92 56 148 50 152 132"/>
+          <path fill="none" stroke="#E8C48C" stroke-width="2" stroke-opacity=".7"
+                d="M91 118 C95 62 144 57 149 116"/>
+          <path fill="none" stroke="#6E4E27" stroke-width="2" stroke-opacity=".75"
+                d="M99 84 l9 -6 M118 63 l9 -3 M140 76 l8 -8"/>
+          <path fill="none" stroke="#5E4020" stroke-width="10" stroke-linecap="round"
+                d="M178 138 C182 60 238 56 242 140"/>
+          <path fill="none" stroke="#BC8F52" stroke-width="6" stroke-linecap="round"
+                d="M178 138 C182 60 238 56 242 140"/>
+          <path fill="none" stroke="#DDB87E" stroke-width="2" stroke-opacity=".6"
+                d="M181 122 C185 66 234 62 239 124"/>
+          <path fill="none" stroke="#6E4E27" stroke-width="2" stroke-opacity=".75"
+                d="M189 88 l9 -6 M208 68 l9 -3 M230 81 l8 -8"/>
+
+          <!-- creases: a paper bag is nothing but its folds -->
+          <path fill="none" stroke="#7A5729" stroke-opacity=".5" stroke-width="2.4"
+                d="M88 146 L88 399 M59 140 L60 396"/>
+          <path fill="none" stroke="#B98C55" stroke-opacity=".35" stroke-width="2"
+                d="M124 149 L122 401 M190 152 L192 403"/>
+          <path fill="none" stroke="#8A6534" stroke-opacity=".3" stroke-width="1.6"
+                d="M96 246 Q166 240 236 246 M96 308 Q166 304 238 310"/>
+          <!-- the base fold -->
+          <path fill="#8A6231" opacity=".4"
+                d="M88 374 Q164 382 240 374 L240 396 Q166 406 88 399 Z"/>
+
+          <!-- rot: soaks up from the base, because that is where the wet is -->
+          <path id="bagRot" fill="url(#rotUp)" opacity="0"
+                d="M56 130 L242 136 L240 396 Q166 406 60 396 L58 143 Z"/>
+        </g>
+
+        <text id="bagGone" x="150" y="330" text-anchor="middle"
+              font-size="15" font-weight="700" letter-spacing=".18em"
+              fill="#7C838C" opacity="0">GONE</text>
+      </svg>
+      <div class="floor"></div>
+      <div class="tag">Paper bag
+        <span class="verdict" id="bagVerdict"></span>
+      </div>
+    </div>
+
+    <!-- ========================== GLASS BOTTLE =========================== -->
+    <!--
+      A bottle is a PROFILE: wide body, a shoulder that turns in, a narrow
+      neck, a collar. The first attempt was a cylinder with a cap on it and it
+      read as a test tube, because a cylinder is the one silhouette a bottle
+      never has.
+
+      Glass is drawn by its edges. It is darkest where you are looking through
+      the most of it — the two sides — and lightest through the middle, and it
+      has one hard specular down the lit side that nothing else in the game
+      has. Those three things are what say glass rather than green plastic.
+    -->
+    <div class="lane">
+      <svg viewBox="0 0 300 420" preserveAspectRatio="xMidYMax meet">
+        <defs>
+          <linearGradient id="glassX" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0"    stop-color="#0A2612"/>
+            <stop offset=".08"  stop-color="#1B4A26"/>
+            <stop offset=".22"  stop-color="#3E8447"/>
+            <stop offset=".38"  stop-color="#57A75C"/>
+            <stop offset=".54"  stop-color="#3B7E43"/>
+            <stop offset=".76"  stop-color="#21582C"/>
+            <stop offset=".92"  stop-color="#112F19"/>
+            <stop offset="1"    stop-color="#071C0E"/>
+          </linearGradient>
+          <linearGradient id="glassY" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0"    stop-color="#9BD49A" stop-opacity=".30"/>
+            <stop offset=".16"  stop-color="#6FB574" stop-opacity=".12"/>
+            <stop offset=".55"  stop-color="#000000" stop-opacity="0"/>
+            <stop offset=".88"  stop-color="#031007" stop-opacity=".45"/>
+            <stop offset="1"    stop-color="#031007" stop-opacity=".7"/>
+          </linearGradient>
+          <linearGradient id="spec" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0"    stop-color="#EAFBE4" stop-opacity="0"/>
+            <stop offset=".07"  stop-color="#F2FFEE" stop-opacity=".92"/>
+            <stop offset=".62"  stop-color="#CFEDC8" stop-opacity=".52"/>
+            <stop offset=".93"  stop-color="#CFEDC8" stop-opacity=".10"/>
+            <stop offset="1"    stop-color="#CFEDC8" stop-opacity="0"/>
+          </linearGradient>
+          <linearGradient id="specNeck" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0"   stop-color="#F2FFEE" stop-opacity=".85"/>
+            <stop offset="1"   stop-color="#F2FFEE" stop-opacity=".25"/>
+          </linearGradient>
+        </defs>
+
+        <!-- cast, thrown right and away from the upper-left key -->
+        <ellipse cx="184" cy="403" rx="92" ry="15" fill="url(#cast)"/>
+        <!-- contact: tight and dark, and the only part with a hard edge -->
+        <ellipse cx="152" cy="401" rx="70" ry="10" fill="#05080A" opacity=".55"/>
+        <ellipse cx="150" cy="399.5" rx="60" ry="7" fill="#000000" opacity=".8"/>
+        <!-- Light comes THROUGH it and lands inside its own shadow. Only glass
+             does this. Two hard-edged ellipses read as green puddles parked
+             next to the bottle, so it is one soft pool instead. -->
+        <ellipse cx="196" cy="402" rx="58" ry="11" fill="url(#caustic)"/>
+
+        <g id="glassBottle">
+          <!-- the profile: body, shoulder, neck, collar -->
+          <path fill="url(#glassX)"
+                d="M130 78 L170 78 L170 130
+                   C170 144 176 152 185 161
+                   C202 177 214 190 215 214
+                   L215 384 Q215 399 200 400 L100 400 Q85 399 85 384
+                   L86 214 C87 190 98 177 115 161
+                   C124 152 130 144 130 130 Z"/>
+          <path fill="url(#glassY)"
+                d="M130 78 L170 78 L170 130
+                   C170 144 176 152 185 161
+                   C202 177 214 190 215 214
+                   L215 384 Q215 399 200 400 L100 400 Q85 399 85 384
+                   L86 214 C87 190 98 177 115 161
+                   C124 152 130 144 130 130 Z"/>
+
+          <!-- the collar: a bottle is named by its finish -->
+          <path fill="#2E6A38" d="M126 58 L174 58 Q178 58 178 62 L178 74
+                                  Q178 78 174 78 L126 78 Q122 78 122 74
+                                  L122 62 Q122 58 126 58 Z"/>
+          <path fill="#6FB974" d="M126 58 L174 58 Q178 58 178 61 L178 65 L122 65
+                                  L122 61 Q122 58 126 58 Z"/>
+          <path fill="#0C2B15" opacity=".8" d="M122 74 L178 74 L178 78
+                                  Q178 80 174 80 L126 80 Q122 80 122 78 Z"/>
+          <ellipse cx="150" cy="59" rx="26" ry="5" fill="#8FCC8E" opacity=".55"/>
+          <ellipse cx="150" cy="59" rx="19" ry="3" fill="#0A2411" opacity=".85"/>
+
+          <!-- the hard specular down the lit side, kinked where the shoulder
+               turns, because that is what a curved surface does to a highlight -->
+          <path fill="url(#spec)"
+                d="M108 186 C112 172 120 164 126 158 L133 166
+                   C127 172 120 180 117 192 L117 372 L108 372 Z"/>
+          <rect x="108" y="200" width="9" height="172" rx="4.5" fill="url(#spec)"/>
+          <rect x="134" y="84" width="7" height="44" rx="3.5" fill="url(#specNeck)"/>
+          <!-- the weaker return highlight on the shaded side -->
+          <rect x="196" y="216" width="4" height="150" rx="2" fill="#CFEDC8" opacity=".16"/>
+
+          <!-- edge darkening: most of the glass you look through is at the rim -->
+          <path fill="#061A0C" opacity=".55"
+                d="M86 214 C87 190 98 177 115 161 L119 166
+                   C104 181 93 193 92 215 L92 386 L86 384 Z"/>
+          <path fill="#061A0C" opacity=".75"
+                d="M215 214 C214 190 202 177 185 161 L181 166
+                   C196 181 208 193 209 215 L209 386 L215 384 Z"/>
+
+          <!-- the punt, and the ring of light that gets bent round it -->
+          <path fill="#061A0C" opacity=".75"
+                d="M86 368 Q150 386 215 368 L215 384 Q215 399 200 400
+                   L100 400 Q85 399 85 384 Z"/>
+          <ellipse cx="150" cy="386" rx="42" ry="8" fill="#5FA95E" opacity=".38"/>
+          <ellipse cx="150" cy="390" rx="22" ry="4" fill="#A8DDA0" opacity=".30"/>
+
+          <!-- two bubbles in the wall, the tell of real bottle glass -->
+          <ellipse cx="172" cy="252" rx="2.6" ry="4" fill="#CFEDC8" opacity=".35"/>
+          <ellipse cx="128" cy="310" rx="2" ry="3" fill="#CFEDC8" opacity=".28"/>
+        </g>
+
+        <text id="glassGone" x="150" y="36" text-anchor="middle"
+              font-size="15" font-weight="700" letter-spacing=".18em"
+              fill="#E8C15A" opacity="0">STILL HERE</text>
+      </svg>
+      <div class="floor"></div>
+      <div class="tag">Glass bottle
+        <span class="verdict" id="glassVerdict"></span>
+      </div>
+    </div>
+
+  </div>
+
+  <button id="again">Replay</button>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  // ---- the timeline -------------------------------------------------------
+  // Logarithmic. T0 is about a week, T1 is two million years; the whole thing
+  // runs in DUR milliseconds, so each decade of time gets an equal share of
+  // the screen time and the bag's brief life is as watchable as the silence
+  // that follows it.
+  const T0 = Math.log10(0.0027);   // one day
+  const T1 = Math.log10(2e6);
+  const DUR = 7600;
+
+  // Equal screen time per decade sounds right and plays terribly: the bag sits
+  // at decade -1.1 of a range running to +6.3, so its entire life was over
+  // inside the first second and the remaining six were an empty bottle. This
+  // curve lingers where things are actually happening and then lets the number
+  // run away, which is the drama anyway — the counter tearing through
+  // centuries while the glass does not move.
+  const BEND = 2.4;
+
+  const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+
+  // Decomposition figures vary by source and by conditions, so the real thing
+  // will cite one set and state the conditions. These two are only here to
+  // drive the animation, and the gap between them is not in dispute.
+  const BAG = 0.083;      // a paper bag, roughly a month
+  const GLASS = 1e9;      // glass does not biodegrade. It just does not.
+
+  const el = id => document.getElementById(id);
+  const num = el("num"), unit = el("unit");
+  const bagDisp = el("bagDisp"), bagHoleA = el("bagHoleA");
+  const bagBody = el("bagBody"), bagRot = el("bagRot");
+  const bagShadow = el("bagShadow"), bagCast = el("bagCast"), bagGone = el("bagGone");
+  const glassBottle = el("glassBottle"), glassGone = el("glassGone");
+  const bagVerdict = el("bagVerdict"), glassVerdict = el("glassVerdict");
+
+  /** How far through its decay an object is, at time logT. It starts going
+   *  half a decade before its nominal life and is finished a little after. */
+  function decayAt(logT, lifeYears) {
+    return clamp((logT - Math.log10(lifeYears) + 0.8) / 1.45, 0, 1);
+  }
+
+  function label(years) {
+    if (years < 1 / 52)  return [Math.max(1, Math.round(years * 365)), "days"];
+    if (years < 1 / 12)  return [Math.max(1, Math.round(years * 52)), "weeks"];
+    if (years < 1)       return [Math.max(1, Math.round(years * 12)), "months"];
+    if (years < 1e3)     return [Math.round(years), "years"];
+    if (years < 1e6)     return [Math.round(years / 100) * 100, "years"];
+    return [Math.round(years / 1e6), "million years"];
+  }
+
+  let start = null, raf = null;
+  // Review hook: set FREEZE to a number in 0..1 to hold the race at that point
+  // so a still can be judged. null plays it. (A query string would be nicer but
+  // the preview pane serves this as a data: URL, which has no search params.)
+  const FREEZE = null;
+  const freeze = FREEZE;
+
+  function reset() {
+    bagDisp.setAttribute("scale", "0");
+    bagHoleA.setAttribute("intercept", "-16.5");
+    bagBody.setAttribute("transform", "");
+    bagBody.style.opacity = "1";
+    bagRot.setAttribute("opacity", "0");
+    bagShadow.setAttribute("opacity", ".85");
+    bagCast.setAttribute("opacity", "1");
+    bagShadow.setAttribute("rx", "88");
+    bagGone.setAttribute("opacity", "0");
+    glassGone.setAttribute("opacity", "0");
+    bagVerdict.className = "verdict";
+    glassVerdict.className = "verdict";
+    bagVerdict.textContent = "";
+    glassVerdict.textContent = "";
+    num.textContent = "1";
+    unit.textContent = "day";
+  }
+
+  function frame(now) {
+    if (start === null) start = now;
+    const p = freeze !== null ? freeze : clamp((now - start) / DUR, 0, 1);
+    const e = Math.pow(p, BEND);
+    const logT = T0 + (T1 - T0) * e;
+    const years = Math.pow(10, logT);
+
+    const [n, u] = label(years);
+    num.textContent = n.toLocaleString();
+    unit.textContent = u;
+
+    // --- the bag: ragged, holed, shrinking, sinking, and then not there ---
+    const d = decayAt(logT, BAG);
+    bagDisp.setAttribute("scale", (d * 46).toFixed(2));
+    bagHoleA.setAttribute("intercept", (-16.5 + d * 20).toFixed(3));
+    bagRot.setAttribute("opacity", clamp(d * 1.5, 0, 0.92).toFixed(3));
+    const shrink = 1 - d * 0.16;
+    bagBody.setAttribute("transform",
+      "translate(150 400) scale(" + shrink.toFixed(4) + ") translate(-150 -400)");
+    bagBody.style.opacity = (1 - clamp((d - 0.75) / 0.25, 0, 1)).toFixed(3);
+    bagShadow.setAttribute("rx", (88 * (1 - d * 0.8)).toFixed(1));
+    bagShadow.setAttribute("opacity", (0.85 * Math.pow(1 - d, 1.6)).toFixed(3));
+    bagCast.setAttribute("opacity", Math.pow(1 - d, 1.3).toFixed(3));
+    bagGone.setAttribute("opacity", clamp((d - 0.86) / 0.12, 0, 1).toFixed(3));
+
+    if (d >= 1 && !bagVerdict.textContent) {
+      bagVerdict.textContent = "gone in about a month";
+      bagVerdict.className = "verdict show gone";
+    }
+
+    // --- the glass: nothing. That is the whole point of it. ---
+    // It gets a breath of movement only so it does not look like a frozen
+    // frame; it never decays, because it does not.
+    const breath = Math.sin(now / 1400) * 0.7;
+    glassBottle.setAttribute("transform", "translate(0 " + breath.toFixed(2) + ")");
+
+    if (freeze !== null) { raf = null; return; }
+    if (p >= 1) {
+      glassGone.setAttribute("opacity", "1");
+      glassVerdict.textContent = "still here";
+      glassVerdict.className = "verdict show here";
+      raf = null;
+      return;
+    }
+    raf = requestAnimationFrame(frame);
+  }
+
+  function run() {
+    if (raf) cancelAnimationFrame(raf);
+    reset();
+    start = null;
+    raf = requestAnimationFrame(frame);
+  }
+
+  el("again").addEventListener("click", run);
+  run();
+})();
+</script>
+</body>
+</html>
