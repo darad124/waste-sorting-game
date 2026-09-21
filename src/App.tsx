@@ -206,7 +206,16 @@ function App() {
     );
   }
 
-  if (ShareCard) return <ShareCard />;
+  // No loader here on purpose: the only thing that renders a card is the
+  // capture script, which waits for the screenshot rather than for a
+  // spinner, and a spinner could land in the poster.
+  if (ShareCard) {
+    return (
+      <Suspense fallback={<div style={{ width: 1200, height: 630 }} />}>
+        <ShareCard />
+      </Suspense>
+    );
+  }
 
   return (
     <div className="app-shell w-screen bg-[#fde047] font-sans antialiased text-slate-800 overflow-hidden select-none relative flex flex-col">
