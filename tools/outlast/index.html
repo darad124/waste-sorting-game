@@ -131,48 +131,67 @@ const ITEMS = {
     name: "Paper bag",
     material: "paper",
     years: 0.083,
-    base: { cx: 150, rx: 88 },
-    silhouette: "M56 130 L242 136 L240 396 Q166 406 60 396 L58 143 Z",
+    base: { cx: 148, rx: 86 },
+    silhouette: "M62 168 L78 150 L104 162 L126 142 L168 150 L196 136 L224 154 L240 170 Q248 280 238 396 Q148 412 58 396 Q52 280 62 168 Z",
     defs: `
       <linearGradient id="{p}kraftFront" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stop-color="#8A6231"/><stop offset=".16" stop-color="#C89B5E"/>
-        <stop offset=".46" stop-color="#DDB379"/><stop offset=".78" stop-color="#B98C52"/>
-        <stop offset="1" stop-color="#8A6231"/>
+        <stop offset="0" stop-color="#7E5828"/><stop offset=".13" stop-color="#B98C52"/>
+        <stop offset=".38" stop-color="#DEB77E"/><stop offset=".62" stop-color="#C79B5E"/>
+        <stop offset=".85" stop-color="#9A7040"/><stop offset="1" stop-color="#6E4C22"/>
       </linearGradient>
-      <linearGradient id="{p}kraftSide" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stop-color="#5E4020"/><stop offset=".55" stop-color="#8A6434"/>
-        <stop offset="1" stop-color="#6E4E27"/>
+      <linearGradient id="{p}kraftGus" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#4E3418"/><stop offset=".4" stop-color="#7E5C2E"/>
+        <stop offset=".75" stop-color="#5E4220"/><stop offset="1" stop-color="#8A6434"/>
       </linearGradient>
-      <linearGradient id="{p}kraftRim" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stop-color="#A87C46"/><stop offset=".32" stop-color="#EDC894"/>
-        <stop offset=".72" stop-color="#D0A469"/><stop offset="1" stop-color="#9A7040"/>
-      </linearGradient>
-      <linearGradient id="{p}bagMouth" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#1E1509"/><stop offset=".65" stop-color="#3A2A14"/>
-        <stop offset="1" stop-color="#5A4322"/>
+      <linearGradient id="{p}kraftMouth" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#140D05"/><stop offset=".55" stop-color="#33230E"/>
+        <stop offset="1" stop-color="#6E4E24"/>
       </linearGradient>`,
     body: `
-      <path fill="url(#{p}bagMouth)" d="M62 100 L244 106 L240 142 L84 134 Z"/>
-      <path fill="#100B04" opacity=".8" d="M76 108 L238 114 L235 134 L90 127 Z"/>
-      <path fill="url(#{p}kraftRim)" d="M60 90 L246 96 L244 108 L62 102 Z"/>
-      <path fill="#EFCE9C" opacity=".55" d="M60 90 L246 96 L246 99 L60 93 Z"/>
-      <path fill="url(#{p}kraftSide)" d="M58 136 L60 396 Q74 403 88 399 L88 142 Z"/>
-      <path fill="url(#{p}kraftFront)" d="M88 142 L238 148 Q244 272 240 396 Q166 406 88 399 Z"/>
-      <path fill="url(#{p}kraftRim)" d="M56 130 L242 136 L241 154 L88 147 L58 143 Z"/>
-      <path fill="#7E5A2E" opacity=".45" d="M56 130 L88 136 L88 147 L58 143 Z"/>
-      <path fill="#F0D0A0" opacity=".45" d="M56 130 L242 136 L242 140 L56 134 Z"/>
-      <path fill="none" stroke="#5E4020" stroke-width="10" stroke-linecap="round" d="M88 134 C92 56 148 50 152 132"/>
-      <path fill="none" stroke="#C99A5C" stroke-width="6" stroke-linecap="round" d="M88 134 C92 56 148 50 152 132"/>
-      <path fill="none" stroke="#E8C48C" stroke-width="2" stroke-opacity=".7" d="M91 118 C95 62 144 57 149 116"/>
-      <path fill="none" stroke="#6E4E27" stroke-width="2" stroke-opacity=".75" d="M99 84 l9 -6 M118 63 l9 -3 M140 76 l8 -8"/>
-      <path fill="none" stroke="#5E4020" stroke-width="10" stroke-linecap="round" d="M178 138 C182 60 238 56 242 140"/>
-      <path fill="none" stroke="#BC8F52" stroke-width="6" stroke-linecap="round" d="M178 138 C182 60 238 56 242 140"/>
-      <path fill="none" stroke="#DDB87E" stroke-width="2" stroke-opacity=".6" d="M181 122 C185 66 234 62 239 124"/>
-      <path fill="none" stroke="#6E4E27" stroke-width="2" stroke-opacity=".75" d="M189 88 l9 -6 M208 68 l9 -3 M230 81 l8 -8"/>
-      <path fill="none" stroke="#7A5729" stroke-opacity=".5" stroke-width="2.4" d="M88 146 L88 399 M59 140 L60 396"/>
-      <path fill="none" stroke="#B98C55" stroke-opacity=".35" stroke-width="2" d="M124 149 L122 401 M190 152 L192 403"/>
-      <path fill="none" stroke="#8A6534" stroke-opacity=".3" stroke-width="1.6" d="M96 246 Q166 240 236 246 M96 308 Q166 304 238 310"/>
-      <path fill="#8A6231" opacity=".4" d="M88 374 Q164 382 240 374 L240 396 Q166 406 88 399 Z"/>`,
+      <!-- A paper bag is NOT a box. The first two attempts drew straight
+           vertical sides and a level rim and it came out a bin with handles on.
+           What actually names one is the accordion gusset down each side and a
+           rim that has collapsed out of true, so both of those get the detail
+           and the body is deliberately off-square and slouched. -->
+      <path fill="url(#{p}kraftMouth)"
+            d="M62 168 L78 150 L104 162 L126 142 L168 150 L196 136 L224 154 L240 170
+               Q238 200 230 206 L74 202 Q64 196 62 168 Z"/>
+      <path fill="#0E0904" opacity=".75"
+            d="M80 168 L100 158 L126 166 L166 158 L196 150 L220 164 Q220 188 212 194
+               L88 190 Q80 186 80 168 Z"/>
+      <!-- the slouched body -->
+      <path fill="url(#{p}kraftFront)"
+            d="M96 196 L240 170 Q248 280 238 396 Q160 410 96 400 Z"/>
+      <path fill="url(#{p}kraftGus)"
+            d="M62 168 L96 196 L96 400 Q74 402 58 396 Q52 280 62 168 Z"/>
+      <!-- the W-fold. This is the single thing that says paper bag. -->
+      <path fill="none" stroke="#2E1E0C" stroke-opacity=".55" stroke-width="2.6"
+            d="M62 168 L96 196 M78 182 L96 240 M70 226 L96 286 M64 300 L96 330
+               M60 350 L96 372"/>
+      <path fill="none" stroke="#B98C52" stroke-opacity=".45" stroke-width="2"
+            d="M80 184 L96 220 M72 246 L96 300 M62 322 L96 352"/>
+      <path fill="#3A2610" opacity=".35" d="M96 196 L110 198 L108 400 L96 400 Z"/>
+      <!-- crumple. Straight creases read as printing; these wander. -->
+      <path fill="none" stroke="#7A5729" stroke-opacity=".4" stroke-width="2.6"
+            d="M132 204 Q126 300 138 402 M176 198 Q186 296 174 404 M214 188 Q206 292 218 398"/>
+      <path fill="none" stroke="#E4C08C" stroke-opacity=".35" stroke-width="2"
+            d="M120 246 Q170 236 232 244 M104 316 Q166 306 234 316"/>
+      <path fill="#5E4220" opacity=".3"
+            d="M96 372 Q166 384 238 372 Q238 388 238 396 Q160 410 96 400 Z"/>
+      <!-- handles: one still standing, one gone slack, because a discarded bag
+           never has two tidy loops -->
+      <path fill="none" stroke="#4E3418" stroke-width="10" stroke-linecap="round"
+            d="M104 172 C106 100 158 96 164 158"/>
+      <path fill="none" stroke="#C99A5C" stroke-width="6" stroke-linecap="round"
+            d="M104 172 C106 100 158 96 164 158"/>
+      <path fill="none" stroke="#E8C48C" stroke-width="2" stroke-opacity=".7"
+            d="M107 156 C110 108 154 104 161 146"/>
+      <path fill="none" stroke="#4E3418" stroke-width="9" stroke-linecap="round"
+            d="M188 146 C204 104 236 120 232 166"/>
+      <path fill="none" stroke="#B08248" stroke-width="5" stroke-linecap="round"
+            d="M188 146 C204 104 236 120 232 166"/>
+      <path fill="none" stroke="#6E4E27" stroke-width="2" stroke-opacity=".7"
+            d="M116 120 l9 -6 M136 106 l9 -2 M203 116 l8 -5 M224 132 l7 -6"/>`,
   },
 
   newspaper: {
@@ -466,99 +485,131 @@ const ITEMS = {
   },
 
   toothbrush: {
-    scale: 1.28,
+    scale: 1.22,
     name: "Toothbrush",
     material: "plastic",
     years: 500,
-    base: { cx: 150, rx: 86, cy: 388 },
-    silhouette: "M44 330 Q36 348 52 356 L104 342 Q128 336 132 322 L232 296 Q260 288 258 272 Q256 256 230 262 L130 288 Q118 276 96 282 L48 296 Q36 310 44 330 Z",
+    // cy sits where the HANDLE rests, not at the standing baseline — the
+    // scale is applied about this point, so getting it wrong leaves the brush
+    // hovering 60px above its own shadow.
+    base: { cx: 158, rx: 92, cy: 352 },
+    silhouette: "M36 338 L104 330 L110 316 L118 316 L124 330 L258 322 Q272 322 272 334 Q272 348 258 348 L124 352 L118 366 L110 366 L104 352 L36 352 Q28 345 36 338 Z",
     defs: `
-      <linearGradient id="{p}brush" x1="0" y1="1" x2="1" y2="0">
-        <stop offset="0" stop-color="#0E5E86"/><stop offset=".2" stop-color="#2E9CC8"/>
-        <stop offset=".46" stop-color="#5FC2E4"/><stop offset=".74" stop-color="#2482AC"/>
-        <stop offset="1" stop-color="#0C4A6C"/>
+      <linearGradient id="{p}brushH" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#6FD0EE"/><stop offset=".28" stop-color="#2E9CC8"/>
+        <stop offset=".62" stop-color="#1A7AA4"/><stop offset="1" stop-color="#0A4664"/>
+      </linearGradient>
+      <linearGradient id="{p}brushG" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#8E98A2"/><stop offset=".3" stop-color="#4E565E"/>
+        <stop offset="1" stop-color="#22282E"/>
+      </linearGradient>
+      <linearGradient id="{p}tuft" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#FFFFFF"/><stop offset=".62" stop-color="#E2EDF3"/>
+        <stop offset="1" stop-color="#A8BDC9"/>
       </linearGradient>`,
     body: `
-      <g transform="translate(0 46) rotate(-8 150 280)">
-        <!-- A toothbrush is a WIDE head, a narrow neck and a tapering handle.
-             Drawn as one even lozenge it reads as a pen, which it did. -->
-        <path fill="url(#{p}brush)" d="M256 226 Q272 224 274 238 Q276 252 260 256
-              L150 284 Q136 288 132 280 L128 266 Q126 258 140 254 Z"/>
-        <path fill="url(#{p}brush)" d="M132 280 L128 266 Q112 262 96 266 L58 276
-              Q36 282 34 300 Q32 320 52 322 L96 312 Q124 306 132 292 Z"/>
-        <ellipse cx="66" cy="296" rx="34" ry="19" fill="url(#{p}brush)" transform="rotate(-14 66 296)"/>
-        <path fill="#9FE0F4" opacity=".5" d="M258 228 Q270 227 271 237 L150 268
-              Q138 271 135 266 Z"/>
-        <path fill="#9FE0F4" opacity=".45" d="M126 270 Q110 266 96 270 L58 280
-              Q40 285 38 298 Q44 288 60 285 L98 276 Q112 273 126 277 Z"/>
-        <path fill="#0A3E5C" opacity=".4" d="M52 322 Q88 316 108 304 L132 292 L132 282
-              Q120 300 96 308 Z"/>
-        <path fill="#0A3E5C" opacity=".35" d="M274 238 Q276 252 260 256 L150 284
-              Q140 287 134 283 L150 280 L258 252 Q272 248 274 238 Z"/>
-        <ellipse cx="220" cy="248" rx="26" ry="8" fill="#DFF3FB" opacity=".45"
-                 transform="rotate(-14 220 248)"/>
-        <!-- the bristle block: flat, dense, and clearly wider than the neck -->
-        <path fill="#DCEAF0" d="M40 272 L96 258 L104 286 L48 300 Z"
-              transform="rotate(-14 70 279)"/>
-        <g fill="#FCFEFF" transform="rotate(-14 70 279)">
-          <rect x="40" y="262" width="12" height="20" rx="5"/>
-          <rect x="55" y="258" width="12" height="20" rx="5"/>
-          <rect x="70" y="255" width="12" height="20" rx="5"/>
-          <rect x="85" y="252" width="12" height="20" rx="5"/>
-          <rect x="44" y="280" width="12" height="18" rx="5"/>
-          <rect x="59" y="277" width="12" height="18" rx="5"/>
-          <rect x="74" y="274" width="12" height="18" rx="5"/>
-          <rect x="89" y="271" width="12" height="18" rx="5"/>
+      <!-- Side-on and flat, with the BRISTLES STANDING UP off the head. Drawn
+           at three-quarters with the tufts sunk into the surface, which is what
+           the last two attempts did, it is a pen. The comb of tufts rising
+           above a flat head is the outline everybody knows. -->
+      <g transform="rotate(-3 150 336)">
+        <!-- bristle block first, so the head overlaps its roots -->
+        <g fill="url(#{p}tuft)">
+          <rect x="40" y="294" width="11" height="40" rx="5"/>
+          <rect x="54" y="288" width="11" height="46" rx="5"/>
+          <rect x="68" y="286" width="11" height="48" rx="5"/>
+          <rect x="82" y="288" width="11" height="46" rx="5"/>
+          <rect x="96" y="294" width="11" height="40" rx="5"/>
         </g>
-        <g fill="#9FC4D4" opacity=".55" transform="rotate(-14 70 279)">
-          <rect x="40" y="274" width="12" height="8" rx="4"/>
-          <rect x="70" y="267" width="12" height="8" rx="4"/>
-          <rect x="59" y="289" width="12" height="7" rx="3.5"/>
-          <rect x="89" y="283" width="12" height="7" rx="3.5"/>
+        <g fill="#C2D6E2" opacity=".75">
+          <rect x="47" y="300" width="5" height="34" rx="2.5"/>
+          <rect x="61" y="294" width="5" height="40" rx="2.5"/>
+          <rect x="75" y="292" width="5" height="42" rx="2.5"/>
+          <rect x="89" y="294" width="5" height="40" rx="2.5"/>
+          <rect x="103" y="300" width="5" height="34" rx="2.5"/>
         </g>
+        <g fill="#5FC2E4" opacity=".85">
+          <rect x="54" y="288" width="11" height="9" rx="4.5"/>
+          <rect x="82" y="288" width="11" height="9" rx="4.5"/>
+        </g>
+        <!-- head: clearly wider than the neck -->
+        <path fill="url(#{p}brushH)" d="M36 338 Q28 345 36 352 L108 352 Q120 345 108 330 Z"/>
+        <ellipse cx="72" cy="341" rx="38" ry="12" fill="url(#{p}brushH)"/>
+        <ellipse cx="72" cy="337" rx="34" ry="7" fill="#7FD8F4" opacity=".45"/>
+        <!-- neck: the narrowest point, and the reason it is not a spatula -->
+        <path fill="url(#{p}brushH)" d="M104 334 L150 330 L150 350 L104 348 Z"/>
+        <!-- handle, tapering to a rounded end, with a rubber grip -->
+        <path fill="url(#{p}brushH)" d="M150 328 L250 322 Q272 322 272 334
+              Q272 348 250 348 L150 352 Z"/>
+        <path fill="url(#{p}brushG)" d="M176 327 L222 324 L222 348 L176 350 Z"/>
+        <g fill="#8E98A2" opacity=".6">
+          <rect x="182" y="329" width="4" height="17" rx="2"/>
+          <rect x="192" y="328" width="4" height="18" rx="2"/>
+          <rect x="202" y="328" width="4" height="18" rx="2"/>
+          <rect x="212" y="327" width="4" height="18" rx="2"/>
+        </g>
+        <path fill="#9FE0F4" opacity=".55" d="M150 328 L250 322 Q266 322 269 330
+              L150 336 Z"/>
+        <path fill="#063A54" opacity=".4" d="M150 346 L270 341 Q268 348 250 348
+              L150 352 Z"/>
+        <ellipse cx="256" cy="330" rx="11" ry="4" fill="#DFF3FB" opacity=".5"/>
       </g>`,
   },
 
   plastic_straw: {
-    scale: 1.12,
+    scale: 1.05,
     name: "Plastic straw",
     material: "plastic",
     years: 200,
-    base: { cx: 140, rx: 62, cy: 396 },
-    silhouette: "M84 380 L96 372 L226 118 L240 96 L252 104 L240 126 L110 380 Z",
+    base: { cx: 150, rx: 78, cy: 392 },
+    silhouette: "M96 388 L122 384 L172 196 L182 160 L246 178 L242 200 L192 186 L146 372 Z",
     defs: `
-      <linearGradient id="{p}straw" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stop-color="#8A1E2E"/><stop offset=".22" stop-color="#E23C50"/>
-        <stop offset=".46" stop-color="#FF7A88"/><stop offset=".72" stop-color="#C42638"/>
-        <stop offset="1" stop-color="#7A1624"/>
+      <linearGradient id="{p}strawR" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#7A1624"/><stop offset=".22" stop-color="#D42E42"/>
+        <stop offset=".46" stop-color="#FF8894"/><stop offset=".72" stop-color="#C42638"/>
+        <stop offset="1" stop-color="#6E1220"/>
       </linearGradient>
-      <linearGradient id="{p}strawW" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stop-color="#C8C4BE"/><stop offset=".3" stop-color="#FFFFFF"/>
-        <stop offset=".62" stop-color="#E8E4DE"/><stop offset="1" stop-color="#AEAAA4"/>
+      <linearGradient id="{p}strawR2" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#FF8894"/><stop offset=".4" stop-color="#D42E42"/>
+        <stop offset="1" stop-color="#7A1624"/>
       </linearGradient>`,
     body: `
-      <g transform="rotate(4 150 250)">
-        <path fill="url(#{p}straw)" d="M86 382 L110 382 L240 128 L216 128 Z"/>
-        <path fill="url(#{p}strawW)" d="M92 372 L100 372 L228 124 L220 124 Z" opacity=".55"/>
-        <path fill="#6E1220" opacity=".5" d="M104 382 L110 382 L240 128 L234 128 Z"/>
-        <path fill="url(#{p}straw)" d="M216 128 L240 128 L254 100 L230 100 Z"/>
-        <g fill="#F4909C" opacity=".85">
-          <path d="M196 170 L220 170 L214 182 L190 182 Z"/>
-          <path d="M190 182 L214 182 L208 194 L184 194 Z"/>
-          <path d="M184 194 L208 194 L202 206 L178 206 Z"/>
-          <path d="M178 206 L202 206 L196 218 L172 218 Z"/>
+      <!-- A straight tube is a stick, and a stick is a pencil or a chopstick.
+           The BEND and its concertina is the only thing that says drinking
+           straw, so the elbow gets the middle of the frame and the ribs are
+           drawn large enough to count. -->
+      <g transform="rotate(-2 160 290)">
+        <!-- the long leg, standing on the ground -->
+        <path fill="url(#{p}strawR)" d="M96 388 L124 384 L174 194 L148 188 Z"/>
+        <path fill="#FFC2C8" opacity=".45" d="M102 386 L110 385 L158 192 L150 190 Z"/>
+        <path fill="#5E0E1A" opacity=".45" d="M118 385 L124 384 L174 194 L168 192 Z"/>
+        <!-- the concertina elbow: seven ribs, and they are the whole point -->
+        <g>
+          <path fill="url(#{p}strawR2)" d="M148 188 L174 194 L170 210 L144 204 Z"/>
+          <path fill="#FF9AA6" d="M146 196 L172 202 L171 206 L145 200 Z"/>
+          <path fill="url(#{p}strawR2)" d="M152 170 L178 176 L174 192 L148 186 Z"/>
+          <path fill="#FF9AA6" d="M150 178 L176 184 L175 188 L149 182 Z"/>
+          <path fill="url(#{p}strawR2)" d="M156 152 L182 158 L178 174 L152 168 Z"/>
+          <path fill="#FF9AA6" d="M154 160 L180 166 L179 170 L153 164 Z"/>
+          <path fill="url(#{p}strawR2)" d="M161 136 L187 142 L183 156 L157 150 Z"/>
+          <path fill="#FF9AA6" d="M159 143 L185 149 L184 153 L158 147 Z"/>
         </g>
-        <g fill="#B0202E" opacity=".55">
-          <path d="M194 176 L218 176 L216 180 L192 180 Z"/>
-          <path d="M188 188 L212 188 L210 192 L186 192 Z"/>
-          <path d="M182 200 L206 200 L204 204 L180 204 Z"/>
-          <path d="M176 212 L200 212 L198 216 L174 216 Z"/>
-        </g>
-        <ellipse cx="242" cy="100" rx="12" ry="5" fill="#5E0E1A" transform="rotate(-62 242 100)"/>
-        <ellipse cx="240" cy="102" rx="9" ry="3.5" fill="#1E0408" transform="rotate(-62 240 102)"/>
-        <ellipse cx="98" cy="382" rx="12" ry="5" fill="#7A1624" transform="rotate(-62 98 382)"/>
+        <!-- the bend itself, turning the short leg over -->
+        <path fill="url(#{p}strawR)" d="M161 136 Q170 112 196 110 L200 136
+              Q184 138 183 156 Z"/>
+        <path fill="#FF9AA6" opacity=".4" d="M166 132 Q174 116 194 114 L195 122
+              Q178 124 172 138 Z"/>
+        <!-- the short leg, tipped over -->
+        <path fill="url(#{p}strawR)" d="M196 110 L250 128 L242 152 L188 134 Z"/>
+        <path fill="#FFC2C8" opacity=".42" d="M198 116 L248 133 L246 139 L196 122 Z"/>
+        <path fill="#5E0E1A" opacity=".4" d="M190 130 L244 148 L242 152 L188 134 Z"/>
+        <ellipse cx="246" cy="140" rx="13" ry="6" fill="#5E0E1A" transform="rotate(20 246 140)"/>
+        <ellipse cx="245" cy="139" rx="9" ry="4" fill="#1E0408" transform="rotate(20 245 139)"/>
+        <ellipse cx="110" cy="386" rx="15" ry="6" fill="#7A1624" transform="rotate(-14 110 386)"/>
+        <ellipse cx="110" cy="385" rx="10" ry="3.6" fill="#33060C" transform="rotate(-14 110 385)"/>
       </g>`,
   },
+
 
   /* ------------------------------------------------- PAPER AND ORGANIC */
   cardboard_box: {
