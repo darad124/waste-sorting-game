@@ -42,9 +42,20 @@ Rules that each cost a rebuild to learn:
 * shadows are a tight contact patch plus a soft cast thrown away from the key,
   never one flat disc under the middle
 
-## The five behaviours
+## The roster
 
-`paper` goes ragged, rots from the base up and tears through. `plastic` does
+25 items across six behaviours — 4 paper, 6 organic, 9 plastic, 2 steel,
+2 aluminium, 2 glass. `harness.js` builds every pair more than 1.2 decades
+apart, which from this roster is a few hundred of them.
+
+The surprises are what carry the mode, and the sharpest are the cigarette butt
+(cellulose acetate, so it is plastic and it fragments rather than going), the
+takeaway coffee cup (paper with a bonded plastic lining) and the two cans
+sitting side by side corroding in completely different ways.
+
+## The six behaviours
+
+`paper` and `organic` go ragged, rots from the base up and tears through. `plastic` does
 **not** go — it yellows, embrittles and breaks into chunks that stay on screen
 for ever, shedding specks. `steel` rusts orange in patches and is eaten
 through. `aluminium` does not rust at all; it grows a dull white oxide that
@@ -55,6 +66,10 @@ Two things that took a pass to get right, both the same mistake in different
 places: a corrosion mask opened all the way is a flat colour swap rather than
 rust, and a plastic hole mask opened as wide as paper's makes the plastic
 vanish — which contradicts the only thing that behaviour exists to say.
+
+An item can also set `scale` and `base.cy`. Anything LYING DOWN needs both, or
+it sits in the bottom third of an empty frame with its shadow parked at the
+standing baseline underneath it.
 
 ## Accuracy
 

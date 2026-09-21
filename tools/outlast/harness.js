@@ -43,14 +43,16 @@ function laneHTML(p, item) {
   <button class="lane" data-pick="${item.id}">
     <svg viewBox="0 0 300 420" preserveAspectRatio="xMidYMax meet">
       <defs>${CASTG(p)}${item.defs.replace(/\{p\}/g, p)}${laneDefs(p, item)}</defs>
-      <ellipse id="${p}cast" cx="${b.cx + 28}" cy="403"
+      <ellipse id="${p}cast" cx="${b.cx + 28}" cy="${(b.cy || 400) + 3}"
                rx="${(b.rx * 1.3).toFixed(0)}" ry="15" fill="url(#${p}castG)"/>
-      <ellipse id="${p}contact" cx="${b.cx + 2}" cy="400"
+      <ellipse id="${p}contact" cx="${b.cx + 2}" cy="${b.cy || 400}"
                rx="${b.rx}" ry="9" fill="#04070A" opacity=".85"/>
       ${caustic}
       <g id="${p}body" ${bodyAttrs(p, item)}>
-        ${item.body.replace(/\{p\}/g, p)}
-        ${laneOverlays(p, item)}
+        <g transform="translate(150 ${b.cy || 400}) scale(${item.scale || 1}) translate(-150 ${-(b.cy || 400)})">
+          ${item.body.replace(/\{p\}/g, p)}
+          ${laneOverlays(p, item)}
+        </g>
       </g>
       ${laneMicro(p, item)}
       <text id="${p}mark" x="150" y="40" text-anchor="middle" font-size="14"

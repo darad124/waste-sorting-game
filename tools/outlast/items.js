@@ -213,6 +213,519 @@ export const ITEMS = {
       <ellipse cx="96" cy="386" rx="22" ry="5" fill="#6B5A3A" opacity=".3"/>`,
   },
 
+  plastic_bag: {
+    name: "Carrier bag",
+    material: "plastic",
+    years: 20,
+    base: { cx: 150, rx: 84 },
+    silhouette: "M74 150 L226 150 Q240 260 234 396 Q150 410 66 396 Q60 260 74 150 Z",
+    defs: `
+      <linearGradient id="{p}hdpe" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#7E8E98"/><stop offset=".14" stop-color="#C8D6DD"/>
+        <stop offset=".34" stop-color="#F0F6F8"/><stop offset=".56" stop-color="#D2DEE4"/>
+        <stop offset=".8" stop-color="#9FAFB8"/><stop offset="1" stop-color="#6E7C86"/>
+      </linearGradient>
+      <linearGradient id="{p}hdpeTop" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#FFFFFF" stop-opacity=".55"/>
+        <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+      </linearGradient>`,
+    body: `
+      <path fill="url(#{p}hdpe)" d="M74 150 L226 150 Q240 260 234 396 Q150 410 66 396 Q60 260 74 150 Z"/>
+      <path fill="url(#{p}hdpeTop)" d="M74 150 L226 150 Q230 208 228 246 Q150 262 72 246 Q70 208 74 150 Z"/>
+      <path fill="none" stroke="#8C9AA4" stroke-width="10" stroke-linecap="round" stroke-opacity=".9"
+            d="M84 154 C86 82 140 78 144 150"/>
+      <path fill="none" stroke="#DCE6EA" stroke-width="5" stroke-linecap="round"
+            d="M84 154 C86 82 140 78 144 150"/>
+      <path fill="none" stroke="#8C9AA4" stroke-width="10" stroke-linecap="round" stroke-opacity=".9"
+            d="M158 150 C162 78 216 82 218 154"/>
+      <path fill="none" stroke="#CBD8DE" stroke-width="5" stroke-linecap="round"
+            d="M158 150 C162 78 216 82 218 154"/>
+      <path fill="#6E7C86" opacity=".45" d="M74 150 L226 150 L225 162 L75 162 Z"/>
+      <path fill="none" stroke="#FFFFFF" stroke-opacity=".7" stroke-width="3"
+            d="M96 172 Q104 280 98 388 M150 168 Q154 282 150 394 M204 172 Q198 280 204 388"/>
+      <path fill="none" stroke="#93A3AC" stroke-opacity=".55" stroke-width="2.4"
+            d="M122 176 Q128 282 122 390 M178 176 Q174 282 178 390"/>
+      <ellipse cx="150" cy="268" rx="46" ry="30" fill="#2E7BB8" opacity=".55"/>
+      <path fill="#F4FAFC" opacity=".85" d="M128 254 h44 v7 h-44 Z M128 268 h44 v7 h-44 Z M128 282 h30 v7 h-30 Z"/>
+      <path fill="#6E7C86" opacity=".4" d="M66 374 Q150 392 234 374 Q150 410 66 396 Z"/>`,
+  },
+
+  foam_cup: {
+    name: "Foam cup",
+    material: "plastic",
+    years: 500,
+    base: { cx: 150, rx: 50 },
+    silhouette: "M92 130 L208 130 L192 388 Q150 398 108 388 Z",
+    defs: `
+      <linearGradient id="{p}foam" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#B8B6AE"/><stop offset=".12" stop-color="#E6E4DC"/>
+        <stop offset=".33" stop-color="#FDFDFA"/><stop offset=".58" stop-color="#EDEBE3"/>
+        <stop offset=".82" stop-color="#C6C4BB"/><stop offset="1" stop-color="#9C9A92"/>
+      </linearGradient>
+      <linearGradient id="{p}foamRim" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#C2C0B7"/>
+      </linearGradient>`,
+    body: `
+      <path fill="url(#{p}foam)" d="M92 130 L208 130 L192 388 Q150 398 108 388 Z"/>
+      <path fill="#9C9A92" opacity=".35" d="M92 130 L208 130 L207 142 L93 142 Z"/>
+      <path fill="none" stroke="#C6C4BB" stroke-width="2.4" stroke-opacity=".7"
+            d="M96 196 Q150 206 204 196 M100 262 Q150 272 200 262 M104 328 Q150 338 196 328"/>
+      <ellipse cx="150" cy="130" rx="58" ry="14" fill="url(#{p}foamRim)"/>
+      <ellipse cx="150" cy="132" rx="58" ry="14" fill="#B0AEA6"/>
+      <ellipse cx="150" cy="129" rx="58" ry="14" fill="#FAFAF6"/>
+      <ellipse cx="150" cy="131" rx="49" ry="10" fill="#8E8C84"/>
+      <ellipse cx="150" cy="133" rx="45" ry="8.5" fill="#4A4842"/>
+      <ellipse cx="150" cy="137" rx="41" ry="7" fill="#6E5A3E" opacity=".75"/>
+      <path fill="#FFFFFF" opacity=".45" d="M112 126 q32 -10 68 -2 q-34 6 -68 2 Z"/>
+      <ellipse cx="150" cy="390" rx="42" ry="8" fill="#B0AEA6"/>
+      <ellipse cx="150" cy="387" rx="42" ry="8" fill="#E2E0D8"/>
+      <ellipse cx="150" cy="387" rx="33" ry="5.5" fill="#C2C0B7"/>
+      <g fill="#FFFFFF" opacity=".5">
+        <circle cx="118" cy="200" r="3"/><circle cx="170" cy="232" r="2.4"/>
+        <circle cx="132" cy="288" r="2.8"/><circle cx="186" cy="176" r="2.2"/>
+        <circle cx="160" cy="330" r="2.6"/><circle cx="126" cy="350" r="2"/>
+      </g>`,
+  },
+
+  face_mask: {
+    scale: 1.18,
+    name: "Face mask",
+    material: "plastic",
+    years: 450,
+    base: { cx: 150, rx: 78, cy: 392 },
+    silhouette: "M64 232 L236 232 Q244 318 236 392 L64 392 Q56 318 64 232 Z",
+    defs: `
+      <linearGradient id="{p}mask" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#9FC8DC"/><stop offset=".22" stop-color="#C8E2EE"/>
+        <stop offset=".5" stop-color="#A8D0E2"/><stop offset=".78" stop-color="#8ABACF"/>
+        <stop offset="1" stop-color="#6E9FB6"/>
+      </linearGradient>`,
+    body: `
+      <g transform="translate(0 36)">
+      <path fill="none" stroke="#DCE6EA" stroke-width="5" stroke-linecap="round"
+            d="M66 210 C24 232 22 312 64 342"/>
+      <path fill="none" stroke="#9FB0B8" stroke-width="2" stroke-linecap="round"
+            d="M66 212 C28 234 26 310 64 340"/>
+      <path fill="none" stroke="#DCE6EA" stroke-width="5" stroke-linecap="round"
+            d="M234 210 C276 232 278 312 236 342"/>
+      <path fill="none" stroke="#9FB0B8" stroke-width="2" stroke-linecap="round"
+            d="M234 212 C272 234 274 310 236 340"/>
+      <path fill="url(#{p}mask)" d="M64 196 L236 196 Q244 282 236 356 L64 356 Q56 282 64 196 Z"/>
+      <path fill="#FFFFFF" opacity=".3" d="M64 196 L236 196 Q240 226 238 244 L62 244 Q60 226 64 196 Z"/>
+      <path fill="#6E9FB6" opacity=".55" d="M58 238 L242 238 L242 248 L58 248 Z"/>
+      <path fill="#6E9FB6" opacity=".55" d="M57 286 L243 286 L243 296 L57 296 Z"/>
+      <path fill="#6E9FB6" opacity=".55" d="M58 332 L242 332 L242 342 L58 342 Z"/>
+      <path fill="#FFFFFF" opacity=".35" d="M58 248 L242 248 L242 254 L58 254 Z M57 296 L243 296 L243 302 L57 302 Z"/>
+      <path fill="#B8C6CE" d="M64 196 L236 196 L236 208 L64 208 Z"/>
+      <path fill="#7E8E98" d="M74 199 L226 199 L226 204 L74 204 Z"/>
+      <path fill="#5A7F94" opacity=".5" d="M64 350 L236 350 L236 356 L64 356 Z"/>
+      </g>`,
+  },
+
+  coffee_cup: {
+    name: "Coffee cup",
+    material: "plastic",
+    years: 30,
+    base: { cx: 150, rx: 52 },
+    silhouette: "M94 116 L206 116 L192 388 Q150 398 108 388 Z",
+    defs: `
+      <linearGradient id="{p}cupPaper" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#B9B2A4"/><stop offset=".14" stop-color="#EFEADC"/>
+        <stop offset=".36" stop-color="#FCFAF2"/><stop offset=".6" stop-color="#E8E2D2"/>
+        <stop offset=".84" stop-color="#C2BBAB"/><stop offset="1" stop-color="#9A9486"/>
+      </linearGradient>
+      <linearGradient id="{p}sleeve" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#6E4E2C"/><stop offset=".16" stop-color="#A97A46"/>
+        <stop offset=".42" stop-color="#C69660"/><stop offset=".7" stop-color="#93693A"/>
+        <stop offset="1" stop-color="#5E4224"/>
+      </linearGradient>
+      <linearGradient id="{p}lid" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#1E2226"/><stop offset=".2" stop-color="#4A5158"/>
+        <stop offset=".44" stop-color="#5E666E"/><stop offset=".72" stop-color="#363C42"/>
+        <stop offset="1" stop-color="#181C20"/>
+      </linearGradient>`,
+    body: `
+      <path fill="url(#{p}cupPaper)" d="M94 116 L206 116 L192 388 Q150 398 108 388 Z"/>
+      <path fill="url(#{p}sleeve)" d="M100 232 L200 232 L194 320 L106 320 Z"/>
+      <path fill="#F0E0C4" opacity=".8" d="M100 232 L200 232 L199 240 L101 240 Z M107 312 L193 312 L194 320 L106 320 Z"/>
+      <path fill="none" stroke="#5E4224" stroke-width="2" stroke-opacity=".55"
+            d="M114 234 L110 318 M134 233 L131 319 M154 233 L153 319 M174 233 L176 319"/>
+      <ellipse cx="150" cy="276" rx="22" ry="17" fill="#F2E4C8" opacity=".9"/>
+      <path fill="#6E4E2C" d="M138 268 h24 v5 h-24 Z M138 278 h24 v5 h-24 Z"/>
+      <path fill="#FFFFFF" opacity=".45" d="M110 124 L118 124 L112 390 L106 386 Z"/>
+      <path fill="#7E7768" opacity=".35" d="M188 124 L196 124 L192 388 L186 390 Z"/>
+      <path fill="url(#{p}lid)" d="M88 104 L212 104 L206 126 L94 126 Z"/>
+      <ellipse cx="150" cy="104" rx="62" ry="15" fill="url(#{p}lid)"/>
+      <ellipse cx="150" cy="102" rx="62" ry="15" fill="#5A626A"/>
+      <ellipse cx="150" cy="103" rx="52" ry="11" fill="#2A3036"/>
+      <ellipse cx="150" cy="101" rx="52" ry="11" fill="#454C54"/>
+      <ellipse cx="150" cy="100" rx="38" ry="7.5" fill="#2E343A"/>
+      <path fill="#12161A" d="M132 94 q16 -8 34 -1 q-6 9 -18 9 q-13 0 -16 -8 Z"/>
+      <path fill="#6E767E" opacity=".7" d="M112 96 q26 -11 58 -4 q-28 3 -58 4 Z"/>
+      <ellipse cx="150" cy="390" rx="42" ry="8" fill="#A39C8E"/>
+      <ellipse cx="150" cy="387" rx="42" ry="8" fill="#E2DCCC"/>`,
+  },
+
+  toothbrush: {
+    scale: 1.28,
+    name: "Toothbrush",
+    material: "plastic",
+    years: 500,
+    base: { cx: 150, rx: 86, cy: 388 },
+    silhouette: "M44 330 Q36 348 52 356 L104 342 Q128 336 132 322 L232 296 Q260 288 258 272 Q256 256 230 262 L130 288 Q118 276 96 282 L48 296 Q36 310 44 330 Z",
+    defs: `
+      <linearGradient id="{p}brush" x1="0" y1="1" x2="1" y2="0">
+        <stop offset="0" stop-color="#0E5E86"/><stop offset=".2" stop-color="#2E9CC8"/>
+        <stop offset=".46" stop-color="#5FC2E4"/><stop offset=".74" stop-color="#2482AC"/>
+        <stop offset="1" stop-color="#0C4A6C"/>
+      </linearGradient>`,
+    body: `
+      <g transform="translate(0 46) rotate(-8 150 280)">
+        <!-- A toothbrush is a WIDE head, a narrow neck and a tapering handle.
+             Drawn as one even lozenge it reads as a pen, which it did. -->
+        <path fill="url(#{p}brush)" d="M256 226 Q272 224 274 238 Q276 252 260 256
+              L150 284 Q136 288 132 280 L128 266 Q126 258 140 254 Z"/>
+        <path fill="url(#{p}brush)" d="M132 280 L128 266 Q112 262 96 266 L58 276
+              Q36 282 34 300 Q32 320 52 322 L96 312 Q124 306 132 292 Z"/>
+        <ellipse cx="66" cy="296" rx="34" ry="19" fill="url(#{p}brush)" transform="rotate(-14 66 296)"/>
+        <path fill="#9FE0F4" opacity=".5" d="M258 228 Q270 227 271 237 L150 268
+              Q138 271 135 266 Z"/>
+        <path fill="#9FE0F4" opacity=".45" d="M126 270 Q110 266 96 270 L58 280
+              Q40 285 38 298 Q44 288 60 285 L98 276 Q112 273 126 277 Z"/>
+        <path fill="#0A3E5C" opacity=".4" d="M52 322 Q88 316 108 304 L132 292 L132 282
+              Q120 300 96 308 Z"/>
+        <path fill="#0A3E5C" opacity=".35" d="M274 238 Q276 252 260 256 L150 284
+              Q140 287 134 283 L150 280 L258 252 Q272 248 274 238 Z"/>
+        <ellipse cx="220" cy="248" rx="26" ry="8" fill="#DFF3FB" opacity=".45"
+                 transform="rotate(-14 220 248)"/>
+        <!-- the bristle block: flat, dense, and clearly wider than the neck -->
+        <path fill="#DCEAF0" d="M40 272 L96 258 L104 286 L48 300 Z"
+              transform="rotate(-14 70 279)"/>
+        <g fill="#FCFEFF" transform="rotate(-14 70 279)">
+          <rect x="40" y="262" width="12" height="20" rx="5"/>
+          <rect x="55" y="258" width="12" height="20" rx="5"/>
+          <rect x="70" y="255" width="12" height="20" rx="5"/>
+          <rect x="85" y="252" width="12" height="20" rx="5"/>
+          <rect x="44" y="280" width="12" height="18" rx="5"/>
+          <rect x="59" y="277" width="12" height="18" rx="5"/>
+          <rect x="74" y="274" width="12" height="18" rx="5"/>
+          <rect x="89" y="271" width="12" height="18" rx="5"/>
+        </g>
+        <g fill="#9FC4D4" opacity=".55" transform="rotate(-14 70 279)">
+          <rect x="40" y="274" width="12" height="8" rx="4"/>
+          <rect x="70" y="267" width="12" height="8" rx="4"/>
+          <rect x="59" y="289" width="12" height="7" rx="3.5"/>
+          <rect x="89" y="283" width="12" height="7" rx="3.5"/>
+        </g>
+      </g>`,
+  },
+
+  plastic_straw: {
+    scale: 1.12,
+    name: "Plastic straw",
+    material: "plastic",
+    years: 200,
+    base: { cx: 140, rx: 62, cy: 396 },
+    silhouette: "M84 380 L96 372 L226 118 L240 96 L252 104 L240 126 L110 380 Z",
+    defs: `
+      <linearGradient id="{p}straw" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#8A1E2E"/><stop offset=".22" stop-color="#E23C50"/>
+        <stop offset=".46" stop-color="#FF7A88"/><stop offset=".72" stop-color="#C42638"/>
+        <stop offset="1" stop-color="#7A1624"/>
+      </linearGradient>
+      <linearGradient id="{p}strawW" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#C8C4BE"/><stop offset=".3" stop-color="#FFFFFF"/>
+        <stop offset=".62" stop-color="#E8E4DE"/><stop offset="1" stop-color="#AEAAA4"/>
+      </linearGradient>`,
+    body: `
+      <g transform="rotate(4 150 250)">
+        <path fill="url(#{p}straw)" d="M86 382 L110 382 L240 128 L216 128 Z"/>
+        <path fill="url(#{p}strawW)" d="M92 372 L100 372 L228 124 L220 124 Z" opacity=".55"/>
+        <path fill="#6E1220" opacity=".5" d="M104 382 L110 382 L240 128 L234 128 Z"/>
+        <path fill="url(#{p}straw)" d="M216 128 L240 128 L254 100 L230 100 Z"/>
+        <g fill="#F4909C" opacity=".85">
+          <path d="M196 170 L220 170 L214 182 L190 182 Z"/>
+          <path d="M190 182 L214 182 L208 194 L184 194 Z"/>
+          <path d="M184 194 L208 194 L202 206 L178 206 Z"/>
+          <path d="M178 206 L202 206 L196 218 L172 218 Z"/>
+        </g>
+        <g fill="#B0202E" opacity=".55">
+          <path d="M194 176 L218 176 L216 180 L192 180 Z"/>
+          <path d="M188 188 L212 188 L210 192 L186 192 Z"/>
+          <path d="M182 200 L206 200 L204 204 L180 204 Z"/>
+          <path d="M176 212 L200 212 L198 216 L174 216 Z"/>
+        </g>
+        <ellipse cx="242" cy="100" rx="12" ry="5" fill="#5E0E1A" transform="rotate(-62 242 100)"/>
+        <ellipse cx="240" cy="102" rx="9" ry="3.5" fill="#1E0408" transform="rotate(-62 240 102)"/>
+        <ellipse cx="98" cy="382" rx="12" ry="5" fill="#7A1624" transform="rotate(-62 98 382)"/>
+      </g>`,
+  },
+
+  /* ------------------------------------------------- PAPER AND ORGANIC */
+  cardboard_box: {
+    name: "Cardboard box",
+    material: "paper",
+    years: 0.17,
+    base: { cx: 150, rx: 92 },
+    silhouette: "M62 186 L150 226 L238 186 L238 340 L150 392 L62 340 Z",
+    defs: `
+      <linearGradient id="{p}cardL" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#8A6234"/><stop offset="1" stop-color="#B4854A"/>
+      </linearGradient>
+      <linearGradient id="{p}cardR" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#7C5628"/><stop offset="1" stop-color="#5E401C"/>
+      </linearGradient>
+      <linearGradient id="{p}cardIn" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#3A2810"/><stop offset="1" stop-color="#6E4E24"/>
+      </linearGradient>`,
+    body: `
+      <path fill="url(#{p}cardIn)" d="M62 186 L150 226 L238 186 L150 150 Z"/>
+      <path fill="#2A1C0A" opacity=".65" d="M86 186 L150 214 L214 186 L150 164 Z"/>
+      <path fill="url(#{p}cardL)" d="M62 186 L150 226 L150 392 L62 340 Z"/>
+      <path fill="url(#{p}cardR)" d="M150 226 L238 186 L238 340 L150 392 Z"/>
+      <!-- the corrugated edge, which is the whole tell -->
+      <path fill="#D2A464" d="M62 182 L150 146 L238 182 L238 190 L150 154 L62 190 Z"/>
+      <path fill="none" stroke="#8A6234" stroke-width="2" stroke-opacity=".8"
+            d="M74 183 l4 5 M86 179 l4 5 M98 175 l4 5 M110 171 l4 5 M122 167 l4 5
+               M134 163 l4 5 M162 163 l4 -5 M174 167 l4 -5 M186 171 l4 -5
+               M198 175 l4 -5 M210 179 l4 -5 M222 183 l4 -5"/>
+      <!-- open flaps folded out -->
+      <path fill="#C1934F" d="M62 186 L150 150 L120 134 L38 168 Z"/>
+      <path fill="#A87C3E" d="M238 186 L150 150 L180 132 L264 166 Z"/>
+      <path fill="#8A6234" opacity=".4" d="M62 186 L150 150 L150 156 L64 191 Z"/>
+      <path fill="none" stroke="#6E4A20" stroke-width="2.6" stroke-opacity=".45"
+            d="M150 226 L150 392 M62 252 L150 292 M238 252 L150 292"/>
+      <path fill="#F0DCB4" opacity=".75" d="M92 268 L138 288 L138 322 L92 302 Z"/>
+      <path fill="#7C5628" d="M98 278 h34 v5 h-34 Z M98 290 h26 v5 h-26 Z"/>
+      <path fill="#5E401C" opacity=".45" d="M150 226 L238 186 L238 196 L150 236 Z"/>`,
+  },
+
+  egg_carton: {
+    scale: 1.1,
+    name: "Egg carton",
+    material: "paper",
+    years: 0.25,
+    base: { cx: 150, rx: 96, cy: 394 },
+    silhouette: "M42 300 Q40 264 62 258 L236 258 Q260 264 258 300 L258 370 Q258 392 236 394 L64 394 Q42 392 42 370 Z",
+    defs: `
+      <linearGradient id="{p}pulp" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#C6B9A0"/><stop offset=".4" stop-color="#A8997E"/>
+        <stop offset="1" stop-color="#7C7059"/>
+      </linearGradient>
+      <linearGradient id="{p}pulpLid" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#D8CCB4"/><stop offset="1" stop-color="#A89A80"/>
+      </linearGradient>`,
+    body: `
+      <!-- lid, hinged open and leaning back -->
+      <path fill="url(#{p}pulpLid)" d="M56 258 L244 258 L228 152 L72 152 Z"/>
+      <path fill="#8E8168" opacity=".45" d="M72 152 L228 152 L226 162 L74 162 Z"/>
+      <path fill="none" stroke="#8E8168" stroke-opacity=".5" stroke-width="2.4"
+            d="M96 156 L86 256 M150 154 L150 256 M204 156 L214 256"/>
+      <path fill="url(#{p}pulp)" d="M42 300 Q40 264 62 258 L236 258 Q260 264 258 300
+            L258 370 Q258 392 236 394 L64 394 Q42 392 42 370 Z"/>
+      <path fill="#6E634E" opacity=".5" d="M42 292 L258 292 L258 302 L42 302 Z"/>
+      <!-- the six cups, which is the only thing that says egg carton -->
+      <g>
+        <ellipse cx="78" cy="318" rx="28" ry="19" fill="#6E634E"/>
+        <ellipse cx="78" cy="315" rx="24" ry="16" fill="#8E8168"/>
+        <ellipse cx="150" cy="318" rx="28" ry="19" fill="#6E634E"/>
+        <ellipse cx="150" cy="315" rx="24" ry="16" fill="#8E8168"/>
+        <ellipse cx="222" cy="318" rx="28" ry="19" fill="#6E634E"/>
+        <ellipse cx="222" cy="315" rx="24" ry="16" fill="#8E8168"/>
+        <ellipse cx="78" cy="366" rx="28" ry="19" fill="#5E5442"/>
+        <ellipse cx="78" cy="363" rx="24" ry="16" fill="#7E7360"/>
+        <ellipse cx="150" cy="366" rx="28" ry="19" fill="#5E5442"/>
+        <ellipse cx="150" cy="363" rx="24" ry="16" fill="#7E7360"/>
+        <ellipse cx="222" cy="366" rx="28" ry="19" fill="#5E5442"/>
+        <ellipse cx="222" cy="363" rx="24" ry="16" fill="#7E7360"/>
+      </g>
+      <path fill="#C6B9A0" opacity=".7" d="M112 300 q6 22 0 44 M186 300 q6 22 0 44"/>
+      <path fill="none" stroke="#C6B9A0" stroke-opacity=".6" stroke-width="5"
+            d="M114 300 q4 22 0 44 M186 300 q4 22 0 44"/>`,
+  },
+
+  banana_peel: {
+    scale: 1.42,
+    name: "Banana peel",
+    material: "organic",
+    years: 0.08,
+    base: { cx: 150, rx: 90, cy: 384 },
+    silhouette: "M64 330 Q52 300 78 296 L150 320 L246 268 Q266 262 268 282 Q270 300 246 308 L160 356 Q108 372 64 330 Z",
+    defs: `
+      <linearGradient id="{p}peelA" x1="0" y1="1" x2="1" y2="0">
+        <stop offset="0" stop-color="#8F721C"/><stop offset=".45" stop-color="#E8C93F"/>
+        <stop offset="1" stop-color="#F6E27A"/>
+      </linearGradient>
+      <linearGradient id="{p}peelB" x1="0" y1="1" x2="1" y2="0">
+        <stop offset="0" stop-color="#7E6316"/><stop offset=".5" stop-color="#D6B733"/>
+        <stop offset="1" stop-color="#EDD86C"/>
+      </linearGradient>
+      <linearGradient id="{p}peelC" x1="0" y1="1" x2="1" y2="0">
+        <stop offset="0" stop-color="#6E5512"/><stop offset=".5" stop-color="#C2A429"/>
+        <stop offset="1" stop-color="#DCC55C"/>
+      </linearGradient>
+      <linearGradient id="{p}peelIn" x1="0" y1="1" x2="1" y2="0">
+        <stop offset="0" stop-color="#C9B47E"/><stop offset="1" stop-color="#FBF3CE"/>
+      </linearGradient>`,
+    body: `
+      <g transform="translate(0 46)">
+        <!-- Three strips falling to ONE side from a dark stub. Four equal
+             strips radiating from a centre is a starfish, which is what the
+             first attempt drew. -->
+        <path fill="url(#{p}peelA)" d="M94 300 C132 254 196 230 252 226
+              C254 240 246 250 232 256 C186 272 138 294 108 320 Z"/>
+        <path fill="url(#{p}peelIn)" opacity=".85" d="M98 300 C134 260 194 238 248 234
+              C248 242 242 248 230 252 C184 266 138 288 110 314 Z"/>
+        <path fill="url(#{p}peelB)" d="M92 316 C138 288 200 276 262 282
+              C262 296 252 304 236 306 C186 310 136 324 104 344 Z"/>
+        <path fill="url(#{p}peelIn)" opacity=".7" d="M96 316 C140 292 198 282 256 288
+              C254 294 248 298 236 299 C188 302 138 316 106 338 Z"/>
+        <path fill="url(#{p}peelC)" d="M90 330 C132 322 188 326 236 342
+              C232 354 220 358 206 356 C166 350 124 350 96 358 Z"/>
+        <ellipse cx="248" cy="240" rx="12" ry="8" fill="#5A4318" opacity=".55" transform="rotate(-20 248 240)"/>
+        <ellipse cx="256" cy="292" rx="11" ry="7" fill="#5A4318" opacity=".5"/>
+        <ellipse cx="228" cy="348" rx="11" ry="7" fill="#5A4318" opacity=".5"/>
+        <path fill="#BE9C28" d="M64 330 Q52 300 78 296 Q100 296 104 318 Q104 344 80 348 Q64 346 64 330 Z"/>
+        <path fill="#9C7C21" d="M70 328 Q62 308 80 306 Q94 306 96 320 Q96 338 80 340 Q70 338 70 328 Z"/>
+        <path fill="none" stroke="#4E3A0F" stroke-width="7" stroke-linecap="round" d="M68 342 q-14 8 -24 20"/>
+        <path fill="none" stroke="#5A4312" stroke-opacity=".3" stroke-width="7" stroke-linecap="round"
+              d="M140 296 l24 -12 M172 310 l22 -8 M148 336 l20 -4"/>
+      </g>`,
+  },
+
+  apple_core: {
+    scale: 1.34,
+    name: "Apple core",
+    material: "organic",
+    years: 0.15,
+    base: { cx: 150, rx: 54, cy: 392 },
+    silhouette: "M114 320 C114 288 130 268 150 268 C172 268 188 288 188 320 C188 356 172 380 150 380 C130 380 114 356 114 320 Z",
+    defs: `
+      <radialGradient id="{p}apFlesh" cx="41%" cy="57%" r="64%">
+        <stop offset="0" stop-color="#F9F2DC"/><stop offset=".52" stop-color="#E2CFA4"/>
+        <stop offset="1" stop-color="#AF9564"/>
+      </radialGradient>
+      <radialGradient id="{p}apSkin" cx="36%" cy="52%" r="70%">
+        <stop offset="0" stop-color="#DC4A55"/><stop offset=".52" stop-color="#B02531"/>
+        <stop offset="1" stop-color="#6E121B"/>
+      </radialGradient>`,
+    body: `
+      <g transform="translate(0 32) rotate(-8 150 320)">
+        <!-- A half-eaten APPLE, not a bare core. A core has no canonical
+             silhouette; standing it up makes an eggcup and laying it flat
+             makes a cartoon bone. An apple is a circle with a stem, and a
+             bite scooped out of that circle reads instantly. -->
+        <ellipse cx="152" cy="322" rx="42" ry="44" fill="url(#{p}apFlesh)"/>
+        <path fill="url(#{p}apSkin)" d="M150 278 C172 278 188 296 190 316
+              C172 310 154 318 156 336 C158 354 176 360 190 350
+              C186 366 170 374 150 374 C126 374 108 356 108 322
+              C108 296 126 278 150 278 Z"/>
+        <path fill="#E8867A" opacity=".75" d="M150 278 C132 278 118 288 112 302
+              C120 290 134 283 150 283 Z"/>
+        <ellipse cx="130" cy="300" rx="13" ry="8" fill="#FFFFFF" opacity=".3" transform="rotate(-30 130 300)"/>
+        <path fill="#FBF3DA" d="M190 316 C172 310 154 318 156 336 C158 354 176 360 190 350
+              C200 340 200 328 190 316 Z"/>
+        <path fill="#E6D2A0" opacity=".6" d="M190 316 C172 310 154 318 156 336
+              C158 354 176 360 190 350 C180 346 166 334 170 322 Z"/>
+        <path fill="none" stroke="#A8843F" stroke-width="2.4" stroke-opacity=".6"
+              d="M190 316 C172 310 154 318 156 336 C158 354 176 360 190 350"/>
+        <path fill="none" stroke="#D5BE8C" stroke-width="1.8" stroke-opacity=".8"
+              d="M168 318 q6 6 4 13 M176 314 q6 6 4 13 M164 334 q5 6 4 12"/>
+        <ellipse cx="174" cy="330" rx="2.4" ry="4" fill="#5C4718" transform="rotate(18 174 330)"/>
+        <ellipse cx="178" cy="342" rx="2.2" ry="3.6" fill="#5C4718" transform="rotate(18 178 342)"/>
+        <path fill="none" stroke="#6B5227" stroke-width="5" stroke-linecap="round" d="M149 278 q3 -16 13 -21"/>
+        <path fill="#6E9A4A" d="M158 256 q18 -12 27 -2 q-13 11 -27 2 Z"/>
+        <path fill="#8FB86A" opacity=".65" d="M160 256 q14 -8 21 -3 q-10 7 -21 3 Z"/>
+        <path fill="none" stroke="#4F7634" stroke-width="1.6" d="M160 255 q13 -6 22 -2"/>
+      </g>`,
+  },
+
+  orange_peel: {
+    scale: 1.3,
+    name: "Orange peel",
+    material: "organic",
+    years: 0.5,
+    base: { cx: 150, rx: 62, cy: 392 },
+    silhouette: "M92 388 Q64 336 96 296 Q136 250 190 272 Q236 292 228 338 Q220 380 176 390 Z",
+    defs: `
+      <linearGradient id="{p}rindO" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#F7A62C"/><stop offset=".4" stop-color="#E4781A"/>
+        <stop offset="1" stop-color="#9E480C"/>
+      </linearGradient>
+      <linearGradient id="{p}rindO2" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#EE8E1E"/><stop offset=".5" stop-color="#C85E12"/>
+        <stop offset="1" stop-color="#8A3C0A"/>
+      </linearGradient>
+      <linearGradient id="{p}rindW" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#FDF4E0"/><stop offset=".6" stop-color="#EBD9B4"/>
+        <stop offset="1" stop-color="#BFA87E"/>
+      </linearGradient>`,
+    body: `
+      <g transform="translate(0 6)">
+        <!-- One continuous ribbon coiling up, with DAYLIGHT between the coils.
+             Drawn as a filled disc with a spiral scored on it, it reads as a
+             cinnamon bun, which is exactly what the first attempt looked like. -->
+        <path fill="url(#{p}rindW)" d="M96 386 C62 348 76 292 126 276
+              C172 262 214 292 210 336 C206 372 176 388 150 380
+              C128 374 120 352 130 334 C138 318 158 316 168 328
+              L156 340 C152 334 144 336 142 344 C139 356 148 366 160 364
+              C180 360 190 342 186 322 C180 294 148 282 122 296
+              C92 312 86 350 106 378 Z"/>
+        <path fill="url(#{p}rindO)" d="M96 386 C62 348 76 292 126 276
+              C172 262 214 292 210 336 L196 334 C198 300 166 278 130 290
+              C90 304 80 350 106 380 Z"/>
+        <path fill="url(#{p}rindO2)" d="M210 336 C206 372 176 388 150 380
+              C128 374 120 352 130 334 C138 318 158 316 168 328 L158 338
+              C150 330 140 336 139 346 C137 358 148 368 161 365
+              C182 360 192 342 196 334 Z"/>
+        <path fill="#FFD9A0" opacity=".45" d="M100 372 C80 336 94 300 128 290
+              C120 302 106 318 104 340 C102 356 100 366 100 372 Z"/>
+        <g fill="#A8500E" opacity=".5">
+          <circle cx="120" cy="288" r="2.4"/><circle cx="152" cy="278" r="2.2"/>
+          <circle cx="186" cy="298" r="2.4"/><circle cx="202" cy="326" r="2.2"/>
+          <circle cx="98" cy="318" r="2.4"/><circle cx="92" cy="352" r="2.2"/>
+          <circle cx="112" cy="376" r="2"/><circle cx="176" cy="372" r="2.2"/>
+        </g>
+        <path fill="none" stroke="#7E3A08" stroke-opacity=".45" stroke-width="2"
+              d="M96 386 C62 348 76 292 126 276 C172 262 214 292 210 336"/>
+      </g>`,
+  },
+
+  wooden_chopsticks: {
+    scale: 1.34,
+    name: "Chopsticks",
+    material: "organic",
+    years: 2,
+    base: { cx: 150, rx: 88, cy: 390 },
+    silhouette: "M40 358 L58 312 L244 276 L262 288 L250 320 L64 372 Z",
+    defs: `
+      <linearGradient id="{p}woodA" x1="0" y1="1" x2="1" y2="0">
+        <stop offset="0" stop-color="#9A7642"/><stop offset=".4" stop-color="#D8B57C"/>
+        <stop offset="1" stop-color="#EFD7A8"/>
+      </linearGradient>
+      <linearGradient id="{p}woodB" x1="0" y1="1" x2="1" y2="0">
+        <stop offset="0" stop-color="#8A6836"/><stop offset=".4" stop-color="#C6A268"/>
+        <stop offset="1" stop-color="#E2C694"/>
+      </linearGradient>`,
+    body: `
+      <g transform="translate(0 30)">
+        <g transform="rotate(-9 150 330)">
+          <path fill="url(#{p}woodA)" d="M44 330 L52 316 L248 272 L258 280 L250 292 Z"/>
+          <path fill="#7C5E2E" opacity=".45" d="M44 330 L52 316 L248 272 L250 276 L48 324 Z"/>
+          <path fill="#FBEDCE" opacity=".5" d="M50 318 L52 316 L248 272 L250 276 Z"/>
+          <path fill="#6E5228" d="M248 272 L258 280 L250 292 L244 286 Z"/>
+        </g>
+        <g transform="rotate(2 150 348)">
+          <path fill="url(#{p}woodB)" d="M46 356 L54 342 L250 300 L260 308 L252 320 Z"/>
+          <path fill="#6E5228" opacity=".45" d="M46 356 L54 342 L250 300 L252 304 L50 350 Z"/>
+          <path fill="#F4E2BE" opacity=".45" d="M52 344 L54 342 L250 300 L252 304 Z"/>
+          <path fill="#5E4420" d="M250 300 L260 308 L252 320 L246 314 Z"/>
+        </g>
+        <path fill="none" stroke="#8A6836" stroke-opacity=".4" stroke-width="1.4"
+              d="M90 320 L236 288 M96 346 L240 314"/>
+      </g>`,
+  },
+
   /* ------------------------------------------------------------ METAL */
   aluminium_can: {
     name: "Aluminium can",
@@ -299,6 +812,253 @@ export const ITEMS = {
       <ellipse cx="150" cy="150" rx="44" ry="9" fill="#5E666E" opacity=".45"/>
       <path fill="none" stroke="#EAF0F4" stroke-width="3" stroke-opacity=".8" d="M118 145 q22 -10 50 -3"/>
       <path fill="url(#{p}steel)" d="M92 376 L208 376 L208 384 Q208 396 192 398 L108 398 Q92 396 92 384 Z"/>`,
+  },
+
+  cotton_shirt: {
+    scale: 1.05,
+    name: "Cotton T-shirt",
+    material: "organic",
+    years: 0.5,
+    base: { cx: 150, rx: 92, cy: 394 },
+    silhouette: "M56 250 L96 208 Q124 194 150 200 Q176 194 204 208 L244 250 L216 278 L206 268 L208 388 Q150 400 92 388 L94 268 L84 278 Z",
+    defs: `
+      <linearGradient id="{p}cotton" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#E4E8EC"/><stop offset=".3" stop-color="#C6CED6"/>
+        <stop offset=".62" stop-color="#9EA9B4"/><stop offset="1" stop-color="#6E7A86"/>
+      </linearGradient>`,
+    body: `
+      <path fill="url(#{p}cotton)" d="M56 250 L96 208 Q124 194 150 200 Q176 194 204 208
+            L244 250 L216 278 L206 268 L208 388 Q150 400 92 388 L94 268 L84 278 Z"/>
+      <path fill="#5E6A76" opacity=".35" d="M204 208 L244 250 L216 278 L206 268 L208 388
+            Q182 394 158 396 L162 262 L186 232 Z"/>
+      <path fill="#F2F5F8" opacity=".45" d="M96 208 L120 230 L104 262 L94 268 L84 278
+            L56 250 Z"/>
+      <path fill="none" stroke="#7E8A96" stroke-width="3" stroke-opacity=".7"
+            d="M120 206 Q150 224 180 206"/>
+      <path fill="none" stroke="#E8EDF2" stroke-width="2" stroke-opacity=".8"
+            d="M121 211 Q150 228 179 211"/>
+      <!-- crumple, which is what says a shirt on the ground and not a template -->
+      <path fill="none" stroke="#7E8A96" stroke-opacity=".4" stroke-width="3"
+            d="M108 296 Q134 312 108 334 M196 300 Q170 316 196 340
+               M120 356 Q150 344 182 358 M126 268 Q150 282 176 268"/>
+      <path fill="#6E7A86" opacity=".28" d="M92 366 Q150 384 208 366 L208 388
+            Q150 400 92 388 Z"/>
+      <ellipse cx="150" cy="306" rx="34" ry="24" fill="#3E5A78" opacity=".45"/>
+      <path fill="#DCE4EA" opacity=".7" d="M134 296 h32 v7 h-32 Z M134 310 h32 v7 h-32 Z"/>`,
+  },
+
+  wool_sock: {
+    scale: 1.22,
+    name: "Wool sock",
+    material: "organic",
+    years: 1.5,
+    base: { cx: 150, rx: 78, cy: 392 },
+    silhouette: "M108 214 L176 214 Q186 288 180 330 L238 342 Q262 350 258 372 Q252 392 226 390 L120 384 Q98 378 98 350 Q96 282 108 214 Z",
+    defs: `
+      <linearGradient id="{p}wool" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#D8C2A2"/><stop offset=".34" stop-color="#B99D78"/>
+        <stop offset=".7" stop-color="#8E7452"/><stop offset="1" stop-color="#63503A"/>
+      </linearGradient>`,
+    body: `
+      <path fill="url(#{p}wool)" d="M108 214 L176 214 Q186 288 180 330 L238 342
+            Q262 350 258 372 Q252 392 226 390 L120 384 Q98 378 98 350 Q96 282 108 214 Z"/>
+      <path fill="#5A4832" opacity=".38" d="M176 214 Q186 288 180 330 L238 342
+            Q262 350 258 372 Q252 392 226 390 L196 389 Q228 380 226 366
+            Q224 352 194 348 Q160 342 162 322 Q170 276 160 214 Z"/>
+      <path fill="#EBDAC0" opacity=".45" d="M108 214 L128 214 Q116 290 118 348
+            Q120 372 142 378 L122 384 Q98 378 98 350 Q96 282 108 214 Z"/>
+      <!-- the ribbed cuff, which is what makes it a sock and not a mitten -->
+      <path fill="#C6AC88" d="M106 210 L178 210 L176 244 L108 244 Z"/>
+      <path fill="none" stroke="#8E7452" stroke-width="3" stroke-opacity=".8"
+            d="M116 212 L115 242 M128 212 L127 242 M140 212 L140 242
+               M152 212 L153 242 M164 212 L165 242"/>
+      <path fill="#7C6446" opacity=".45" d="M106 236 L177 236 L176 244 L108 244 Z"/>
+      <!-- heel and toe patches -->
+      <path fill="#7C6446" opacity=".5" d="M98 342 Q118 330 134 344 Q126 372 104 372
+            Q96 358 98 342 Z"/>
+      <path fill="#E2CFAE" opacity=".5" d="M226 350 Q250 352 252 368 Q244 380 224 378
+            Q214 364 226 350 Z"/>
+      <path fill="none" stroke="#8E7452" stroke-opacity=".45" stroke-width="2.4"
+            d="M124 264 Q150 276 172 266 M118 300 Q146 312 176 302"/>`,
+  },
+
+  disposable_nappy: {
+    scale: 1.06,
+    name: "Disposable nappy",
+    material: "plastic",
+    years: 450,
+    base: { cx: 150, rx: 90, cy: 392 },
+    silhouette: "M62 212 Q56 200 74 196 L226 196 Q244 200 238 212 Q220 268 216 300 Q214 356 190 382 Q150 396 110 382 Q86 356 84 300 Q80 268 62 212 Z",
+    defs: `
+      <linearGradient id="{p}nappy" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#FCFDFE"/><stop offset=".42" stop-color="#EDF1F4"/>
+        <stop offset=".78" stop-color="#D4DBE1"/><stop offset="1" stop-color="#AEB8C0"/>
+      </linearGradient>`,
+    body: `
+      <path fill="url(#{p}nappy)" d="M62 212 Q56 200 74 196 L226 196 Q244 200 238 212
+            Q220 268 216 300 Q214 356 190 382 Q150 396 110 382 Q86 356 84 300
+            Q80 268 62 212 Z"/>
+      <path fill="#9FAAB4" opacity=".3" d="M226 196 Q244 200 238 212 Q220 268 216 300
+            Q214 356 190 382 Q172 388 154 390 Q184 362 188 300 Q192 262 210 196 Z"/>
+      <!-- the tapes, which are the only reason this is not a cushion -->
+      <path fill="#D8E2EA" d="M56 202 L92 200 L92 234 L56 236 Q48 218 56 202 Z"/>
+      <path fill="#B9C6D0" d="M56 214 L92 212 L92 220 L56 222 Z"/>
+      <path fill="#D8E2EA" d="M244 202 L208 200 L208 234 L244 236 Q252 218 244 202 Z"/>
+      <path fill="#B9C6D0" d="M244 214 L208 212 L208 220 L244 222 Z"/>
+      <!-- elasticated legs, gathered -->
+      <path fill="none" stroke="#B9C6D0" stroke-width="4" stroke-opacity=".9"
+            d="M86 246 Q94 310 112 372 M214 246 Q206 310 188 372"/>
+      <path fill="none" stroke="#FFFFFF" stroke-width="2" stroke-opacity=".8"
+            d="M89 248 Q97 310 114 370 M211 248 Q203 310 186 370"/>
+      <path fill="#E4EAEF" d="M104 252 Q150 240 196 252 Q198 314 190 358
+            Q150 372 110 358 Q102 314 104 252 Z"/>
+      <path fill="none" stroke="#C6D2DA" stroke-width="2.4" stroke-opacity=".8"
+            d="M114 274 Q150 266 186 274 M112 300 Q150 292 188 300 M114 326 Q150 318 186 326"/>
+      <ellipse cx="150" cy="222" rx="30" ry="9" fill="#8FBFE0" opacity=".65"/>
+      <path fill="#5E9ECC" opacity=".7" d="M136 218 h28 v4 h-28 Z"/>`,
+  },
+
+  battery: {
+    scale: 1.18,
+    name: "AA battery",
+    material: "steel",
+    years: 100,
+    base: { cx: 150, rx: 44 },
+    silhouette: "M118 128 L182 128 L182 386 Q182 396 168 396 L132 396 Q118 396 118 386 Z",
+    defs: `
+      <linearGradient id="{p}cell" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#15181C"/><stop offset=".14" stop-color="#31363C"/>
+        <stop offset=".34" stop-color="#4E555D"/><stop offset=".54" stop-color="#2A2F35"/>
+        <stop offset=".82" stop-color="#1A1E22"/><stop offset="1" stop-color="#0C0E11"/>
+      </linearGradient>
+      <linearGradient id="{p}copper" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#6E3F14"/><stop offset=".18" stop-color="#C98A45"/>
+        <stop offset=".42" stop-color="#EBB877"/><stop offset=".7" stop-color="#A86A2C"/>
+        <stop offset="1" stop-color="#5E3410"/>
+      </linearGradient>
+      <linearGradient id="{p}gold" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#8A6A16"/><stop offset=".2" stop-color="#D8B23A"/>
+        <stop offset=".46" stop-color="#F2D86A"/><stop offset=".74" stop-color="#B4901E"/>
+        <stop offset="1" stop-color="#6E5410"/>
+      </linearGradient>`,
+    body: `
+      <path fill="url(#{p}cell)" d="M118 128 L182 128 L182 386 Q182 396 168 396
+            L132 396 Q118 396 118 386 Z"/>
+      <rect x="118" y="196" width="64" height="118" fill="url(#{p}gold)"/>
+      <path fill="#2A2210" opacity=".35" d="M118 196 h64 v6 h-64 Z M118 308 h64 v6 h-64 Z"/>
+      <path fill="#1A1E22" d="M128 222 h44 v9 h-44 Z M128 240 h44 v9 h-44 Z"/>
+      <ellipse cx="150" cy="272" rx="17" ry="17" fill="#15181C"/>
+      <path fill="url(#{p}gold)" d="M142 262 h16 v8 h-16 Z M142 274 h16 v8 h-16 Z"/>
+      <path fill="#E4EAEF" opacity=".3" d="M128 132 L136 132 L134 392 L127 390 Z"/>
+      <path fill="#000000" opacity=".4" d="M170 132 L178 132 L178 390 L170 392 Z"/>
+      <!-- the copper cap: nothing else in a bin is a dark cylinder with a
+           bright metal top, and that is the whole recognition -->
+      <path fill="url(#{p}copper)" d="M118 128 L182 128 L182 116 L118 116 Z"/>
+      <ellipse cx="150" cy="116" rx="32" ry="9" fill="url(#{p}copper)"/>
+      <ellipse cx="150" cy="114" rx="32" ry="9" fill="#C98A45"/>
+      <rect x="138" y="96" width="24" height="22" rx="4" fill="url(#{p}copper)"/>
+      <ellipse cx="150" cy="96" rx="12" ry="4.5" fill="#EBB877"/>
+      <ellipse cx="150" cy="97" rx="8" ry="3" fill="#8A5A22"/>
+      <path fill="#9AA2AC" d="M118 386 Q118 396 132 396 L168 396 Q182 396 182 386 Z"/>
+      <ellipse cx="150" cy="392" rx="32" ry="8" fill="#B4BDC5"/>
+      <ellipse cx="150" cy="392" rx="22" ry="5" fill="#7E868E"/>`,
+  },
+
+  aluminium_foil: {
+    scale: 1.2,
+    name: "Aluminium foil",
+    material: "aluminium",
+    years: 400,
+    base: { cx: 150, rx: 76, cy: 392 },
+    silhouette: "M74 344 L92 288 L128 254 L186 246 L226 278 L234 336 L206 380 L120 384 Z",
+    defs: `
+      <linearGradient id="{p}foilA" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#FDFEFE"/><stop offset="1" stop-color="#9BA5AE"/>
+      </linearGradient>
+      <linearGradient id="{p}foilB" x1="1" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#E4E9EE"/><stop offset="1" stop-color="#6A737C"/>
+      </linearGradient>`,
+    body: `
+      <g transform="translate(0 8)">
+        <!-- Crumpled foil is FACETS. A smooth gradient cannot do it — it needs
+             hard edges, near-white against near-black with no transition, which
+             the Park had to learn the hard way on its own piece of foil. -->
+        <path fill="#8E98A2" d="M74 344 L92 288 L128 254 L186 246 L226 278 L234 336 L206 380 L120 384 Z"/>
+        <path fill="url(#{p}foilA)" d="M92 288 L128 254 L150 296 L112 318 Z"/>
+        <path fill="#5E666E" d="M74 344 L92 288 L112 318 L104 354 Z"/>
+        <path fill="url(#{p}foilB)" d="M128 254 L186 246 L178 292 L150 296 Z"/>
+        <path fill="#B4BDC5" d="M186 246 L226 278 L206 306 L178 292 Z"/>
+        <path fill="#3E464E" d="M226 278 L234 336 L208 340 L206 306 Z"/>
+        <path fill="#D2DAE0" d="M150 296 L178 292 L186 330 L152 338 Z"/>
+        <path fill="#6E767E" d="M112 318 L150 296 L152 338 L118 352 Z"/>
+        <path fill="#FAFCFD" d="M178 292 L206 306 L208 340 L186 330 Z"/>
+        <path fill="#454D55" d="M104 354 L118 352 L126 380 L120 384 Z"/>
+        <path fill="#A8B2BA" d="M118 352 L152 338 L166 372 L126 380 Z"/>
+        <path fill="#EEF2F5" d="M152 338 L186 330 L196 362 L166 372 Z"/>
+        <path fill="#5E666E" d="M186 330 L208 340 L206 380 L196 362 Z"/>
+        <path fill="#FFFFFF" opacity=".85" d="M128 254 L150 296 L146 298 L124 258 Z"/>
+        <path fill="#FFFFFF" opacity=".7" d="M178 292 L186 330 L182 331 L174 293 Z"/>
+        <path fill="#2E353C" opacity=".8" d="M112 318 L118 352 L114 353 L108 320 Z"/>
+        <path fill="#2E353C" opacity=".65" d="M186 330 L196 362 L192 363 L182 332 Z"/>
+      </g>`,
+  },
+
+  glass_jar: {
+    name: "Glass jar",
+    material: "glass",
+    years: 1e9,
+    base: { cx: 150, rx: 66 },
+    silhouette: "M104 128 L196 128 L196 158 C204 172 212 186 212 208 L212 378 Q212 396 194 398 L106 398 Q88 396 88 378 L88 208 C88 186 96 172 104 158 Z",
+    caustic: { cx: 194, rx: 56, ry: 11 },
+    defs: `
+      <linearGradient id="{p}jarX" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#2A3A36"/><stop offset=".09" stop-color="#4E6E62"/>
+        <stop offset=".24" stop-color="#8FB9A8"/><stop offset=".4" stop-color="#C2E2D4"/>
+        <stop offset=".58" stop-color="#8CB5A4"/><stop offset=".8" stop-color="#4A6A5E"/>
+        <stop offset="1" stop-color="#22322E"/>
+      </linearGradient>
+      <linearGradient id="{p}jarY" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#EAF6F0" stop-opacity=".35"/>
+        <stop offset=".2" stop-color="#C2E2D4" stop-opacity=".12"/>
+        <stop offset=".6" stop-color="#000000" stop-opacity="0"/>
+        <stop offset="1" stop-color="#0A1412" stop-opacity=".55"/>
+      </linearGradient>
+      <linearGradient id="{p}jarSpec" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#FFFFFF" stop-opacity="0"/>
+        <stop offset=".08" stop-color="#FFFFFF" stop-opacity=".95"/>
+        <stop offset=".7" stop-color="#E8F6F0" stop-opacity=".5"/>
+        <stop offset="1" stop-color="#E8F6F0" stop-opacity="0"/>
+      </linearGradient>`,
+    body: `
+      <path fill="url(#{p}jarX)" d="M104 128 L196 128 L196 158 C204 172 212 186 212 208
+            L212 378 Q212 396 194 398 L106 398 Q88 396 88 378 L88 208
+            C88 186 96 172 104 158 Z"/>
+      <path fill="url(#{p}jarY)" d="M104 128 L196 128 L196 158 C204 172 212 186 212 208
+            L212 378 Q212 396 194 398 L106 398 Q88 396 88 378 L88 208
+            C88 186 96 172 104 158 Z"/>
+      <!-- the screw thread on the neck, which is what makes it a jar -->
+      <path fill="none" stroke="#1E2E2A" stroke-width="4" stroke-opacity=".5"
+            d="M104 136 Q150 146 196 136 M104 148 Q150 158 196 148"/>
+      <path fill="none" stroke="#DDF0E8" stroke-width="2" stroke-opacity=".5"
+            d="M104 133 Q150 143 196 133 M104 145 Q150 155 196 145"/>
+      <path fill="#7EA898" d="M100 122 L200 122 L200 130 L100 130 Z"/>
+      <path fill="#CFEADF" d="M100 122 L200 122 L200 126 L100 126 Z"/>
+      <ellipse cx="150" cy="122" rx="50" ry="10" fill="#A8CCBE" opacity=".6"/>
+      <ellipse cx="150" cy="122" rx="41" ry="7" fill="#16211E" opacity=".85"/>
+      <path fill="url(#{p}jarSpec)" d="M106 200 C108 184 114 172 120 162 L128 168
+            C121 178 116 190 115 202 L115 372 L106 372 Z"/>
+      <rect x="106" y="212" width="9" height="160" rx="4.5" fill="url(#{p}jarSpec)"/>
+      <rect x="192" y="220" width="4" height="146" rx="2" fill="#E8F6F0" opacity=".2"/>
+      <path fill="#14201D" opacity=".5" d="M88 208 C88 186 96 172 104 158 L110 162
+            C102 176 94 188 94 210 L94 380 L88 378 Z"/>
+      <path fill="#14201D" opacity=".7" d="M212 208 C212 186 204 172 196 158 L190 162
+            C198 176 206 188 206 210 L206 380 L212 378 Z"/>
+      <path fill="#14201D" opacity=".7" d="M88 366 Q150 384 212 366 L212 378
+            Q212 396 194 398 L106 398 Q88 396 88 378 Z"/>
+      <ellipse cx="150" cy="384" rx="44" ry="8" fill="#8FC2AE" opacity=".35"/>
+      <ellipse cx="150" cy="388" rx="24" ry="4" fill="#DDF0E8" opacity=".3"/>
+      <ellipse cx="176" cy="264" rx="2.6" ry="4" fill="#E8F6F0" opacity=".35"/>
+      <ellipse cx="124" cy="318" rx="2" ry="3" fill="#E8F6F0" opacity=".28"/>`,
   },
 
   /* ------------------------------------------------------------ GLASS */
