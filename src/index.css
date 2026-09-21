@@ -578,12 +578,11 @@ body,
  *  dark stage and it looked like a different product bolted on — a mode
  *  should read as a room in the same house, not a different house.
  *
- *  So it IS the app's yellow — #FDE047, the same value the shell uses — with
- *  a lift at the top and a deeper tint of the same hue across the bottom to
- *  make the surface the objects stand on. One hue throughout, no new colour
- *  introduced. The accent is that hue taken dark (#A96D12) and the text is a
- *  warm near-black, both of which carry on a saturated ground where a paler
- *  gold would vanish.
+ *  So it IS the app's yellow — #FDE047, flat, the same value the shell uses.
+ *  No gradient, no sweep: the objects are grounded by their own contact
+ *  shadows, which is the honest way to do it anyway. The accent is that hue
+ *  taken dark (#96600C) and the text is a warm near-black, both of which
+ *  carry on a saturated ground where a paler gold would vanish.
  *
  *  Shadows are warm brown rather than black, for the same reason a shadow on
  *  grass is green: it is the colour of what fills it, and what fills these is
@@ -633,17 +632,12 @@ body,
 .ol-streak-n { display: block; font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
 .ol-streak-l { display: block; font-size: 8px; letter-spacing: .2em; text-transform: uppercase; color: var(--ol-dim); margin-top: 3px; }
 
-/* A photographer's sweep: lighter above, and a deeper tint of the same hue
-   across the bottom so pale objects — the foam cup, the nappy — still have
-   something to sit against. */
 .ol-stage {
   flex: 1 1 0; min-height: 0;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: clamp(4px, 1.4vh, 10px);
   padding: clamp(8px, 2vh, 16px) 14px clamp(10px, 2vh, 18px);
-  background:
-    radial-gradient(120% 68% at 50% 2%, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 60%),
-    linear-gradient(to bottom, #FEE86A 0%, #FDE047 46%, #F6D22C 76%, #EDC41C 100%);
+  background: #FDE047;
 }
 
 .ol-clock { text-align: center; line-height: 1; }
