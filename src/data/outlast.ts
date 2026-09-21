@@ -10,6 +10,11 @@
  *      cup" is a person. This is the single thing that made the first draft
  *      read like documentation.
  *    Say the surprising thing FIRST and explain it after, not the reverse.
+ *    STATE THE CONDITION. "Back on a shelf within weeks" is not a fact about
+ *      an aluminium can, it is a fact about a RECYCLED aluminium can, and
+ *      leaving the "if you recycle it" out turns the whole line into a
+ *      claim that a can magically renews itself. Anything that only holds
+ *      under a condition has to carry it.
  *
  *  The test for a line is whether somebody would repeat it to another person
  *  an hour later. If it would not survive that, it is not finished.
@@ -56,17 +61,17 @@ export const ITEM_FACTS: Record<string, string> = {
   coffee_cup:
     "It's not a paper cup. It's a plastic cup with paper round it, and almost no mill can separate the two.",
   tin_can:
-    "A magnet lifts it straight out of the mix — the easiest thing in the entire stream to sort.",
+    "Put it in the bin and a magnet lifts it straight back out at the other end — the easiest thing in the whole stream to sort.",
   battery:
     "As the case corrodes, everything inside it comes out. Never the normal bin, however small it is.",
   plastic_straw:
     "Too light for the sorters to catch, too small for the screens to hold. Barely any get recycled, wherever you put them.",
   aluminium_can:
-    "Back on a shelf within weeks, for a fraction of the energy it takes to make a new one from ore.",
+    "Recycle it and it can be back on a shelf in about six weeks, using a fraction of the energy it takes to make a new one from ore.",
   aluminium_foil:
     "Aluminium doesn't rust — it seals itself under its own oxide. Clean foil is worth recycling. Greasy foil isn't.",
   plastic_bottle:
-    "One of the few plastics genuinely recycled at scale. Most of it still isn't.",
+    "PET is one of the few plastics genuinely recycled at scale — but only the ones that actually reach a bin, which is most of them nowhere near.",
   face_mask:
     "Three layers of polypropylene, worn for an hour. Billions got thrown away and every one is still here.",
   disposable_nappy:
@@ -76,7 +81,7 @@ export const ITEM_FACTS: Record<string, string> = {
   toothbrush:
     "Every toothbrush you've ever owned is still somewhere on this planet.",
   glass_bottle:
-    "Recycles forever with no loss at all. Left alone, it just waits.",
+    "Recycle it and it comes back as glass, forever, with no loss at all. Leave it and it just waits.",
   glass_jar:
     "Sand, soda ash and lime. Nothing rots, nothing leaches, nothing changes.",
 };
