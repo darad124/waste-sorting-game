@@ -17,8 +17,15 @@ import { canPrompt } from "../utils/feedbackGate";
 /* ====================================================================== *
  *  Outlast — two objects, one question: which one outlasts the other?
  *
- *  You commit, then the race decides it in front of you. One wrong call ends
- *  the run, so the score is simply how far you got.
+ *  You commit, and then nothing tells you anything. The race runs, the thing
+ *  you picked either falls apart in front of you or doesn't, and only when
+ *  the clock stops does the game say a word.
+ *
+ *  That delay is the mode. Announcing "Right." on the tap answers the
+ *  question before the six seconds of decay that exist to answer it, and
+ *  turns the animation into a victory lap nobody watches. So the tap changes
+ *  nothing visible: no verdict line, no sound, no streak tick — the counter
+ *  in the header would give it away on its own.
  * ====================================================================== */
 
 const RULES = {
@@ -139,19 +146,12 @@ export const OutlastScreen: React.FC<OutlastScreenProps> = ({ onBack }) => {
 
   const answer = (id: string) => {
     if (phase !== "ask" || !winner) return;
-    const right = id === winner.id;
+    // Recorded, not revealed. Everything the player could read the answer off
+    // — the line under the clock, the sound, the streak counter — waits for
+    // the race to finish.
     setPicked(id);
-    setWasRight(right);
+    setWasRight(id === winner.id);
     setSeen((n) => n + 1);
-    if (right) {
-      const next = streak + 1;
-      setStreak(next);
-      setBest((bestSoFar) => Math.max(bestSoFar, next));
-      if ((RULES.milestones as readonly number[]).includes(next)) setMilestone(next);
-      playSound.triviaCorrect();
-    } else {
-      playSound.triviaWrong();
-    }
     setPhase("racing");
   };
 
@@ -197,7 +197,17 @@ export const OutlastScreen: React.FC<OutlastScreenProps> = ({ onBack }) => {
 
       if (p >= 1) {
         pair.forEach((item) => settle(item, "still here", "here"));
-        playSound.triviaReveal();
+        // Everything the tap held back lands here, together, once the decay
+        // has already made the case.
+        if (wasRight) {
+          const next = streak + 1;
+          setStreak(next);
+          setBest((b) => Math.max(b, next));
+          if ((RULES.milestones as readonly number[]).includes(next)) setMilestone(next);
+          playSound.triviaCorrect();
+        } else {
+          playSound.triviaWrong();
+        }
         setPhase("settled");
         return;
       }
@@ -206,7 +216,10 @@ export const OutlastScreen: React.FC<OutlastScreenProps> = ({ onBack }) => {
 
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
-  }, [phase, pair]);
+    // wasRight and streak are read at the finish. Both are safe here: they
+    // change in the same render as `phase`, and by the time the settle writes
+    // them back the phase is no longer "racing", so the effect early-returns.
+  }, [phase, pair, wasRight, streak]);
 
   useEffect(() => {
     if (!milestone) return;
@@ -257,12 +270,14 @@ export const OutlastScreen: React.FC<OutlastScreenProps> = ({ onBack }) => {
           <div className="ol-unit" ref={unitRef}>your call</div>
         </div>
 
-        <div className={`ol-ask ${phase === "ask" ? "" : wasRight ? "ol-good" : "ol-bad"}`}>
-          {phase === "ask"
-            ? "Which one outlasts the other?"
-            : wasRight
+        <div className={`ol-ask ${phase === "settled" ? (wasRight ? "ol-good" : "ol-bad") : ""}`}>
+          {phase === "ask" && "Which one outlasts the other?"}
+          {/* Deliberately blank while it runs. Nothing to read; watch. */}
+          {phase === "racing" && "\u00a0"}
+          {phase === "settled" &&
+            (wasRight
               ? (streak >= 8 ? "Still going." : streak >= 3 ? "Right again." : "Right.")
-              : "Other way round."}
+              : "Other way round.")}
         </div>
 
         <div className="ol-race">
@@ -273,7 +288,7 @@ export const OutlastScreen: React.FC<OutlastScreenProps> = ({ onBack }) => {
               item={item}
               onPick={phase === "ask" ? () => answer(item.id) : undefined}
               picked={picked === item.id}
-              dimmed={picked !== null && picked !== item.id}
+              dimmed={phase === "settled" && picked !== item.id}
               verdict={verdicts[item.id]?.text ?? ""}
               verdictTone={verdicts[item.id]?.tone ?? ""}
             />
