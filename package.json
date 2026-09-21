@@ -9,6 +9,7 @@
     "generate:share-pages": "node scripts/generate-share-pages.mjs",
     "capture:share-cards": "node scripts/capture-gameplay-share-cards.mjs && npm run optimise:share-cards",
     "optimise:share-cards": "node scripts/optimise-share-cards.mjs",
+    "check:factbook": "node scripts/check-factbook.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },

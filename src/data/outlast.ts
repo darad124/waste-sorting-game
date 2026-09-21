@@ -43,6 +43,32 @@ export const OUTLAST_ALWAYS_PAIR: [string, string][] = [
   ["aluminium_can", "tin_can"],
 ];
 
+/* ---------------------------------------------------------------------- *
+ *  Fact Book bridge.
+ *
+ *  Outlast names its objects for what the mode is teaching: the whole point
+ *  of the two cans is that one is aluminium and one is steel, so calling them
+ *  "soda_can" and "steel_tin_can" the way the Fact Book does would throw away
+ *  the distinction the round exists to make. The five ids below are the same
+ *  physical object under the other file's name, so they map across rather
+ *  than being duplicated. Everything else shares an id with its Fact Book
+ *  entry; twelve of those entries were written for this mode.
+ *
+ *  scripts/check-factbook.mjs fails if any of the 25 stops resolving.
+ * ---------------------------------------------------------------------- */
+const FACT_BOOK_ALIAS: Record<string, string> = {
+  foam_cup: "styrofoam_cup",
+  tin_can: "steel_tin_can",
+  aluminium_can: "soda_can",
+  battery: "alkaline_battery",
+  disposable_nappy: "diaper",
+};
+
+/** The Fact Book id for one of Outlast's objects. */
+export function factBookId(outlastId: string): string {
+  return FACT_BOOK_ALIAS[outlastId] ?? outlastId;
+}
+
 /** One line per object. */
 export const ITEM_FACTS: Record<string, string> = {
   paper_bag:

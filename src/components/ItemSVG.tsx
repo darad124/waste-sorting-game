@@ -413,6 +413,157 @@ export const ItemSVG: React.FC<ItemSVGProps> = ({ itemId, size = 48, className =
         </svg>
       );
 
+    /* --- Outlast roster --------------------------------------------- */
+
+    case "paper_bag":
+      return (
+        <svg viewBox="0 0 100 100" className={className} width={size} height={size}>
+          <path d="M40 30 Q40 18 50 18 Q60 18 60 30" fill="none" stroke="#a16207" strokeWidth="2.5" strokeLinecap="round" />
+          <path d="M26 30 L74 30 L70 86 L30 86 Z" fill="#d9a441" />
+          <path d="M50 30 L74 30 L70 86 L50 86 Z" fill="#c08a32" />
+          <path d="M26 30 L74 30 L73 38 L27 38 Z" fill="#8a6224" />
+          <line x1="50" y1="38" x2="50" y2="86" stroke="#a16207" strokeWidth="1.5" opacity="0.5" />
+        </svg>
+      );
+
+    case "glass_bottle":
+      return (
+        <svg viewBox="0 0 100 100" className={className} width={size} height={size}>
+          <path d="M44 14 L56 14 L56 34 Q68 44 68 58 L68 84 Q68 88 64 88 L36 88 Q32 88 32 84 L32 58 Q32 44 44 34 Z" fill="#4d7c52" />
+          <path d="M50 14 L56 14 L56 34 Q68 44 68 58 L68 84 Q68 88 64 88 L50 88 Z" fill="#3f6644" />
+          <rect x="42" y="12" width="16" height="6" rx="1.5" fill="#b91c1c" />
+          <rect x="34" y="60" width="32" height="18" rx="2" fill="#f1f5f9" opacity="0.9" />
+          <path d="M39 40 Q37 54 37 82" fill="none" stroke="#a7f3d0" strokeWidth="2.5" opacity="0.5" strokeLinecap="round" />
+        </svg>
+      );
+
+    case "aluminium_foil":
+      return (
+        <svg viewBox="0 0 100 100" className={className} width={size} height={size}>
+          <path d="M14 46 L26 22 L48 16 L70 20 L88 36 L84 60 L68 80 L44 84 L22 74 L10 60 Z" fill="#cbd5e1" />
+          <path d="M26 22 L48 16 L50 44 L30 50 Z" fill="#f1f5f9" />
+          <path d="M48 16 L70 20 L74 42 L50 44 Z" fill="#a9b6c6" />
+          <path d="M70 20 L88 36 L84 60 L74 42 Z" fill="#e2e8f0" />
+          <path d="M14 46 L26 22 L30 50 L22 74 L10 60 Z" fill="#94a3b8" />
+          <path d="M30 50 L50 44 L52 70 L28 72 Z" fill="#eef2f6" />
+          <path d="M50 44 L74 42 L68 80 L52 70 Z" fill="#b6c2d1" />
+          <path d="M22 74 L28 72 L52 70 L44 84 Z" fill="#dbe2ea" />
+          <path d="M84 60 L68 80 L74 42 Z" fill="#8fa0b3" opacity="0.65" />
+        </svg>
+      );
+
+    case "egg_carton":
+      return (
+        <svg viewBox="0 0 100 100" className={className} width={size} height={size}>
+          <path d="M12 52 Q20 30 28 52 Q36 30 44 52 Q52 30 60 52 Q68 30 76 52 L88 52 L88 58 L12 58 Z" fill="#dcd2c0" />
+          <path d="M12 58 L88 58 L88 74 Q50 80 12 74 Z" fill="#b3a68e" />
+          <path d="M28 52 Q28 38 34 40 Q30 44 32 52 Z" fill="#f2ece0" opacity="0.8" />
+          <path d="M44 52 Q44 38 50 40 Q46 44 48 52 Z" fill="#f2ece0" opacity="0.8" />
+          <path d="M60 52 Q60 38 66 40 Q62 44 64 52 Z" fill="#f2ece0" opacity="0.8" />
+          <rect x="42" y="70" width="16" height="8" rx="2" fill="#9b8f78" />
+          <line x1="12" y1="58" x2="88" y2="58" stroke="#8f8371" strokeWidth="2.5" />
+        </svg>
+      );
+
+    case "orange_peel":
+      return (
+        <svg viewBox="0 0 100 100" className={className} width={size} height={size}>
+          <path
+            d="M50 20 A30 30 0 0 1 80 50 A30 30 0 0 1 50 80 A24 24 0 0 1 26 56 A19 19 0 0 1 45 37 A14 14 0 0 1 59 51 A9 9 0 0 1 50 60"
+            fill="none" stroke="#fde8d0" strokeWidth="13" strokeLinecap="round"
+          />
+          <path
+            d="M50 20 A30 30 0 0 1 80 50 A30 30 0 0 1 50 80 A24 24 0 0 1 26 56 A19 19 0 0 1 45 37 A14 14 0 0 1 59 51 A9 9 0 0 1 50 60"
+            fill="none" stroke="#f97316" strokeWidth="8" strokeLinecap="round"
+          />
+          <path
+            d="M50 20 A30 30 0 0 1 80 50"
+            fill="none" stroke="#fdba74" strokeWidth="2.5" strokeLinecap="round" opacity="0.8"
+          />
+          <circle cx="72" cy="66" r="1.6" fill="#c2410c" opacity="0.5" />
+          <circle cx="34" cy="38" r="1.6" fill="#c2410c" opacity="0.5" />
+        </svg>
+      );
+
+    case "cigarette_butt":
+      return (
+        <svg viewBox="0 0 100 100" className={className} width={size} height={size}>
+          <rect x="18" y="42" width="44" height="18" rx="3" fill="#f8fafc" stroke="#e2e8f0" strokeWidth="1.5" />
+          <rect x="58" y="42" width="26" height="18" rx="3" fill="#d9a441" />
+          <rect x="58" y="42" width="4" height="18" fill="#b98a2e" />
+          <path d="M66 44 L66 58 M72 44 L72 58 M78 44 L78 58" stroke="#b98a2e" strokeWidth="1.5" opacity="0.7" />
+          <path d="M18 42 Q12 51 18 60 Z" fill="#334155" />
+          <circle cx="22" cy="51" r="2.5" fill="#1e293b" opacity="0.5" />
+        </svg>
+      );
+
+    case "plastic_bag":
+      return (
+        <svg viewBox="0 0 100 100" className={className} width={size} height={size}>
+          <path d="M34 34 Q34 20 42 20 Q48 20 48 32" fill="none" stroke="#7dd3fc" strokeWidth="3" strokeLinecap="round" />
+          <path d="M52 32 Q52 20 58 20 Q66 20 66 34" fill="none" stroke="#7dd3fc" strokeWidth="3" strokeLinecap="round" />
+          <path d="M26 34 L74 34 Q80 62 72 86 Q50 92 28 86 Q20 62 26 34 Z" fill="#bae6fd" />
+          <path d="M50 34 L74 34 Q80 62 72 86 Q61 89 50 89 Z" fill="#7dd3fc" opacity="0.6" />
+          <path d="M34 44 Q38 64 36 82" fill="none" stroke="#e0f2fe" strokeWidth="2.5" strokeLinecap="round" />
+        </svg>
+      );
+
+    case "coffee_cup":
+      return (
+        <svg viewBox="0 0 100 100" className={className} width={size} height={size}>
+          <path d="M30 30 L38 84 Q38 88 50 88 Q62 88 62 84 L70 30 Z" fill="#fdfcfa" stroke="#e7e2da" strokeWidth="2" />
+          <path d="M28 26 Q50 20 72 26 L71 34 Q50 28 29 34 Z" fill="#78350f" />
+          <ellipse cx="50" cy="26" rx="21" ry="4.5" fill="#92400e" />
+          <path d="M33 48 L67 48 L64 70 L36 70 Z" fill="#c2884a" />
+          <path d="M36 56 Q50 60 64 56" fill="none" stroke="#8a5a26" strokeWidth="2" opacity="0.7" />
+        </svg>
+      );
+
+    case "plastic_straw":
+      return (
+        <svg viewBox="0 0 100 100" className={className} width={size} height={size}>
+          <path d="M40 22 L54 22 L54 34 L40 34 Z" fill="#ef4444" />
+          <path d="M40 34 L54 34 L54 50 L40 50 Z" fill="#fca5a5" />
+          <path d="M40 36 H54 M40 40 H54 M40 44 H54 M40 48 H54" stroke="#dc2626" strokeWidth="2.2" />
+          <path d="M40 50 L54 50 L60 88 L46 88 Z" fill="#ef4444" />
+          <path d="M44 52 L50 86" stroke="#fecaca" strokeWidth="2.5" strokeLinecap="round" opacity="0.85" />
+          <ellipse cx="47" cy="22" rx="7" ry="3" fill="#b91c1c" />
+          <ellipse cx="47" cy="22" rx="4.5" ry="1.8" fill="#7f1d1d" />
+        </svg>
+      );
+
+    case "toothbrush":
+      return (
+        <svg viewBox="0 0 100 100" className={className} width={size} height={size}>
+          <path d="M8 54 L58 45 Q66 44 67 50 Q68 56 60 57 L10 64 Q4 65 3 59 Q2 54 8 54 Z" fill="#2563eb" />
+          <path d="M9 59 L60 51 Q68 50 67 50 Q68 56 60 57 L10 64 Q4 65 3 59 Z" fill="#1e40af" opacity="0.55" />
+          <rect x="62" y="41" width="30" height="16" rx="6" fill="#e2e8f0" transform="rotate(-7 77 49)" />
+          <path d="M66 39 V25 M74 38 V23 M82 37 V22 M89 36 V24" stroke="#f8fafc" strokeWidth="6" strokeLinecap="round" />
+          <path d="M66 39 V25 M74 38 V23 M82 37 V22 M89 36 V24" stroke="#94a3b8" strokeWidth="1.8" strokeLinecap="round" />
+          <circle cx="12" cy="59" r="3" fill="#1e40af" opacity="0.5" />
+        </svg>
+      );
+
+    case "cotton_shirt":
+      return (
+        <svg viewBox="0 0 100 100" className={className} width={size} height={size}>
+          <path d="M36 22 L44 20 Q50 27 56 20 L64 22 L84 34 L76 46 L68 42 L68 82 Q50 86 32 82 L32 42 L24 46 L16 34 Z" fill="#60a5fa" />
+          <path d="M50 24 L64 22 L84 34 L76 46 L68 42 L68 82 Q59 84 50 84 Z" fill="#3b82f6" />
+          <path d="M44 20 Q50 30 56 20" fill="none" stroke="#1d4ed8" strokeWidth="2" strokeLinecap="round" />
+          <path d="M32 70 Q50 74 68 70" fill="none" stroke="#93c5fd" strokeWidth="2" opacity="0.7" />
+        </svg>
+      );
+
+    case "wool_sock":
+      return (
+        <svg viewBox="0 0 100 100" className={className} width={size} height={size}>
+          <path d="M38 18 L64 18 L64 54 Q64 66 52 72 L32 82 Q22 86 18 78 Q14 70 22 64 L36 54 Q38 50 38 44 Z" fill="#e11d48" />
+          <path d="M51 18 L64 18 L64 54 Q64 66 52 72 L36 81 L30 72 L48 62 Q51 58 51 50 Z" fill="#be123c" />
+          <rect x="36" y="16" width="30" height="10" rx="3" fill="#fda4af" />
+          <path d="M40 30 H62 M40 38 H62" stroke="#fda4af" strokeWidth="2" opacity="0.6" />
+        </svg>
+      );
+
     default:
       return (
         <svg viewBox="0 0 100 100" className={className} width={size} height={size}>
