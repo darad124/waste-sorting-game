@@ -9,13 +9,20 @@ import { LevelResultScreen } from "./screens/LevelResultScreen";
 import { EducationScreen } from "./screens/EducationScreen";
 import { TrashDetectiveScreen } from "./screens/TrashDetectiveScreen";
 import { TriviaScreen } from "./screens/TriviaScreen";
-import { ContaminationHuntScreen } from "./screens/ContaminationHuntScreen";
+import { Hourglass } from "lucide-react";
 import { backgroundMusic } from "./utils/audio";
 import { parseShareQuery } from "./utils/share";
 import { SHARE_CARDS } from "./components/shareCards";
+import { ModeLoader } from "./components/ModeLoader";
 import { logVisit } from "./api/analytics";
 
 const AdminDashboard = lazy(() => import("./screens/AdminDashboard"));
+
+// Outlast carries 25 hand-drawn objects, which is most of a megabyte of SVG
+// source. Somebody who came here to play Arcade should not download it.
+const OutlastScreen = lazy(() =>
+  import("./screens/OutlastScreen").then((m) => ({ default: m.OutlastScreen })),
+);
 
 const isAdminRoute = () =>
   typeof window !== "undefined" && window.location.hash.replace(/^#/, "").startsWith("admin");
@@ -149,7 +156,23 @@ function App() {
       case "trivia":
         return <TriviaScreen onBack={() => setScreen("home")} />;
       case "contamination":
-        return <ContaminationHuntScreen onBack={() => setScreen("home")} />;
+        // The route id stays "contamination" although the mode is now Outlast,
+        // so every /share/mode/contamination link already in the wild keeps
+        // resolving.
+        return (
+          <Suspense
+            fallback={
+              <ModeLoader
+                fullBleed
+                background="#FDE047"
+                label="Loading Outlast"
+                icon={<Hourglass size={20} />}
+              />
+            }
+          >
+            <OutlastScreen onBack={() => setScreen("home")} />
+          </Suspense>
+        );
       case "completed":
         return (
           <LevelResultScreen
@@ -183,7 +206,16 @@ function App() {
     );
   }
 
-  if (ShareCard) return <ShareCard />;
+  // No loader here on purpose: the only thing that renders a card is the
+  // capture script, which waits for the screenshot rather than for a
+  // spinner, and a spinner could land in the poster.
+  if (ShareCard) {
+    return (
+      <Suspense fallback={<div style={{ width: 1200, height: 630 }} />}>
+        <ShareCard />
+      </Suspense>
+    );
+  }
 
   return (
     <div className="app-shell w-screen bg-[#fde047] font-sans antialiased text-slate-800 overflow-hidden select-none relative flex flex-col">

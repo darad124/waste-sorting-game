@@ -570,3 +570,291 @@ body,
     animation: none !important;
   }
 }
+
+/* ====================================================================== *
+ *  Outlast
+ *
+ *  Same family as the rest of the app, deliberately. The first version was a
+ *  dark stage and it looked like a different product bolted on — a mode
+ *  should read as a room in the same house, not a different house.
+ *
+ *  So it IS the app's yellow — #FDE047, flat, the same value the shell uses.
+ *  No gradient, no sweep: the objects are grounded by their own contact
+ *  shadows, which is the honest way to do it anyway. The accent is that hue
+ *  taken dark (#96600C) and the text is a warm near-black, both of which
+ *  carry on a saturated ground where a paler gold would vanish.
+ *
+ *  Shadows are warm brown rather than black, for the same reason a shadow on
+ *  grass is green: it is the colour of what fills it, and what fills these is
+ *  a warm room.
+ *
+ *  Everything is namespaced `ol-`. The reduced-motion block is scoped to that
+ *  list rather than a global `* { animation: none }`, which would silently
+ *  stop every animation in the rest of the app.
+ * ====================================================================== */
+
+.ol-root {
+  --ol-ink: #2A2418;
+  /* Muted text has to be darker on a saturated ground than it would be on a
+     cream one, or it disappears into the yellow. */
+  --ol-dim: #7A6A44;
+  --ol-accent: #96600C;
+  --ol-line: #E9D9A8;
+  --ol-panel: #FFFDF6;
+
+  position: absolute; inset: 0; z-index: 50;
+  display: flex; flex-direction: column;
+  background: #FDE047; color: var(--ol-ink);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden; user-select: none;
+}
+
+.ol-bar {
+  flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(2,6,23,.07);
+  background: rgba(255,255,255,.55);
+  backdrop-filter: blur(8px);
+}
+.ol-back {
+  display: grid; place-items: center; width: 34px; height: 34px;
+  border: 1px solid rgba(2,6,23,.1); border-radius: 12px;
+  color: #5A5140; background: rgba(255,255,255,.7); cursor: pointer;
+  transition: color .2s, border-color .2s;
+}
+.ol-back:hover { color: var(--ol-ink); border-color: rgba(2,6,23,.26); }
+.ol-title {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 13px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--ol-accent);
+}
+.ol-streak { text-align: right; line-height: 1; min-width: 46px; }
+.ol-streak-n { display: block; font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.ol-streak-l { display: block; font-size: 8px; letter-spacing: .2em; text-transform: uppercase; color: var(--ol-dim); margin-top: 3px; }
+
+.ol-stage {
+  flex: 1 1 0; min-height: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: clamp(4px, 1.4vh, 10px);
+  padding: clamp(8px, 2vh, 16px) 14px clamp(10px, 2vh, 18px);
+  background: #FDE047;
+}
+
+.ol-clock { text-align: center; line-height: 1; }
+.ol-num {
+  font-size: clamp(32px, min(8vw, 9vh), 74px); font-weight: 800;
+  letter-spacing: -.03em; font-variant-numeric: tabular-nums; color: var(--ol-ink);
+}
+.ol-unit {
+  font-size: clamp(9px, 1.8vw, 12px); text-transform: uppercase;
+  letter-spacing: .22em; color: var(--ol-dim); margin-top: 7px;
+}
+.ol-ask {
+  font-size: clamp(11px, 2.2vw, 14px); font-weight: 700;
+  color: #6B5C34; text-align: center; min-height: 1.4em;
+}
+/* Announced, never drawn. The result is obvious on screen — the objects have
+   just spent six seconds demonstrating it — but somebody who cannot see that
+   still has to be told. */
+.ol-sr {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+
+/* min-height:0 on the grid AND the lane is load-bearing. Without it the row
+   is sized by its content, the SVG never agrees to shrink, and the objects
+   run off the bottom of any short viewport. */
+.ol-race {
+  flex: 1 1 0; min-height: 0; width: 100%; max-width: 880px;
+  display: grid; grid-template-columns: 1fr 1fr; align-items: stretch;
+  gap: clamp(10px, 4vw, 48px);
+}
+.ol-lane {
+  position: relative; min-height: 0;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  background: none; border: 0; padding: 0; color: inherit; font: inherit;
+  border-radius: 14px; cursor: pointer;
+  transition: background .18s ease, transform .18s ease, opacity .3s ease;
+}
+.ol-lane:disabled { cursor: default; }
+.ol-lane:not(:disabled):hover { background: rgba(255,255,255,.4); transform: translateY(-3px); }
+.ol-lane.ol-picked { background: rgba(255,255,255,.34); }
+.ol-lane.ol-dim { opacity: .74; }
+.ol-lane svg { flex: 1 1 0; min-height: 0; width: 100%; display: block; }
+.ol-floor {
+  height: 1px; width: 100%; margin-top: 2px;
+  background: linear-gradient(to right, transparent, rgba(107,81,36,.3) 18%, rgba(107,81,36,.3) 82%, transparent);
+}
+.ol-tag {
+  text-align: center; margin-top: clamp(5px, 1.4vh, 12px);
+  font-size: clamp(10px, 2vw, 13px); font-weight: 700;
+}
+.ol-verdict {
+  display: block; margin-top: 4px; font-size: clamp(9px, 1.7vw, 11px);
+  font-weight: 600; color: var(--ol-dim); opacity: 0; min-height: 1.3em;
+  transition: opacity .45s ease;
+}
+.ol-verdict.ol-show { opacity: 1; }
+.ol-verdict.ol-gone { color: #A8563A; }
+.ol-verdict.ol-warn { color: #9A6510; }
+.ol-verdict.ol-here { color: var(--ol-accent); }
+
+.ol-foot { min-height: 40px; display: grid; place-items: center; }
+.ol-hint { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #8A7638; }
+.ol-cond { text-transform: none; letter-spacing: 0; font-size: 11px; max-width: 420px; text-align: center; line-height: 1.5; }
+.ol-next {
+  background: rgba(255,255,255,.7); border: 1px solid rgba(2,6,23,.12); color: #5A5140;
+  font: inherit; font-size: 11px; font-weight: 700; letter-spacing: .16em;
+  text-transform: uppercase; padding: 9px 20px; border-radius: 999px;
+  cursor: pointer; transition: color .2s, border-color .2s, background .2s;
+}
+.ol-next:hover { color: var(--ol-ink); border-color: rgba(2,6,23,.3); background: #fff; }
+
+/* The panels sit in the MIDDLE of the screen, over a scrim. They arrive after
+   the race has finished, so there is nothing left to watch behind them — and
+   the middle is where the eye already is. */
+.ol-scrim {
+  position: absolute; inset: 0; z-index: 55;
+  /* Light enough that the result you have just watched is still visible
+     behind it. The panel carries its own surface and shadow, so the scrim
+     only has to separate them, not hide anything. */
+  background: rgba(253,224,71,.55);
+  backdrop-filter: blur(1px);
+}
+.ol-centre {
+  position: absolute; inset: 0; z-index: 60;
+  display: grid; place-items: center; padding: 20px;
+  pointer-events: none;
+}
+.ol-centre > * { pointer-events: auto; }
+
+/* Centred by the grid, NOT by translateX(-50%). framer-motion animates
+   `transform` and its final value replaces whatever the stylesheet put there,
+   so the panel simply walks off to one side. Same trap the Park's butterfly
+   fell into. */
+.ol-note {
+  width: min(520px, 100%);
+  background: var(--ol-panel); border: 1px solid var(--ol-line);
+  border-radius: 18px; padding: 20px 22px;
+  box-shadow: 0 18px 40px -18px rgba(107,81,36,.4);
+}
+.ol-note-k {
+  display: block; font-size: 9px; font-weight: 800; letter-spacing: .22em;
+  text-transform: uppercase; color: var(--ol-accent); margin-bottom: 8px;
+}
+/* The subject of the line. Without it the card reads "Back on a shelf within
+   weeks" and never says what is. */
+.ol-note-k em, .ol-over-note b em {
+  font-style: normal; color: var(--ol-ink);
+}
+.ol-note-k em::before, .ol-over-note b em::before {
+  content: "\00a0\00a0\00b7\00a0\00a0"; color: rgba(169,109,18,.45);
+}
+.ol-note p { margin: 0; font-size: 15px; line-height: 1.6; color: #453D30; }
+.ol-note-actions { margin-top: 16px; display: flex; gap: 10px; align-items: stretch; }
+.ol-note-actions .ol-note-go { margin-top: 0; flex: 1 1 auto; }
+.ol-note-actions > div { display: flex; }
+.ol-note-actions button[aria-haspopup="menu"] { height: 100%; border-radius: 999px; padding: 0 16px; }
+.ol-note-go {
+  margin-top: 16px; width: 100%;
+  background: #F0C74E; border: 0; color: #3A2F12;
+  font: inherit; font-size: 12px; font-weight: 800; letter-spacing: .14em;
+  text-transform: uppercase; padding: 12px 20px; border-radius: 999px; cursor: pointer;
+  transition: background .2s;
+}
+.ol-note-go:hover { background: #F7D468; }
+
+.ol-milestone {
+  position: absolute; top: 34%; left: 0; right: 0; text-align: center;
+  z-index: 70; pointer-events: none;
+  font-size: clamp(20px, 5vw, 34px); font-weight: 800; letter-spacing: -.02em;
+  color: var(--ol-accent); text-shadow: 0 2px 18px rgba(240,199,78,.8);
+}
+
+.ol-over {
+  width: min(520px, 100%);
+  background: var(--ol-panel); border: 1px solid var(--ol-line);
+  border-radius: 18px; padding: 20px 22px;
+  display: flex; flex-direction: column; gap: 16px;
+  box-shadow: 0 18px 40px -18px rgba(107,81,36,.4);
+}
+.ol-over-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
+.ol-over-row { display: flex; gap: 30px; }
+.ol-over-k { font-size: 9px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: var(--ol-dim); }
+.ol-over-v { font-size: 30px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.ol-over-line { margin: 0; font-size: 13px; color: #6B5C34; text-align: right; max-width: 55%; line-height: 1.5; }
+.ol-over-note {
+  margin: 0; font-size: 13px; line-height: 1.6; color: #453D30;
+  border-top: 1px solid var(--ol-line); padding-top: 14px;
+}
+.ol-over-note b {
+  display: block; font-size: 9px; font-weight: 800; letter-spacing: .22em;
+  text-transform: uppercase; color: var(--ol-accent); margin-bottom: 6px;
+}
+.ol-over-actions { display: flex; gap: 10px; align-items: center; }
+.ol-again {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: #F0C74E; border: 0; color: #3A2F12;
+  font: inherit; font-size: 12px; font-weight: 800; letter-spacing: .1em;
+  text-transform: uppercase; padding: 12px 22px; border-radius: 999px; cursor: pointer;
+  transition: background .2s;
+}
+.ol-again:hover { background: #F7D468; }
+
+@media (max-width: 420px) {
+  .ol-note { padding: 16px 17px; }
+  .ol-note p { font-size: 14px; }
+  .ol-over { padding: 16px 17px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ol-lane, .ol-verdict, .ol-back, .ol-next, .ol-again, .ol-note-go { transition: none; }
+}
+
+
+
+/* ====================================================================== *
+ *  Mode loader — see src/components/ModeLoader.tsx
+ * ====================================================================== */
+
+.ml-root {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 14px; width: 100%; height: 100%; padding: 24px;
+  color: #4A4024;
+}
+.ml-full { position: absolute; inset: 0; z-index: 50; }
+.ml-icon {
+  display: grid; place-items: center;
+  width: 44px; height: 44px; border-radius: 16px;
+  background: rgba(255,255,255,.55); border: 1px solid rgba(42,36,24,.12);
+  color: #96600C;
+  animation: ml-breathe 1.6s ease-in-out infinite;
+}
+.ml-label {
+  margin: 0; font-size: 11px; font-weight: 800;
+  letter-spacing: .18em; text-transform: uppercase; text-align: center;
+}
+/* An indeterminate sweep, not a percentage. We do not know how big the
+   chunk is or how fast the connection is, and a fake percentage that
+   stalls at 90% is worse than no number at all. */
+.ml-bar {
+  width: 148px; height: 3px; border-radius: 999px;
+  background: rgba(42,36,24,.13); overflow: hidden;
+}
+.ml-bar span {
+  display: block; width: 42%; height: 100%; border-radius: 999px;
+  background: #96600C;
+  animation: ml-sweep 1.15s cubic-bezier(.45,.05,.55,.95) infinite;
+}
+@keyframes ml-breathe {
+  0%, 100% { transform: scale(1); opacity: .85; }
+  50% { transform: scale(1.09); opacity: 1; }
+}
+@keyframes ml-sweep {
+  0% { transform: translateX(-110%); }
+  100% { transform: translateX(345%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ml-icon { animation: none; }
+  .ml-bar span { animation: none; width: 100%; opacity: .5; }
+}

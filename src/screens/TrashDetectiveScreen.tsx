@@ -10,6 +10,7 @@ import { playSound } from "../utils/audio";
 import { ShareButton } from "../components/ShareButton";
 import { FeedbackPrompt } from "../components/FeedbackPrompt";
 import { canPrompt } from "../utils/feedbackGate";
+import { ModeLoader } from "../components/ModeLoader";
 import {
   CASES,
   CLUE_ART,
@@ -332,12 +333,10 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
             single frame on a warm cache, and worth saying out loud on a
             cold one rather than showing an empty frame. */}
         {gameState === "loading" && selectedScene && (
-          <div className="flex flex-col items-center gap-3 text-slate-700">
-            <Search size={22} className="animate-pulse text-blue-600" />
-            <p className="text-xs font-black uppercase tracking-[0.18em]">
-              Opening the {selectedScene.title} case
-            </p>
-          </div>
+          <ModeLoader
+            label={`Opening the ${selectedScene.title} case`}
+            icon={<Search size={20} />}
+          />
         )}
 
         {/* State 2: Active Gameplay Screen */}
@@ -391,7 +390,18 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
               <div className="absolute inset-0 rounded-3xl overflow-hidden bg-slate-50">
                 {/* The case's own artwork. Its chunk was fetched before the
                     round started, so this never actually suspends. */}
-                <Suspense fallback={null}>
+                {/* preload() has already resolved by the time we get here, so
+                    this is belt and braces — but a null fallback would drop
+                    the backdrop out from under the clue overlay if it ever
+                    did fire. */}
+                <Suspense
+                  fallback={
+                    <ModeLoader
+                      label={`Opening the ${selectedScene.title} case`}
+                      icon={<Search size={20} />}
+                    />
+                  }
+                >
                   <selectedScene.Scene onDecoy={handleDecoy} />
                 </Suspense>
               </div>

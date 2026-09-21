@@ -21,7 +21,7 @@ const targets = [
 // rest are captured from live gameplay, which is the right card for a mode
 // whose screen IS the picture — but Trash Detective's screen is a menu, and
 // a photograph of a menu tells a stranger nothing about the game.
-const posterTargets = new Set(["mode-detective"]);
+const posterTargets = new Set(["mode-detective", "mode-contamination"]);
 const urlFor = (target) =>
   posterTargets.has(target) ? `${baseUrl}/?card=${target}` : `${baseUrl}/?share=${target}`;
 
@@ -52,6 +52,9 @@ for (const target of targets) {
     { stdio: "ignore" },
   );
 
+  // Chrome writes the PNG and then never exits, so the wait is on the FILE
+  // and the process is killed once it lands. Waiting on the process instead
+  // looks exactly like a hang.
   await waitForScreenshot(outputPath, 10000);
   browser.kill("SIGTERM");
   console.log(`Captured ${target}`);

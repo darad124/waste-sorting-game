@@ -15,6 +15,9 @@ interface ShareButtonProps {
   label?: string;
   compact?: boolean;
   className?: string;
+  /** Replaces the mode's stock share line. For sharing a specific thing the
+   *  player has just seen rather than the mode in general. */
+  text?: string;
 }
 
 const SOCIAL_LABELS = {
@@ -30,6 +33,7 @@ export const ShareButton: FC<ShareButtonProps> = ({
   label = "Share result",
   compact = false,
   className = "",
+  text,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -59,7 +63,7 @@ export const ShareButton: FC<ShareButtonProps> = ({
     try {
       await navigator.share({
         title: details.title,
-        text: getShareText(target),
+        text: text ?? getShareText(target),
         url: getShareUrl(target),
       });
       setIsOpen(false);
@@ -92,7 +96,7 @@ export const ShareButton: FC<ShareButtonProps> = ({
 
   const openSocialShare = (platform: keyof typeof SOCIAL_LABELS) => {
     window.open(
-      getSocialShareUrl(platform, target),
+      getSocialShareUrl(platform, target, text),
       "_blank",
       "noopener,noreferrer,width=720,height=640",
     );

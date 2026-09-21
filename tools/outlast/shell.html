@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Outlast</title>
+<!--
+  GENERATED. Edit items.js / decay.js / harness.js / shell.html and run
+      node tools/outlast/build.mjs
+  The libraries are the source of truth; they are inlined here only because
+  the preview pane serves a local file as a data: URL, which cannot fetch a
+  sibling module.
+-->
+<style>
+  :root { --bg:#14161A; --ink:#F4F1EA; --dim:#8B8F98; --accent:#E8C15A; }
+  * { box-sizing: border-box; }
+  html, body {
+    margin:0; height:100%; background:var(--bg); color:var(--ink);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased; overflow:hidden;
+  }
+  #stage {
+    height:100%; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; gap:clamp(4px,1.5vh,10px);
+    padding:clamp(10px,2.5vh,20px) 16px clamp(14px,3vh,28px);
+    background: radial-gradient(120% 80% at 50% 8%, #2A2F37 0%, #14161A 62%);
+  }
+  .clock { text-align:center; line-height:1; }
+  .clock .n {
+    font-size:clamp(36px,min(8.5vw,10vh),86px); font-weight:800;
+    letter-spacing:-.03em; font-variant-numeric:tabular-nums;
+  }
+  .clock .u {
+    font-size:clamp(10px,1.9vw,13px); text-transform:uppercase;
+    letter-spacing:.22em; color:var(--dim); margin-top:8px;
+  }
+  .ask {
+    font-size:clamp(12px,2.3vw,15px); font-weight:700; letter-spacing:.02em;
+    color:var(--dim); text-align:center; min-height:1.4em;
+  }
+  .ask.good { color:#7FD08A; } .ask.bad { color:#D98A72; }
+
+  /* min-height:0 on the grid and the lane is load-bearing: without it the
+     row is sized by its content, the SVG never agrees to shrink, and the
+     objects run off the bottom of any short viewport. */
+  #race {
+    flex:1 1 0; min-height:0; width:100%; max-width:900px;
+    display:grid; grid-template-columns:1fr 1fr; align-items:stretch;
+    gap:clamp(12px,5vw,60px);
+  }
+  .lane {
+    position:relative; min-height:0; display:flex; flex-direction:column;
+    justify-content:flex-end; background:none; border:0; padding:0;
+    color:inherit; font:inherit; cursor:pointer;
+    border-radius:14px; transition:background .18s, transform .18s;
+  }
+  .lane:hover:not(.locked) { background:rgba(255,255,255,.035); transform:translateY(-3px); }
+  .lane.locked { cursor:default; }
+  .lane.picked { background:rgba(232,193,90,.07); }
+  .lane svg { flex:1 1 0; min-height:0; width:100%; display:block; }
+  .floor {
+    height:1px; width:100%; margin-top:2px;
+    background:linear-gradient(to right, transparent, #3A4048 18%, #3A4048 82%, transparent);
+  }
+  .tag {
+    text-align:center; margin-top:clamp(6px,1.6vh,14px);
+    font-size:clamp(11px,2.2vw,14px); font-weight:700;
+  }
+  .tag .verdict {
+    display:block; margin-top:5px; font-size:clamp(10px,1.9vw,12px);
+    font-weight:600; color:var(--dim); opacity:0; transition:opacity .5s ease;
+    min-height:1.3em;
+  }
+  .tag .verdict.show { opacity:1; }
+  .tag .verdict.gone { color:#C98A72; }
+  .tag .verdict.warn { color:#E0A85C; }
+  .tag .verdict.here { color:var(--accent); }
+  #next {
+    background:none; border:1px solid #3A4048; color:var(--dim); font:inherit;
+    font-size:12px; font-weight:700; letter-spacing:.16em; text-transform:uppercase;
+    padding:10px 22px; border-radius:999px; cursor:pointer;
+    transition:color .2s, border-color .2s;
+  }
+  #next:hover { color:var(--ink); border-color:#5A626C; }
+  @media (prefers-reduced-motion: reduce) {
+    .tag .verdict, .lane { transition:none; }
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="clock"><div class="n" id="num">—</div><div class="u" id="unit">tap one</div></div>
+  <div class="ask" id="ask">Which one outlasts the other?</div>
+  <div id="race"></div>
+  <button id="next">Next pair</button>
+</div>
+<script>
+(() => {
+"use strict";
+/*__LIB__*/
+})();
+</script>
+</body>
+</html>
