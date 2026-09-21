@@ -114,14 +114,27 @@ const PAIR_NOTES: Record<string, string> = {
     "An hour of use each. One's soil by summer, the other's still here in four centuries.",
 };
 
+export interface OutlastNote {
+  text: string;
+  /** Which object the line is about, or null when it is about the pair.
+   *
+   *  This is not decoration. The lines are written like headlines — "Back on
+   *  a shelf within weeks, for a fraction of the energy" — and a headline
+   *  with no subject is just a floating claim. The card has to say WHICH
+   *  thing, and stuffing the name into every sentence would flatten all of
+   *  them. So the subject sits in the kicker and the line keeps its punch. */
+  subjectId: string | null;
+}
+
 /** The line to show once a pair has finished racing. `longerId` is whichever
- *  of the two lasts longer — the caller knows, and it matters, because when
- *  there is no bespoke line for the pair we fall back to that item's fact.
- *  The long-lived side is the one people underestimate, so that is where the
- *  surprise lives. */
-export function noteFor(a: string, b: string, longerId: string): string {
+ *  of the two lasts longer — the caller knows, and it matters, because with no
+ *  bespoke line for the pair we fall back to that item's fact. The long-lived
+ *  side is the one people underestimate, so that is where the surprise is. */
+export function noteFor(a: string, b: string, longerId: string): OutlastNote {
   const key = [a, b].sort().join("|");
-  return PAIR_NOTES[key] ?? ITEM_FACTS[longerId] ?? "";
+  const pair = PAIR_NOTES[key];
+  if (pair) return { text: pair, subjectId: null };
+  return { text: ITEM_FACTS[longerId] ?? "", subjectId: longerId };
 }
 
 /** What to say when a run ends. The player has just lost; this is the last

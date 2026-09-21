@@ -222,7 +222,8 @@ export const OutlastScreen: React.FC<OutlastScreenProps> = ({ onBack }) => {
     deal();
   };
 
-  const note = pair.length === 2 && winner ? noteFor(pair[0].id, pair[1].id, winner.id) : "";
+  const note = pair.length === 2 && winner ? noteFor(pair[0].id, pair[1].id, winner.id) : null;
+  const noteSubject = note?.subjectId ? ITEMS[note.subjectId].name : null;
 
   return (
     <div className="ol-root">
@@ -316,10 +317,13 @@ export const OutlastScreen: React.FC<OutlastScreenProps> = ({ onBack }) => {
                     </div>
                     <p className="ol-over-line">{runSummary(streak)}</p>
                   </div>
-                  {note && (
+                  {note?.text && (
                     <p className="ol-over-note">
-                      <b>Did you know</b>
-                      {note}
+                      <b>
+                        Did you know
+                        {noteSubject && <em>{noteSubject}</em>}
+                      </b>
+                      {note.text}
                     </p>
                   )}
                   <div className="ol-over-actions">
@@ -337,8 +341,11 @@ export const OutlastScreen: React.FC<OutlastScreenProps> = ({ onBack }) => {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3, delay: 0.1 }}
                 >
-                  <span className="ol-note-k">Did you know</span>
-                  <p>{note}</p>
+                  <span className="ol-note-k">
+                    Did you know
+                    {noteSubject && <em>{noteSubject}</em>}
+                  </span>
+                  <p>{note?.text}</p>
                   <button className="ol-note-go" onClick={deal}>Next pair</button>
                 </motion.div>
               )}

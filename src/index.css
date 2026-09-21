@@ -740,6 +740,14 @@ body,
   display: block; font-size: 9px; font-weight: 800; letter-spacing: .22em;
   text-transform: uppercase; color: var(--ol-accent); margin-bottom: 8px;
 }
+/* The subject of the line. Without it the card reads "Back on a shelf within
+   weeks" and never says what is. */
+.ol-note-k em, .ol-over-note b em {
+  font-style: normal; color: var(--ol-ink);
+}
+.ol-note-k em::before, .ol-over-note b em::before {
+  content: "\00a0\00a0\00b7\00a0\00a0"; color: rgba(169,109,18,.45);
+}
 .ol-note p { margin: 0; font-size: 15px; line-height: 1.6; color: #453D30; }
 .ol-note-go {
   margin-top: 16px; width: 100%;
