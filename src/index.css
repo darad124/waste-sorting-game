@@ -578,11 +578,12 @@ body,
  *  dark stage and it looked like a different product bolted on — a mode
  *  should read as a room in the same house, not a different house.
  *
- *  So: the app's yellow (#FDE047) held at the same hue and dropped hard in
- *  chroma gives a warm cream, and a deeper tint of that same hue across the
- *  bottom becomes the surface the objects stand on. Analogous, one hue, no
- *  new colour introduced. The accent is that hue taken dark (#A96D12) so it
- *  still carries on a light ground, where the old gold would have vanished.
+ *  So it IS the app's yellow — #FDE047, the same value the shell uses — with
+ *  a lift at the top and a deeper tint of the same hue across the bottom to
+ *  make the surface the objects stand on. One hue throughout, no new colour
+ *  introduced. The accent is that hue taken dark (#A96D12) and the text is a
+ *  warm near-black, both of which carry on a saturated ground where a paler
+ *  gold would vanish.
  *
  *  Shadows are warm brown rather than black, for the same reason a shadow on
  *  grass is green: it is the colour of what fills it, and what fills these is
@@ -594,15 +595,17 @@ body,
  * ====================================================================== */
 
 .ol-root {
-  --ol-ink: #2E2820;
-  --ol-dim: #8A7C62;
-  --ol-accent: #A96D12;
-  --ol-line: #E4D3A4;
-  --ol-panel: #FFFCF2;
+  --ol-ink: #2A2418;
+  /* Muted text has to be darker on a saturated ground than it would be on a
+     cream one, or it disappears into the yellow. */
+  --ol-dim: #7A6A44;
+  --ol-accent: #96600C;
+  --ol-line: #E9D9A8;
+  --ol-panel: #FFFDF6;
 
   position: absolute; inset: 0; z-index: 50;
   display: flex; flex-direction: column;
-  background: #FCF3D9; color: var(--ol-ink);
+  background: #FDE047; color: var(--ol-ink);
   -webkit-font-smoothing: antialiased;
   overflow: hidden; user-select: none;
 }
@@ -611,7 +614,7 @@ body,
   flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between;
   padding: 12px 14px;
   border-bottom: 1px solid rgba(2,6,23,.07);
-  background: rgba(255,255,255,.62);
+  background: rgba(255,255,255,.55);
   backdrop-filter: blur(8px);
 }
 .ol-back {
@@ -639,8 +642,8 @@ body,
   gap: clamp(4px, 1.4vh, 10px);
   padding: clamp(8px, 2vh, 16px) 14px clamp(10px, 2vh, 18px);
   background:
-    radial-gradient(120% 70% at 50% 4%, rgba(255,255,255,.75) 0%, rgba(255,255,255,0) 58%),
-    linear-gradient(to bottom, #FEF8E6 0%, #FBEFCC 54%, #F2E1B0 78%, #EAD49A 100%);
+    radial-gradient(120% 68% at 50% 2%, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 60%),
+    linear-gradient(to bottom, #FEE86A 0%, #FDE047 46%, #F6D22C 76%, #EDC41C 100%);
 }
 
 .ol-clock { text-align: center; line-height: 1; }
@@ -654,7 +657,7 @@ body,
 }
 .ol-ask {
   font-size: clamp(11px, 2.2vw, 14px); font-weight: 700;
-  color: #6E6350; text-align: center; min-height: 1.4em;
+  color: #6B5C34; text-align: center; min-height: 1.4em;
 }
 /* Announced, never drawn. The result is obvious on screen — the objects have
    just spent six seconds demonstrating it — but somebody who cannot see that
@@ -680,8 +683,8 @@ body,
   transition: background .18s ease, transform .18s ease, opacity .3s ease;
 }
 .ol-lane:disabled { cursor: default; }
-.ol-lane:not(:disabled):hover { background: rgba(255,255,255,.55); transform: translateY(-3px); }
-.ol-lane.ol-picked { background: rgba(169,109,18,.09); }
+.ol-lane:not(:disabled):hover { background: rgba(255,255,255,.4); transform: translateY(-3px); }
+.ol-lane.ol-picked { background: rgba(255,255,255,.34); }
 .ol-lane.ol-dim { opacity: .74; }
 .ol-lane svg { flex: 1 1 0; min-height: 0; width: 100%; display: block; }
 .ol-floor {
@@ -703,7 +706,7 @@ body,
 .ol-verdict.ol-here { color: var(--ol-accent); }
 
 .ol-foot { min-height: 40px; display: grid; place-items: center; }
-.ol-hint { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #9B8E74; }
+.ol-hint { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #8A7638; }
 .ol-cond { text-transform: none; letter-spacing: 0; font-size: 11px; max-width: 420px; text-align: center; line-height: 1.5; }
 .ol-next {
   background: rgba(255,255,255,.7); border: 1px solid rgba(2,6,23,.12); color: #5A5140;
@@ -721,7 +724,7 @@ body,
   /* Light enough that the result you have just watched is still visible
      behind it. The panel carries its own surface and shadow, so the scrim
      only has to separate them, not hide anything. */
-  background: rgba(252,243,217,.46);
+  background: rgba(253,224,71,.55);
   backdrop-filter: blur(1px);
 }
 .ol-centre {
@@ -781,7 +784,7 @@ body,
 .ol-over-row { display: flex; gap: 30px; }
 .ol-over-k { font-size: 9px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: var(--ol-dim); }
 .ol-over-v { font-size: 30px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
-.ol-over-line { margin: 0; font-size: 13px; color: #6E6350; text-align: right; max-width: 55%; line-height: 1.5; }
+.ol-over-line { margin: 0; font-size: 13px; color: #6B5C34; text-align: right; max-width: 55%; line-height: 1.5; }
 .ol-over-note {
   margin: 0; font-size: 13px; line-height: 1.6; color: #453D30;
   border-top: 1px solid var(--ol-line); padding-top: 14px;
@@ -812,4 +815,4 @@ body,
 
 /* Held while the Outlast chunk loads. Matching its background rather than the
    app's yellow stops a flash of the wrong colour on the way in. */
-.ol-boot { position: absolute; inset: 0; background: #FCF3D9; z-index: 50; }
+.ol-boot { position: absolute; inset: 0; background: #FDE047; z-index: 50; }
