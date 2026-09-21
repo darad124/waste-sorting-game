@@ -9,9 +9,11 @@ import { LevelResultScreen } from "./screens/LevelResultScreen";
 import { EducationScreen } from "./screens/EducationScreen";
 import { TrashDetectiveScreen } from "./screens/TrashDetectiveScreen";
 import { TriviaScreen } from "./screens/TriviaScreen";
+import { Hourglass } from "lucide-react";
 import { backgroundMusic } from "./utils/audio";
 import { parseShareQuery } from "./utils/share";
 import { SHARE_CARDS } from "./components/shareCards";
+import { ModeLoader } from "./components/ModeLoader";
 import { logVisit } from "./api/analytics";
 
 const AdminDashboard = lazy(() => import("./screens/AdminDashboard"));
@@ -158,7 +160,16 @@ function App() {
         // so every /share/mode/contamination link already in the wild keeps
         // resolving.
         return (
-          <Suspense fallback={<div className="ol-boot" />}>
+          <Suspense
+            fallback={
+              <ModeLoader
+                fullBleed
+                background="#FDE047"
+                label="Loading Outlast"
+                icon={<Hourglass size={20} />}
+              />
+            }
+          >
             <OutlastScreen onBack={() => setScreen("home")} />
           </Suspense>
         );

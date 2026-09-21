@@ -811,6 +811,50 @@ body,
   .ol-lane, .ol-verdict, .ol-back, .ol-next, .ol-again, .ol-note-go { transition: none; }
 }
 
-/* Held while the Outlast chunk loads. Matching its background rather than the
-   app's yellow stops a flash of the wrong colour on the way in. */
-.ol-boot { position: absolute; inset: 0; background: #FDE047; z-index: 50; }
+
+
+/* ====================================================================== *
+ *  Mode loader — see src/components/ModeLoader.tsx
+ * ====================================================================== */
+
+.ml-root {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 14px; width: 100%; height: 100%; padding: 24px;
+  color: #4A4024;
+}
+.ml-full { position: absolute; inset: 0; z-index: 50; }
+.ml-icon {
+  display: grid; place-items: center;
+  width: 44px; height: 44px; border-radius: 16px;
+  background: rgba(255,255,255,.55); border: 1px solid rgba(42,36,24,.12);
+  color: #96600C;
+  animation: ml-breathe 1.6s ease-in-out infinite;
+}
+.ml-label {
+  margin: 0; font-size: 11px; font-weight: 800;
+  letter-spacing: .18em; text-transform: uppercase; text-align: center;
+}
+/* An indeterminate sweep, not a percentage. We do not know how big the
+   chunk is or how fast the connection is, and a fake percentage that
+   stalls at 90% is worse than no number at all. */
+.ml-bar {
+  width: 148px; height: 3px; border-radius: 999px;
+  background: rgba(42,36,24,.13); overflow: hidden;
+}
+.ml-bar span {
+  display: block; width: 42%; height: 100%; border-radius: 999px;
+  background: #96600C;
+  animation: ml-sweep 1.15s cubic-bezier(.45,.05,.55,.95) infinite;
+}
+@keyframes ml-breathe {
+  0%, 100% { transform: scale(1); opacity: .85; }
+  50% { transform: scale(1.09); opacity: 1; }
+}
+@keyframes ml-sweep {
+  0% { transform: translateX(-110%); }
+  100% { transform: translateX(345%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ml-icon { animation: none; }
+  .ml-bar span { animation: none; width: 100%; opacity: .5; }
+}
