@@ -26,6 +26,16 @@ import { canPrompt } from "../utils/feedbackGate";
  *  turns the animation into a victory lap nobody watches. So the tap changes
  *  nothing visible: no verdict line, no sound, no streak tick — the counter
  *  in the header would give it away on its own.
+ *
+ *  And when the race ends it STILL does not say "Right.", because by then
+ *  four things have already said it: the object you picked either fell apart
+ *  or did not, the verdict under each one spells out which, your pick is the
+ *  highlighted lane, and the streak counter has moved or it has not. A line
+ *  saying "Right." on top of all that is the game explaining its own joke.
+ *
+ *  The one thing that line was genuinely carrying is feedback for anybody who
+ *  cannot see the animation, so that moved to a live region instead of being
+ *  dropped.
  * ====================================================================== */
 
 const RULES = {
@@ -270,15 +280,19 @@ export const OutlastScreen: React.FC<OutlastScreenProps> = ({ onBack }) => {
           <div className="ol-unit" ref={unitRef}>your call</div>
         </div>
 
-        <div className={`ol-ask ${phase === "settled" ? (wasRight ? "ol-good" : "ol-bad") : ""}`}>
-          {phase === "ask" && "Which one outlasts the other?"}
-          {/* Deliberately blank while it runs. Nothing to read; watch. */}
-          {phase === "racing" && "\u00a0"}
-          {phase === "settled" &&
-            (wasRight
-              ? (streak >= 8 ? "Still going." : streak >= 3 ? "Right again." : "Right.")
-              : "Other way round.")}
+        {/* The question, and then nothing. Held at a fixed height so the rest
+            of the screen does not jump when it empties. */}
+        <div className="ol-ask">
+          {phase === "ask" ? "Which one outlasts the other?" : "\u00a0"}
         </div>
+
+        {/* Not shown. This is the only place the result is stated in words,
+            and it exists for anybody who cannot watch the objects do it. */}
+        <p className="ol-sr" role="status" aria-live="polite">
+          {phase === "settled" && winner
+            ? `${wasRight ? "Correct" : "Wrong"}. ${winner.name} lasts longer. Streak ${streak}.`
+            : ""}
+        </p>
 
         <div className="ol-race">
           {pair.map((item, i) => (
