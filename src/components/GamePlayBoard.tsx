@@ -141,6 +141,7 @@ export const GamePlayBoard: React.FC = () => {
     gameStatus,
     streak,
     recordSort,
+    recordMiss,
     finishSession,
   } = useGameStore();
 
@@ -275,7 +276,7 @@ export const GamePlayBoard: React.FC = () => {
       const missed = updated.filter((item) => !item.isDragged && !item.isSnapping && item.y > missLine);
       if (missed.length > 0) {
         missed.forEach((m) => {
-          recordSort(m.itemData, "general");
+          recordMiss(m.itemData);
           playSound.missed();
           
           // Trigger bucket shake on the correct bin to hint the player where it belonged
@@ -310,7 +311,7 @@ export const GamePlayBoard: React.FC = () => {
 
     frameId = requestAnimationFrame(updatePhysics);
     return () => cancelAnimationFrame(frameId);
-  }, [gameStatus, currentLevel, finishSession, recordSort]);
+  }, [gameStatus, currentLevel, finishSession, recordSort, recordMiss]);
 
   // Drag handlers
   const handleDragStart = (id: string) => {

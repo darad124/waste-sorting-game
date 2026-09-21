@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import type { WasteItem, WasteCategory } from "../data/wasteItems";
 import type { LevelConfig } from "../data/levels";
-import { LEVELS } from "../data/levels";
+import { LEVELS, starsFor } from "../data/levels";
 
 interface LevelResult {
   score: number;
@@ -12,7 +12,8 @@ interface LevelResult {
 
 interface SortedItemRecord {
   item: WasteItem;
-  chosenCategory: WasteCategory;
+  /** null when the item fell past the bins: the player chose nothing. */
+  chosenCategory: WasteCategory | null;
   isCorrect: boolean;
 }
 
@@ -50,6 +51,14 @@ interface GameState {
   pauseGame: () => void;
   resumeGame: () => void;
   recordSort: (item: WasteItem, chosenCategory: WasteCategory) => void;
+  /** An item allowed to fall past the bins. Always wrong, never scores. */
+  recordMiss: (item: WasteItem) => void;
+  /** Shared body of recordSort and recordMiss. Not called directly. */
+  registerOutcome: (
+    item: WasteItem,
+    chosenCategory: WasteCategory | null,
+    isCorrect: boolean,
+  ) => void;
   tickTimer: () => void;
   finishSession: () => void;
   exitSession: () => void;
@@ -191,16 +200,28 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   recordSort: (item, chosenCategory) => {
-    const isCorrect = item.category === chosenCategory;
-    
+    get().registerOutcome(item, chosenCategory, item.category === chosenCategory);
+  },
+
+  // A miss used to call recordSort(item, "general"), which meant that letting a
+  // general-waste item fall past the bins was scored as putting it in the
+  // general bin ON PURPOSE: full points, streak intact, and its Fact Book entry
+  // unlocked, for doing nothing at all. On the levels where general waste is in
+  // the pool that was free score. A miss is now always wrong, and the review
+  // screen says "missed" rather than claiming a bin the player never picked.
+  recordMiss: (item) => {
+    get().registerOutcome(item, null, false);
+  },
+
+  registerOutcome: (item, chosenCategory, isCorrect) => {
     set((state) => {
       // 1. Calculate new counts
       const nextCorrectCount = state.correctCount + (isCorrect ? 1 : 0);
       const nextWrongCount = state.wrongCount + (isCorrect ? 0 : 1);
       
       // 2. Streaks and scoring
-      let nextStreak = isCorrect ? state.streak + 1 : 0;
-      let nextMaxStreak = Math.max(state.maxStreak, nextStreak);
+      const nextStreak = isCorrect ? state.streak + 1 : 0;
+      const nextMaxStreak = Math.max(state.maxStreak, nextStreak);
       
       // Scoring formula:
       // Correct: +100 base score
@@ -268,20 +289,9 @@ export const useGameStore = create<GameState>((set, get) => ({
     // Check pass/fail based on accuracy limit
     const passed = accuracy >= currentLevel.passAccuracy;
     
-    // Calculate star rating
-    // 3 stars: 95-100% accuracy.
-    // 2 stars: 85-94% accuracy.
-    // 1 star: 80-84% accuracy.
-    let stars = 0;
-    if (passed) {
-      if (accuracy >= 0.95) {
-        stars = 3;
-      } else if (accuracy >= 0.85) {
-        stars = 2;
-      } else {
-        stars = 1;
-      }
-    }
+    // 3 stars from 95%, 2 from 85%, 1 for clearing the level's own pass mark.
+    // starsFor is the only place this is decided; see src/data/levels.ts.
+    const stars = starsFor(accuracy, currentLevel.passAccuracy);
 
     // Speed bonus: add 10 points per remaining second if passed
     const speedBonus = passed ? state.timeRemaining * 15 : 0;

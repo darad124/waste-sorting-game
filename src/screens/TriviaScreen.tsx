@@ -7,6 +7,7 @@ import { triggerConfetti } from "../components/ParticleEmitter";
 import { ShareButton } from "../components/ShareButton";
 import { FeedbackPrompt } from "../components/FeedbackPrompt";
 import { canPrompt } from "../utils/feedbackGate";
+import { useGameStore } from "../state/gameStore";
 
 interface TriviaQuestion {
   id: string;
@@ -64,14 +65,14 @@ const TRIVIA_BANK: TriviaQuestion[] = [
     statement: "Plastic shopping bags belong in standard home recycling bins.",
     isTrue: false,
     explanation: "Soft bags tangle and clog sorting machinery. Recycle them at grocery store drop-offs.",
-    itemId: "plastic_bottle"
+    itemId: "plastic_bag"
   },
   {
     id: "t8",
     statement: "Aluminum foil can be recycled if it is clean of food waste.",
     isTrue: true,
     explanation: "Like aluminum cans, clean foil can be melted down and recycled infinitely.",
-    itemId: "soda_can"
+    itemId: "aluminium_foil"
   },
   {
     id: "t9",
@@ -434,6 +435,13 @@ export const TriviaScreen: React.FC<TriviaScreenProps> = ({ onBack }) => {
       setCardPulseState("correct");
       setBgFlashColor("correct");
       playSound.triviaCorrect();
+
+      // Every question names the item it is about, and the card already draws
+      // it. Answering correctly unlocks that item's Fact Book entry, the same
+      // as sorting it correctly in Arcade or spotting it in Detective.
+      if (activeQuestion.itemId) {
+        useGameStore.getState().unlockEncyclopediaItem(activeQuestion.itemId);
+      }
       
       const newStreak = streak + 1;
       setStreak(newStreak);

@@ -14,6 +14,7 @@ import { backgroundMusic } from "./utils/audio";
 import { parseShareQuery } from "./utils/share";
 import { SHARE_CARDS } from "./components/shareCards";
 import { ModeLoader } from "./components/ModeLoader";
+import { ChunkBoundary } from "./components/ChunkBoundary";
 import { logVisit } from "./api/analytics";
 
 const AdminDashboard = lazy(() => import("./screens/AdminDashboard"));
@@ -160,18 +161,20 @@ function App() {
         // so every /share/mode/contamination link already in the wild keeps
         // resolving.
         return (
-          <Suspense
-            fallback={
-              <ModeLoader
-                fullBleed
-                background="#FDE047"
-                label="Loading Outlast"
-                icon={<Hourglass size={20} />}
-              />
-            }
-          >
-            <OutlastScreen onBack={() => setScreen("home")} />
-          </Suspense>
+          <ChunkBoundary label="Outlast" onBack={() => setScreen("home")}>
+            <Suspense
+              fallback={
+                <ModeLoader
+                  fullBleed
+                  background="#FDE047"
+                  label="Loading Outlast"
+                  icon={<Hourglass size={20} />}
+                />
+              }
+            >
+              <OutlastScreen onBack={() => setScreen("home")} />
+            </Suspense>
+          </ChunkBoundary>
         );
       case "completed":
         return (
@@ -200,9 +203,11 @@ function App() {
 
   if (admin) {
     return (
-      <Suspense fallback={<div style={{padding: 24}}>Loading dashboard…</div>}>
-        <AdminDashboard />
-      </Suspense>
+      <ChunkBoundary label="The dashboard">
+        <Suspense fallback={<div style={{ padding: 24 }}>Loading dashboard…</div>}>
+          <AdminDashboard />
+        </Suspense>
+      </ChunkBoundary>
     );
   }
 

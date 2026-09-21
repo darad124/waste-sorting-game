@@ -391,5 +391,139 @@ export const WASTE_ITEMS: WasteItem[] = [
     shortFact: "Modern commercial chewing gum is made of synthetic polymers (rubbers) and will not compost.",
     disposalInstruction: "Wrap in a piece of paper and discard in the grey general waste bin.",
     impactNote: "Littered gum is a significant cause of street pollution and is highly toxic if ingested by birds."
+  },
+  // --- OUTLAST ROSTER ---
+  // Outlast races two objects against each other and teaches something real
+  // about each one, so every object it shows needs a card here to unlock.
+  // Twelve of its twenty-five had no entry at all; these are those twelve.
+  // Five more already existed under a different id and are bridged in
+  // src/data/outlast.ts rather than duplicated here.
+  {
+    id: "paper_bag",
+    name: "Paper Bag",
+    category: "recyclable",
+    emoji: "🛍️",
+    difficulty: 1,
+    shortFact: "Paper bags recycle and compost readily, but making one uses more water and energy than making a plastic bag.",
+    disposalInstruction: "Flatten and put it in with paper and cardboard. Tear off plastic handles and bin any greasy sections separately.",
+    impactNote: "A paper bag only beats a plastic one overall if it is reused several times before it is recycled."
+  },
+  {
+    id: "glass_bottle",
+    name: "Glass Bottle",
+    category: "recyclable",
+    emoji: "🍾",
+    difficulty: 1,
+    shortFact: "Glass can be melted and remade endlessly with no loss of quality, which is true of almost nothing else in the bin.",
+    disposalInstruction: "Rinse and recycle. Labels can stay on, but put metal caps and corks in with their own materials.",
+    impactNote: "Recycled glass melts at a lower temperature than raw sand, so every bottle returned cuts furnace energy."
+  },
+  {
+    id: "aluminium_foil",
+    name: "Aluminum Foil",
+    category: "recyclable",
+    emoji: "🍫",
+    difficulty: 3,
+    commonMistake: "general",
+    shortFact: "Clean foil is as recyclable as a drinks can, but food residue or a plastic coating makes it worthless to a recycler.",
+    disposalInstruction: "Scrunch it into a ball. If it holds the shape it is foil, so rinse it and recycle it; if it springs back it is a plastic-lined wrapper for general waste.",
+    impactNote: "Foil recovered clean rejoins the same endless aluminum loop as cans, on a fraction of the energy of new metal."
+  },
+  {
+    id: "egg_carton",
+    name: "Egg Carton",
+    category: "organic",
+    emoji: "🥚",
+    difficulty: 3,
+    commonMistake: "recyclable",
+    shortFact: "Molded pulp cartons are already made from recycled paper, and the fibers left in them are too short to be recycled again.",
+    disposalInstruction: "Tear the cardboard type up and compost it. Clear plastic and foam cartons are not compostable and belong in general waste.",
+    impactNote: "Composting returns the carbon to the soil, which is the only route left once paper fibers are spent."
+  },
+  {
+    id: "orange_peel",
+    name: "Orange Peel",
+    category: "organic",
+    emoji: "🍊",
+    difficulty: 2,
+    shortFact: "Citrus rind carries antimicrobial oils that fight off the very microbes that would rot it, so it breaks down slowly for something organic.",
+    disposalInstruction: "Add it to the organic or compost bin, chopped up. Whole peel can sit intact for months.",
+    impactNote: "Dropped outdoors it is still litter, and it can stay visible on a verge for the better part of a year."
+  },
+  {
+    id: "cigarette_butt",
+    name: "Cigarette Butt",
+    category: "general",
+    emoji: "🚬",
+    difficulty: 4,
+    commonMistake: "organic",
+    shortFact: "The filter is not cotton. It is cellulose acetate, a plastic, and it is the most littered object on earth.",
+    disposalInstruction: "Put it out fully and bin it in general waste. Never drop it down a drain, which runs straight to a river.",
+    impactNote: "A used filter holds the tar and heavy metals it trapped on the way in, and rain washes them back out."
+  },
+  {
+    id: "plastic_bag",
+    name: "Plastic Carrier Bag",
+    category: "general",
+    emoji: "👜",
+    difficulty: 3,
+    commonMistake: "recyclable",
+    shortFact: "Plastic bags wrap themselves around the spinning sorters at recycling plants, and staff often have to stop the line and cut them out by hand.",
+    disposalInstruction: "Keep them out of the curbside bin. Take clean, dry bags back to a supermarket soft-plastic collection point.",
+    impactNote: "One bag in the wrong bin can hold up or contaminate an entire batch of otherwise good recycling."
+  },
+  {
+    id: "coffee_cup",
+    name: "Takeout Coffee Cup",
+    category: "general",
+    emoji: "☕",
+    difficulty: 4,
+    commonMistake: "recyclable",
+    shortFact: "It is not a paper cup. It is paper bonded to a thin plastic lining, and only a handful of specialist mills can split the two apart.",
+    disposalInstruction: "General waste unless you can find a dedicated cup collection point. The lid and the cardboard sleeve can usually be recycled on their own.",
+    impactNote: "Two materials fused into one surface is the single most common reason an everyday object cannot be recycled."
+  },
+  {
+    id: "plastic_straw",
+    name: "Plastic Straw",
+    category: "general",
+    emoji: "🥤",
+    difficulty: 2,
+    shortFact: "Straws are too light for sorting machines to grip and small enough to drop straight through the screens, so almost none are ever recycled.",
+    disposalInstruction: "General waste. Paper straws can be composted as long as they are not plastic-lined.",
+    impactNote: "Small, light plastic is the hardest kind to recover and the easiest to blow out of an open bin."
+  },
+  {
+    id: "toothbrush",
+    name: "Toothbrush",
+    category: "general",
+    emoji: "🪥",
+    difficulty: 3,
+    commonMistake: "recyclable",
+    shortFact: "A toothbrush is a plastic handle, nylon bristles and a metal staple locked together, which is why no standard recycler will take one.",
+    disposalInstruction: "General waste. Some brands run mail-back programs that do the separation themselves.",
+    impactNote: "Mixed-material products are cheap to manufacture and close to impossible to take apart again."
+  },
+  {
+    id: "cotton_shirt",
+    name: "Cotton T-Shirt",
+    category: "general",
+    emoji: "👕",
+    difficulty: 3,
+    commonMistake: "organic",
+    shortFact: "Pure cotton rots like any plant fiber, but most shirts are blended with polyester, and that half of the fabric never breaks down.",
+    disposalInstruction: "Donate it or cut it up for rags while it still holds together. Worn-out textiles go to a textile bank, not the recycling bin.",
+    impactNote: "Blended fabric cannot be pulled back apart into its separate fibers, so very little clothing ever becomes new clothing."
+  },
+  {
+    id: "wool_sock",
+    name: "Wool Sock",
+    category: "general",
+    emoji: "🧦",
+    difficulty: 3,
+    commonMistake: "organic",
+    shortFact: "Wool is keratin, the same protein as hair, and soil bacteria digest it — but the nylon blended in for durability stays behind.",
+    disposalInstruction: "Textile bank, or general waste if it is past use. Check the label: pure wool composts, a blend does not.",
+    impactNote: "The durability that makes a sock last is the same property that stops it leaving once you throw it away."
   }
 ];

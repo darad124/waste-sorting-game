@@ -77,6 +77,10 @@ interface TrashDetectiveScreenProps {
 
 export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBack }) => {
   const [selectedScene, setSelectedScene] = useState<DetectiveCase | null>(null);
+  /** Set when a scene chunk could not be fetched. The toast lives inside the
+   *  play view, so a failure that sends the player back to the menu needs
+   *  somewhere on the menu to say so. */
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [foundIds, setFoundIds] = useState<string[]>([]);
   const [activeItemId, setActiveItemId] = useState<string | null>(null);
   const [shakingItemId, setShakingItemId] = useState<string | null>(null);
@@ -165,9 +169,25 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
     setHintedId(null);
     setToast(null);
     setTimeLeft(RULES.roundSeconds);
+    setLoadError(null);
     setGameState("loading");
     playSound.detectiveScan();
-    await scene.preload();
+
+    // If the scene chunk cannot be fetched, go back to the menu and say so.
+    // Without this the await throws, everything below it is skipped, and the
+    // screen sits on "Opening the ... case" for ever with no way out — which
+    // is exactly what a player sees when a deploy lands while their tab is
+    // open and the chunk named in their cached index.html is gone.
+    try {
+      await scene.preload();
+    } catch {
+      setGameState("select");
+      setSelectedScene(null);
+      setLoadError(
+        `${scene.title} would not load. Check your connection and try again — if it keeps failing, reload the page.`,
+      );
+      return;
+    }
     // The clock starts when the scene is ON SCREEN, not when it was asked
     // for, so a slow chunk does not eat into the round.
     //
@@ -308,6 +328,16 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
               <h2 className="text-2xl font-black text-slate-900 leading-tight">Choose scene to search</h2>
               <p className="text-xs text-slate-600 font-semibold mt-1">Locate and sort the hidden litter in these settings.</p>
             </div>
+
+            {loadError && (
+              <div
+                role="alert"
+                className="flex items-start gap-2 text-[11px] font-bold leading-snug text-rose-800 bg-rose-50/95 border border-rose-500/30 rounded-2xl px-3 py-2.5 shadow-premium"
+              >
+                <AlertTriangle size={14} className="shrink-0 mt-px" />
+                <span>{loadError}</span>
+              </div>
+            )}
             
             <div className="flex flex-col gap-4">
               {CASES.map((scene) => (

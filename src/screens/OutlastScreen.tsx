@@ -6,9 +6,10 @@ import type { OutlastItem } from "../components/outlast/items";
 import { apply, decayAt } from "../components/outlast/decay";
 import { OutlastLane } from "../components/outlast/Lane";
 import {
-  noteFor, runSummary,
+  noteFor, runSummary, factBookId,
   OUTLAST_CONDITIONS, OUTLAST_MIN_GAP, OUTLAST_ALWAYS_PAIR,
 } from "../data/outlast";
+import { useGameStore } from "../state/gameStore";
 import { playSound } from "../utils/audio";
 import { ShareButton } from "../components/ShareButton";
 import { FeedbackPrompt } from "../components/FeedbackPrompt";
@@ -215,6 +216,11 @@ export const OutlastScreen: React.FC<OutlastScreenProps> = ({ onBack }) => {
           setBest((b) => Math.max(b, next));
           if ((RULES.milestones as readonly number[]).includes(next)) setMilestone(next);
           playSound.triviaCorrect();
+          // Both objects, not just the one tapped: you have watched the pair
+          // race and read the note, so you have earned both cards. Only on a
+          // correct call, which is how Arcade and Detective award theirs.
+          const unlock = useGameStore.getState().unlockEncyclopediaItem;
+          pair.forEach((item) => unlock(factBookId(item.id)));
         } else {
           playSound.triviaWrong();
         }

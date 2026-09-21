@@ -124,3 +124,24 @@ export const LEVELS: LevelConfig[] = [
     description: "All categories unlocked, ultra-fast speeds, and a 90% accuracy requirement. The ultimate test of an Eco-Champion!"
   }
 ];
+
+/* ---------------------------------------------------------------------- *
+ *  Stars for a finished level. `accuracy` is a RATIO, 0-1.
+ *
+ *  One definition, deliberately. This used to be written twice: once in
+ *  gameStore.finishSession, which is what gets saved, and again in
+ *  LevelResultScreen, which is what the player is shown — and the two
+ *  disagreed. The screen worked from accuracy already rounded to a whole
+ *  percent and had no pass gate, so 18 sorted right out of 19 came to 94.7%,
+ *  which the screen rounded up to 95 and celebrated as three stars while the
+ *  store saved two. The player pressed Continue and Level Select showed a
+ *  different number to the one it had just given them.
+ *
+ *  Anything that needs a star count calls this. Nothing recalculates it.
+ * ---------------------------------------------------------------------- */
+export function starsFor(accuracy: number, passAccuracy: number): number {
+  if (accuracy < passAccuracy) return 0;
+  if (accuracy >= 0.95) return 3;
+  if (accuracy >= 0.85) return 2;
+  return 1;
+}
