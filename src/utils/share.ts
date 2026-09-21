@@ -38,12 +38,14 @@ const MODE_DETAILS: Record<ShareMode, Omit<ShareDetails, "pathname" | "queryValu
     imagePath: "/share-cards/mode-trivia.png",
     imageAlt: "EcoSort Yes/No Trivia share card",
   },
+  // The key stays "contamination" although the mode is now Outlast, so every
+  // /share/mode/contamination link already in circulation keeps working.
   contamination: {
-    title: "Imposter Hunt | EcoSort",
-    description: "Spot the contaminant hiding in each waste stream before it ruins the batch.",
-    shareText: "I just played EcoSort Imposter Hunt 🕵️♻️ Can you spot the contaminant?",
+    title: "Outlast | EcoSort",
+    description: "Two bits of rubbish, one question: which one is still here in a hundred years?",
+    shareText: "A paper bag is gone in a month. A glass bottle basically never leaves. How long can you last at EcoSort Outlast? ⏳♻️",
     imagePath: "/share-cards/mode-contamination.png",
-    imageAlt: "EcoSort Imposter Hunt share card",
+    imageAlt: "EcoSort Outlast share card",
   },
 };
 

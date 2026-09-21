@@ -1,5 +1,5 @@
 import React from "react";
-import { Play, BookOpen, Settings, Trash2, Award } from "lucide-react";
+import { Play, BookOpen, Settings, Trash2, Award, Hourglass } from "lucide-react";
 import { useGameStore } from "../state/gameStore";
 import { SoundToggle } from "../components/SoundToggle";
 import { LEVELS } from "../data/levels";
@@ -124,22 +124,22 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
             <ShareButton target={{ kind: "mode", id: "trivia" }} label="Share Yes/No Trivia" compact className="absolute top-2.5 right-2.5 z-20" />
           </div>
 
-          {/* Contamination Hunt */}
+          {/* Outlast */}
           <div className="relative min-h-[105px] sm:min-h-[125px]">
             <button
               type="button"
               onClick={() => onNavigate("contamination")}
-              className="flex h-full w-full flex-col items-start justify-between rounded-2xl border-2 border-slate-950/10 bg-white/75 p-3 text-left shadow-premium transition-all duration-200 hover:-translate-y-0.5 hover:border-rose-500 hover:bg-white active:translate-y-0 group sm:p-4"
+              className="flex h-full w-full flex-col items-start justify-between rounded-2xl border-2 border-slate-950/10 bg-white/75 p-3 text-left shadow-premium transition-all duration-200 hover:-translate-y-0.5 hover:border-amber-500 hover:bg-white active:translate-y-0 group sm:p-4"
             >
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-rose-500/10 text-rose-800 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Trash2 size={16} />
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-amber-500/10 text-amber-800 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Hourglass size={16} />
               </div>
               <div className="mt-2">
-                <div className="font-extrabold text-slate-900 text-xs sm:text-sm leading-none">Imposter Hunt</div>
-                <div className="text-[9px] sm:text-[10px] text-slate-600 font-semibold mt-1 leading-snug">Find the contaminant item placed in the wrong bin.</div>
+                <div className="font-extrabold text-slate-900 text-xs sm:text-sm leading-none">Outlast</div>
+                <div className="text-[9px] sm:text-[10px] text-slate-600 font-semibold mt-1 leading-snug">Two bits of rubbish. One of them outlives the other.</div>
               </div>
             </button>
-            <ShareButton target={{ kind: "mode", id: "contamination" }} label="Share Imposter Hunt" compact className="absolute top-2.5 right-2.5 z-20" />
+            <ShareButton target={{ kind: "mode", id: "contamination" }} label="Share Outlast" compact className="absolute top-2.5 right-2.5 z-20" />
           </div>
         </div>
       </div>

@@ -1,5 +1,8 @@
 # Outlast
 
+**Shipped.** The game imports `src/components/outlast/`; this directory stays
+the place to author and argue about an item before porting it across.
+
 Two objects, one question: which one outlasts the other? You commit, then you
 watch the race decide it.
 

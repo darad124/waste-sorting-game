@@ -9,13 +9,18 @@ import { LevelResultScreen } from "./screens/LevelResultScreen";
 import { EducationScreen } from "./screens/EducationScreen";
 import { TrashDetectiveScreen } from "./screens/TrashDetectiveScreen";
 import { TriviaScreen } from "./screens/TriviaScreen";
-import { ContaminationHuntScreen } from "./screens/ContaminationHuntScreen";
 import { backgroundMusic } from "./utils/audio";
 import { parseShareQuery } from "./utils/share";
 import { SHARE_CARDS } from "./components/shareCards";
 import { logVisit } from "./api/analytics";
 
 const AdminDashboard = lazy(() => import("./screens/AdminDashboard"));
+
+// Outlast carries 25 hand-drawn objects, which is most of a megabyte of SVG
+// source. Somebody who came here to play Arcade should not download it.
+const OutlastScreen = lazy(() =>
+  import("./screens/OutlastScreen").then((m) => ({ default: m.OutlastScreen })),
+);
 
 const isAdminRoute = () =>
   typeof window !== "undefined" && window.location.hash.replace(/^#/, "").startsWith("admin");
@@ -149,7 +154,14 @@ function App() {
       case "trivia":
         return <TriviaScreen onBack={() => setScreen("home")} />;
       case "contamination":
-        return <ContaminationHuntScreen onBack={() => setScreen("home")} />;
+        // The route id stays "contamination" although the mode is now Outlast,
+        // so every /share/mode/contamination link already in the wild keeps
+        // resolving.
+        return (
+          <Suspense fallback={<div className="ol-boot" />}>
+            <OutlastScreen onBack={() => setScreen("home")} />
+          </Suspense>
+        );
       case "completed":
         return (
           <LevelResultScreen

@@ -570,3 +570,175 @@ body,
     animation: none !important;
   }
 }
+
+/* ====================================================================== *
+ *  Outlast
+ *
+ *  Full-bleed and dark on purpose. The objects are lit, specular and glassy,
+ *  and the app's yellow shell fights every one of them — so this mode takes
+ *  the whole screen and says plainly that it is a different kind of thing.
+ *
+ *  Everything is namespaced `ol-`. The reduced-motion block at the bottom is
+ *  scoped to that list rather than using a global `* { animation: none }`,
+ *  which would silently stop every animation in the rest of the app.
+ * ====================================================================== */
+
+.ol-root {
+  position: absolute; inset: 0; z-index: 50;
+  display: flex; flex-direction: column;
+  background: #14161A; color: #F4F1EA;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden; user-select: none;
+}
+
+.ol-bar {
+  flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 14px; border-bottom: 1px solid #23272D;
+  background: #181B20;
+}
+.ol-back {
+  display: grid; place-items: center; width: 34px; height: 34px;
+  border: 1px solid #333940; border-radius: 12px;
+  color: #9BA1AA; background: none; cursor: pointer; transition: color .2s, border-color .2s;
+}
+.ol-back:hover { color: #F4F1EA; border-color: #5A626C; }
+.ol-title {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 13px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase;
+  color: #E8C15A;
+}
+.ol-streak { text-align: right; line-height: 1; min-width: 46px; }
+.ol-streak-n { display: block; font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.ol-streak-l { display: block; font-size: 8px; letter-spacing: .2em; text-transform: uppercase; color: #7E858E; margin-top: 3px; }
+
+.ol-stage {
+  flex: 1 1 0; min-height: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: clamp(4px, 1.4vh, 10px);
+  padding: clamp(8px, 2vh, 16px) 14px clamp(10px, 2vh, 18px);
+  background: radial-gradient(120% 80% at 50% 6%, #2A2F37 0%, #14161A 62%);
+  transition: padding-bottom .3s ease;
+}
+
+.ol-clock { text-align: center; line-height: 1; }
+.ol-num {
+  font-size: clamp(32px, min(8vw, 9vh), 74px); font-weight: 800;
+  letter-spacing: -.03em; font-variant-numeric: tabular-nums;
+}
+.ol-unit {
+  font-size: clamp(9px, 1.8vw, 12px); text-transform: uppercase;
+  letter-spacing: .22em; color: #8B8F98; margin-top: 7px;
+}
+.ol-ask {
+  font-size: clamp(11px, 2.2vw, 14px); font-weight: 700;
+  color: #8B8F98; text-align: center; min-height: 1.4em;
+}
+.ol-ask.ol-good { color: #7FD08A; }
+.ol-ask.ol-bad { color: #D98A72; }
+
+/* min-height:0 on the grid AND the lane is load-bearing. Without it the row
+   is sized by its content, the SVG never agrees to shrink, and the objects
+   run off the bottom of any short viewport. */
+.ol-race {
+  flex: 1 1 0; min-height: 0; width: 100%; max-width: 880px;
+  display: grid; grid-template-columns: 1fr 1fr; align-items: stretch;
+  gap: clamp(10px, 4vw, 48px);
+}
+.ol-lane {
+  position: relative; min-height: 0;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  background: none; border: 0; padding: 0; color: inherit; font: inherit;
+  border-radius: 14px; cursor: pointer;
+  transition: background .18s ease, transform .18s ease, opacity .3s ease;
+}
+.ol-lane:disabled { cursor: default; }
+.ol-lane:not(:disabled):hover { background: rgba(255,255,255,.04); transform: translateY(-3px); }
+.ol-lane.ol-picked { background: rgba(232,193,90,.08); }
+.ol-lane.ol-dim { opacity: .82; }
+.ol-lane svg { flex: 1 1 0; min-height: 0; width: 100%; display: block; }
+.ol-floor {
+  height: 1px; width: 100%; margin-top: 2px;
+  background: linear-gradient(to right, transparent, #3A4048 18%, #3A4048 82%, transparent);
+}
+.ol-tag {
+  text-align: center; margin-top: clamp(5px, 1.4vh, 12px);
+  font-size: clamp(10px, 2vw, 13px); font-weight: 700;
+}
+.ol-verdict {
+  display: block; margin-top: 4px; font-size: clamp(9px, 1.7vw, 11px);
+  font-weight: 600; color: #8B8F98; opacity: 0; min-height: 1.3em;
+  transition: opacity .45s ease;
+}
+.ol-verdict.ol-show { opacity: 1; }
+.ol-verdict.ol-gone { color: #C98A72; }
+.ol-verdict.ol-warn { color: #E0A85C; }
+.ol-verdict.ol-here { color: #E8C15A; }
+
+.ol-foot { min-height: 40px; display: grid; place-items: center; }
+/* while a panel is up, the race gives it room instead of hiding behind it */
+.ol-root.ol-panel .ol-stage { padding-bottom: clamp(104px, 18vh, 140px); }
+.ol-hint { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #5E656E; }
+.ol-cond { text-transform: none; letter-spacing: 0; font-size: 11px; max-width: 420px; text-align: center; line-height: 1.5; }
+.ol-next {
+  background: none; border: 1px solid #3A4048; color: #9BA1AA;
+  font: inherit; font-size: 11px; font-weight: 700; letter-spacing: .16em;
+  text-transform: uppercase; padding: 9px 20px; border-radius: 999px;
+  cursor: pointer; transition: color .2s, border-color .2s;
+}
+.ol-next:hover { color: #F4F1EA; border-color: #5A626C; }
+
+/* Centred with auto margins, NOT translateX(-50%). framer-motion animates
+   `transform`, and its final value replaces anything the stylesheet put there
+   — the panel simply walks off to the right. Same trap the Park's butterfly
+   fell into. */
+.ol-note {
+  position: absolute; left: 0; right: 0; margin-inline: auto; bottom: 16px;
+  width: min(560px, calc(100% - 28px));
+  background: #1C2026; border: 1px solid #2E343B; border-radius: 16px;
+  padding: 13px 16px; z-index: 60;
+}
+.ol-note-k {
+  display: block; font-size: 8px; font-weight: 800; letter-spacing: .22em;
+  text-transform: uppercase; color: #E8C15A; margin-bottom: 5px;
+}
+.ol-note p { margin: 0; font-size: 12px; line-height: 1.55; color: #C6CBD2; }
+
+.ol-milestone {
+  position: absolute; top: 40%; left: 0; right: 0; text-align: center;
+  z-index: 70; pointer-events: none;
+  font-size: clamp(20px, 5vw, 34px); font-weight: 800; letter-spacing: -.02em;
+  color: #E8C15A; text-shadow: 0 0 28px rgba(232,193,90,.45);
+}
+
+.ol-over {
+  position: absolute; left: 0; right: 0; margin-inline: auto; bottom: 16px;
+  width: min(560px, calc(100% - 28px)); z-index: 80;
+  background: #1C2026; border: 1px solid #3A3220; border-radius: 16px;
+  padding: 14px 16px; display: flex; flex-direction: column; gap: 12px;
+}
+.ol-over-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
+.ol-over-row { display: flex; gap: 28px; }
+.ol-over-line { margin: 0; font-size: 12px; color: #C6CBD2; text-align: right; max-width: 55%; line-height: 1.5; }
+.ol-over-k { font-size: 8px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: #7E858E; }
+.ol-over-v { font-size: 26px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.ol-over-actions { display: flex; gap: 10px; align-items: center; }
+.ol-again {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: #E8C15A; border: 0; color: #1A1B16;
+  font: inherit; font-size: 12px; font-weight: 800; letter-spacing: .1em;
+  text-transform: uppercase; padding: 11px 20px; border-radius: 999px; cursor: pointer;
+}
+.ol-again:hover { background: #F2CE6E; }
+
+@media (max-width: 420px) {
+  .ol-note { bottom: 10px; padding: 11px 13px; }
+  .ol-note p { font-size: 11.5px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ol-lane, .ol-verdict, .ol-back, .ol-next { transition: none; }
+}
+
+/* Held while the Outlast chunk loads. Matching its background rather than the
+   app's yellow stops a flash of the wrong colour on the way in. */
+.ol-boot { position: absolute; inset: 0; background: #14161A; z-index: 50; }
