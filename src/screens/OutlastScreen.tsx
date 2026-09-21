@@ -5,7 +5,10 @@ import { ITEMS } from "../components/outlast/items";
 import type { OutlastItem } from "../components/outlast/items";
 import { apply, decayAt } from "../components/outlast/decay";
 import { OutlastLane } from "../components/outlast/Lane";
-import { noteFor, runSummary, OUTLAST_CONDITIONS, OUTLAST_MIN_GAP } from "../data/outlast";
+import {
+  noteFor, runSummary,
+  OUTLAST_CONDITIONS, OUTLAST_MIN_GAP, OUTLAST_ALWAYS_PAIR,
+} from "../data/outlast";
 import { playSound } from "../utils/audio";
 import { ShareButton } from "../components/ShareButton";
 import { FeedbackPrompt } from "../components/FeedbackPrompt";
@@ -51,11 +54,14 @@ const clamp = (v: number, a: number, b: number) => (v < a ? a : v > b ? b : v);
  *  two things an order of magnitude apart does not. */
 const PAIRS: [string, string][] = (() => {
   const keys = Object.keys(ITEMS);
+  const forced = new Set(OUTLAST_ALWAYS_PAIR.map((p) => [...p].sort().join("|")));
   const out: [string, string][] = [];
   for (let i = 0; i < keys.length; i++)
-    for (let j = i + 1; j < keys.length; j++)
-      if (Math.abs(Math.log10(ITEMS[keys[i]].years) - Math.log10(ITEMS[keys[j]].years)) >= OUTLAST_MIN_GAP)
+    for (let j = i + 1; j < keys.length; j++) {
+      const gap = Math.abs(Math.log10(ITEMS[keys[i]].years) - Math.log10(ITEMS[keys[j]].years));
+      if (gap >= OUTLAST_MIN_GAP || forced.has([keys[i], keys[j]].sort().join("|")))
         out.push([keys[i], keys[j]]);
+    }
   return out;
 })();
 
@@ -181,7 +187,8 @@ export const OutlastScreen: React.FC<OutlastScreenProps> = ({ onBack }) => {
         const d = decayAt(logT, item.years);
         apply(pre, item, d);
         if (d < 1) return;
-        if (item.material === "plastic") settle(item, "in pieces. still here.", "warn");
+        if (item.id === "battery") settle(item, "case gone. contents out.", "warn");
+        else if (item.material === "plastic") settle(item, "in pieces. still here.", "warn");
         else if (item.material !== "glass") {
           const [ln, lu] = timeLabel(item.years);
           settle(item, `gone in ${ln} ${lu}`, "gone");
@@ -374,7 +381,8 @@ export const OutlastScreen: React.FC<OutlastScreenProps> = ({ onBack }) => {
             levelId={null}
             contextLabel="Outlast"
             score={best}
-            accuracy={seen ? Math.round((best / seen) * 100) : 0}
+            // rounds called right this run, out of rounds played this run
+            accuracy={seen ? Math.round((streak / seen) * 100) : 0}
             onClose={() => setShowFeedback(false)}
           />
         )}

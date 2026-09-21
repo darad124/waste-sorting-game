@@ -32,56 +32,67 @@ export const OUTLAST_CONDITIONS =
  *  argues about. */
 export const OUTLAST_MIN_GAP = 1.2;
 
+/** Pairs allowed through regardless of the gap, because their ordering is
+ *  materials science rather than a decomposition estimate.
+ *
+ *  Steel against aluminium is 0.6 of a decade and the gap rule throws it out,
+ *  but nobody disputes the direction: steel rusts through and aluminium
+ *  passivates under its own oxide. It is also one of the best things the mode
+ *  can teach, and the two objects look almost identical on the shelf. */
+export const OUTLAST_ALWAYS_PAIR: [string, string][] = [
+  ["aluminium_can", "tin_can"],
+];
+
 /** One line per object. */
 export const ITEM_FACTS: Record<string, string> = {
   paper_bag:
-    "Gone in a month — but it cost more water and energy to make than a plastic bag did. It only wins if you reuse it.",
+    "Paper is wood fibre, and water both holds it together and takes it apart. One wet night in a gutter and it's already going.",
   newspaper:
     "Paper fibres get shorter every time round. After five or six goes there's nothing left long enough to make anything from.",
   cardboard_box:
-    "The most recycled packaging there is. Get it wet or greasy and it's worth precisely nothing.",
+    "It's mostly air between two sheets, so water gets straight in and the whole thing collapses. Grease is worse: oil never comes back out of paper fibre.",
   egg_carton:
     "Already made from recycled paper. Those fibres are too short to go again — this is where they stop.",
   banana_peel:
-    "Weeks in the open. Sealed in a bin bag with no air, still recognisable years later.",
+    "People drop these because they're natural. On a cold verge a peel can sit there, whole and yellow, for most of a year.",
   apple_core:
     "In a hedge it's compost. In a bin bag it rots without air and makes methane instead.",
   orange_peel:
-    "That smell is d-limonene — a solvent strong enough that people sell it as a cleaning product.",
+    "The oil in the rind is antimicrobial — it's fighting off the very things that would rot it. That's why peel outlasts almost anything else from a fruit bowl.",
   cotton_shirt:
-    "The cotton rots. The polyester it's blended with doesn't, and almost every T-shirt is blended.",
+    "The cotton rots. The polyester it's blended with doesn't, and the label is the only way to know which you've got.",
   wool_sock:
-    "Wool is basically hair, and soil bacteria treat it exactly that way. It's also why moths bother.",
+    "Wool is keratin, the same protein as your hair, and soil bacteria digest it the same way. Blend it with nylon for durability, as most socks are, and that half stays.",
   wooden_chopsticks:
-    "Tens of billions of pairs a year. Plain wood composts. Lacquered ones are coated, and don't.",
+    "Bare wood composts like a twig. Lacquered ones are sealed under varnish, and the wood can't start rotting until that's worn through.",
   cigarette_butt:
-    "That filter isn't cotton. It's plastic — and it's the most littered object on Earth.",
+    "That filter isn't cotton. It's plastic, and everything it caught on the way in washes back out of it in the rain.",
   plastic_bag:
-    "It doesn't rot. Sunlight makes it brittle and it shatters into pieces too small to pick up.",
+    "Put one in the recycling bin and it wraps itself round the sorting machinery. Most plants have to stop the line and cut them out by hand.",
   coffee_cup:
-    "It's not a paper cup. It's a plastic cup with paper round it, and almost no mill can separate the two.",
+    "It's not a paper cup. It's a plastic cup with paper round it, and only a handful of mills anywhere can split the two apart.",
   tin_can:
-    "Put it in the bin and a magnet lifts it straight back out at the other end — the easiest thing in the whole stream to sort.",
+    "Steel is the one thing in the recycling bin that sorts itself. A magnet lifts it straight out of the stream, so almost none of it gets missed.",
   battery:
-    "As the case corrodes, everything inside it comes out. Never the normal bin, however small it is.",
+    "As the case corrodes, everything inside it comes out into the ground. Which is why it never goes in the normal bin, however small it is.",
   plastic_straw:
-    "Too light for the sorters to catch, too small for the screens to hold. Barely any get recycled, wherever you put them.",
+    "Almost none get recycled, wherever you put them. They're too light for the sorting machines to grab and small enough to fall straight through the screens.",
   aluminium_can:
-    "Recycle it and it can be back on a shelf in about six weeks, using a fraction of the energy it takes to make a new one from ore.",
+    "Recycle it and it's back on a shelf within weeks, on about a twentieth of the energy it takes to make one from ore. Nothing else here comes back that fast.",
   aluminium_foil:
-    "Aluminium doesn't rust — it seals itself under its own oxide. Clean foil is worth recycling. Greasy foil isn't.",
+    "Scrunch it. If it holds the ball it's foil and it's recyclable; if it springs back it's a plastic-coated wrapper and it isn't.",
   plastic_bottle:
-    "PET is one of the few plastics genuinely recycled at scale — but only the ones that actually reach a bin, which is most of them nowhere near.",
+    "PET is one of the few plastics genuinely recycled at scale — into new bottles, not just park benches. The catch is that the bottle has to reach a bin first.",
   face_mask:
-    "Three layers of polypropylene, worn for an hour. Billions got thrown away and every one is still here.",
+    "The middle layer is melt-blown plastic thread, finer than a hair. It doesn't have to break down into microplastic — it was made that way.",
   disposable_nappy:
-    "Half plastic by weight, and one child gets through several thousand of them.",
+    "About half of each one is plastic, bonded to the pulp and gel so tightly that nothing separates them again. That's why almost nowhere will take them.",
   foam_cup:
-    "Almost entirely air, which is the problem — a full lorry of them is worth less than the journey.",
+    "These are one of the few things that essentially never get recycled. They're about 95% air, so a lorry-load weighs almost nothing and isn't worth the diesel to move it.",
   toothbrush:
     "Every toothbrush you've ever owned is still somewhere on this planet.",
   glass_bottle:
-    "Recycle it and it comes back as glass, forever, with no loss at all. Leave it and it just waits.",
+    "Recycle it and it comes back as glass, as many times as you like. Leave it and it just waits.",
   glass_jar:
     "Sand, soda ash and lime. Nothing rots, nothing leaches, nothing changes.",
 };
@@ -90,33 +101,33 @@ export const ITEM_FACTS: Record<string, string> = {
  *  sorted and joined, so which side they land on does not matter. */
 const PAIR_NOTES: Record<string, string> = {
   "cigarette_butt|paper_bag":
-    "Most people get this one backwards. The bag is paper. The filter is plastic.",
+    "The bag is exactly what it looks like. The filter isn't — it's plastic, not cotton.",
   "coffee_cup|newspaper":
     "Both of these look like paper. Only one of them is.",
   "aluminium_can|tin_can":
-    "Two cans, two metals. Steel gets eaten right through. Aluminium seals itself and just sits there.",
+    "Two cans, two metals. Steel rusts right through; aluminium seals itself under its own oxide and just sits there.",
   "glass_bottle|plastic_bottle":
-    "One of them is still whole. The other is still here too — just in pieces too small to see.",
+    "One of these is made from sand, the other from oil. That's the whole difference in what happens next.",
   "banana_peel|glass_bottle":
-    "Weeks against forever.",
+    "Both were made from things dug out of the ground. Only one of them is going back.",
   "cigarette_butt|newspaper":
-    "The paper's long gone before the filter has even started.",
+    "Both are mostly fibre. One is wood pulp, the other is plastic thread spun to look like cotton wool.",
   "foam_cup|paper_bag":
-    "Same drink, same ten minutes, five centuries apart.",
+    "One started as a tree, the other as crude oil. Only one of those has a way of going back.",
   "apple_core|plastic_straw":
     "Both were in your hand for about a minute. Only one of them leaves.",
   "aluminium_foil|cardboard_box":
     "Both wrapped somebody's lunch. One of them is compost by spring.",
   "battery|banana_peel":
-    "These share a bin more than anything else on this list. One of them ruins the other.",
+    "The peel has three or four right answers. The battery has one, and in most places it isn't a bin at your house at all.",
   "toothbrush|newspaper":
-    "You replace one every three months. It outlives the paper by five hundred years.",
+    "Both are designed to be thrown away within months. Only one of them is built like it.",
   "glass_jar|orange_peel":
     "The peel feeds the soil. The jar just sits in it.",
   "disposable_nappy|egg_carton":
-    "Both went out with this morning's rubbish. Only one is coming back as anything.",
+    "Both went out with this morning's rubbish. Only one of them turns back into soil.",
   "face_mask|apple_core":
-    "An hour of use each. One's soil by summer, the other's still here in four centuries.",
+    "An hour of use each. One came off a tree and goes back into the ground; the other came out of a barrel of oil and doesn't.",
 };
 
 export interface OutlastNote {
@@ -139,7 +150,16 @@ export function noteFor(a: string, b: string, longerId: string): OutlastNote {
   const key = [a, b].sort().join("|");
   const pair = PAIR_NOTES[key];
   if (pair) return { text: pair, subjectId: null };
-  return { text: ITEM_FACTS[longerId] ?? "", subjectId: longerId };
+
+  // Falling back to the longer-lived item every time looked right and was
+  // quietly broken: a valid pair needs a 1.2-decade gap, so nothing under
+  // about 1.3 years can EVER be the longer side. Eight of the twenty-five
+  // facts — every paper and most organics — could never be shown to anybody.
+  // Still biased towards the long side, because that is the one people
+  // underestimate, but the short side now gets a turn.
+  const shorter = longerId === a ? b : a;
+  const pick = Math.random() < 0.62 ? longerId : shorter;
+  return { text: ITEM_FACTS[pick] ?? "", subjectId: pick };
 }
 
 /** What to say when a run ends. The player has just lost; this is the last
@@ -147,10 +167,10 @@ export function noteFor(a: string, b: string, longerId: string): OutlastNote {
  *  congratulate them for nothing and it never scolds. */
 export function runSummary(streak: number): string {
   if (streak === 0) return "Rough start. That first one catches nearly everybody.";
-  if (streak === 1) return "One. It's harder than it looks.";
+  if (streak === 1) return "One. They're not as obvious as they look.";
   if (streak < 4) return "Harder than it looks, isn't it.";
   if (streak < 8) return "A decent run.";
   if (streak < 14) return "You clearly know your rubbish.";
   if (streak < 25) return "That's a serious run.";
-  return "Genuinely impressive.";
+  return "That's a proper run.";
 }
