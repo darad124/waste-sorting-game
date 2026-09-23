@@ -39,7 +39,7 @@ const PHYSICS_FRAME_MS = 1000 / 30;
 const MEASUREMENT_CACHE_MS = 250;
 
 // Actual Bucket SVG component (Now larger and with support for shake and hover animations)
-const BucketSVG: React.FC<{ category: WasteCategory; isHovered: boolean; isShaking: boolean }> = ({
+export const BucketSVG: React.FC<{ category: WasteCategory; isHovered: boolean; isShaking: boolean }> = ({
   category,
   isHovered,
   isShaking,

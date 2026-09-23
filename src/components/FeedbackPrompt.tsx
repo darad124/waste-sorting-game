@@ -157,7 +157,7 @@ export const FeedbackPrompt: React.FC<FeedbackPromptProps> = ({
                 <div>
                   <p className="text-xs font-black uppercase tracking-wide text-slate-700 mb-1">
                     Your age range{" "}
-                    <span className="text-slate-500 font-bold normal-case">(optional)</span>
+                    {/* <span className="text-slate-500 font-bold normal-case">(optional)</span> */}
                   </p>
                   <input
                     type="range"
