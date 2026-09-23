@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ThumbsUp, ThumbsDown, X, Check, MessageSquareHeart } from "lucide-react";
+import { ThumbsUp, ThumbsDown, X, Check, MessageSquareHeart, UserRound } from "lucide-react";
 import {
   submitFeedback,
   hasAgeOnRecord,
@@ -36,14 +36,24 @@ export const FeedbackPrompt: React.FC<FeedbackPromptProps> = ({
   onClose,
 }) => {
   const askAge = !hasAgeOnRecord();
-  const [ageIndex, setAgeIndex] = useState<number>(-1); // -1 = skipped / unset
+  const [ageIndex, setAgeIndex] = useState<number>(0); // age range is required, so always a valid index
   const [enjoyed, setEnjoyed] = useState<Enjoyed>(null);
   const [learned, setLearned] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "done">("idle");
+  const [confirmingAge, setConfirmingAge] = useState(false);
 
   const dismiss = () => {
     markPrompted(mode, levelId);
     onClose();
+  };
+
+  const handleSendClick = () => {
+    if (enjoyed === null || status !== "idle") return;
+    if (askAge) {
+      setConfirmingAge(true);
+      return;
+    }
+    send();
   };
 
   const send = async () => {
@@ -52,8 +62,7 @@ export const FeedbackPrompt: React.FC<FeedbackPromptProps> = ({
     markPrompted(mode, levelId);
     playSound.correct();
 
-    const ageRange: AgeRange | null =
-      askAge && ageIndex >= 0 ? AGE_RANGES[ageIndex].value : null;
+    const ageRange: AgeRange | null = askAge ? AGE_RANGES[ageIndex].value : null;
 
     await submitFeedback(
       {
@@ -152,16 +161,15 @@ export const FeedbackPrompt: React.FC<FeedbackPromptProps> = ({
                 </div>
               </div>
 
-              {/* Age — only on first ever submission */}
+              {/* Age — only on first ever submission, and required */}
               {askAge && (
                 <div>
                   <p className="text-xs font-black uppercase tracking-wide text-slate-700 mb-1">
-                    Your age range{" "}
-                    {/* <span className="text-slate-500 font-bold normal-case">(optional)</span> */}
+                    Your age range
                   </p>
                   <input
                     type="range"
-                    min={-1}
+                    min={0}
                     max={AGE_RANGES.length - 1}
                     step={1}
                     value={ageIndex}
@@ -170,7 +178,7 @@ export const FeedbackPrompt: React.FC<FeedbackPromptProps> = ({
                   />
                   <div className="text-center mt-1">
                     <span className="inline-block px-3 py-1 rounded-full bg-white/70 text-sm font-black text-slate-800">
-                      {ageIndex < 0 ? "Prefer not to say" : AGE_RANGES[ageIndex].label}
+                      {AGE_RANGES[ageIndex].label}
                     </span>
                   </div>
                 </div>
@@ -196,7 +204,7 @@ export const FeedbackPrompt: React.FC<FeedbackPromptProps> = ({
               </div>
 
               <button
-                onClick={send}
+                onClick={handleSendClick}
                 disabled={enjoyed === null || status === "sending"}
                 className="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
               >
@@ -206,6 +214,59 @@ export const FeedbackPrompt: React.FC<FeedbackPromptProps> = ({
           )}
         </AnimatePresence>
       </motion.div>
+
+      {/* Age confirmation — a second, deliberate step before the age range
+          (which cannot be changed once submitted) actually goes out. */}
+      <AnimatePresence>
+        {confirmingAge && (
+          <motion.div
+            key="age-confirm-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/55 backdrop-blur-sm p-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 16, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.9, y: 16, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 320, damping: 26 }}
+              className="w-full max-w-[300px] bg-white rounded-3xl p-6 shadow-2xl border border-slate-950/10 flex flex-col items-center gap-4 text-center"
+            >
+              <div className="w-14 h-14 rounded-full bg-pink-500/10 border border-pink-600/20 flex items-center justify-center text-pink-600">
+                <UserRound size={26} />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <h4 className="text-base font-black text-slate-950">Confirm your age range</h4>
+                <p className="text-sm text-slate-600 font-semibold leading-snug">
+                  You're about to submit feedback as{" "}
+                  <span className="font-black text-slate-900">{AGE_RANGES[ageIndex].label}</span>.
+                </p>
+              </div>
+
+              <div className="w-full flex flex-col gap-2 mt-1">
+                <button
+                  onClick={() => {
+                    setConfirmingAge(false);
+                    send();
+                  }}
+                  className="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black rounded-xl shadow-lg cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all"
+                >
+                  Confirm &amp; Send
+                </button>
+                <button
+                  onClick={() => setConfirmingAge(false)}
+                  className="w-full py-2.5 text-slate-500 font-bold text-sm cursor-pointer hover:text-slate-800 transition-colors"
+                >
+                  Go back and change it
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };
