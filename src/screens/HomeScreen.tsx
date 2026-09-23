@@ -1,11 +1,14 @@
-import React from "react";
-import { Play, BookOpen, Settings, Trash2, Award, Hourglass } from "lucide-react";
+import React, { useState } from "react";
+import { AnimatePresence } from "framer-motion";
+import { Play, BookOpen, Settings, Trash2, Award, Hourglass, MessageSquareHeart } from "lucide-react";
 import { useGameStore } from "../state/gameStore";
 import { SoundToggle } from "../components/SoundToggle";
 import { LEVELS } from "../data/levels";
 import { WASTE_ITEMS } from "../data/wasteItems";
 import { ItemSVG } from "../components/ItemSVG";
 import { ShareButton } from "../components/ShareButton";
+import { FeedbackPrompt } from "../components/FeedbackPrompt";
+import { Tooltip } from "../components/Tooltip";
 
 interface HomeScreenProps {
   onNavigate: (screen: string) => void;
@@ -14,6 +17,7 @@ interface HomeScreenProps {
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
   const { highScores, unlockedEncyclopediaIds } = useGameStore();
+  const [showFeedback, setShowFeedback] = useState(false);
 
   // Statistics calculations
   const levelsCompleted = Object.keys(highScores).length;
@@ -50,7 +54,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
           <Trash2 size={22} className="text-emerald-800 drop-shadow-[0_2px_4px_rgba(6,78,59,0.15)]" />
           <span>EcoSort</span>
         </div>
-        <SoundToggle />
+        <div className="flex items-center gap-2">
+          <Tooltip label="Give Feedback">
+            <button
+              onClick={() => setShowFeedback(true)}
+              aria-label="Give Feedback"
+              className="p-2.5 rounded-full transition-all duration-200 glass-card flex items-center justify-center cursor-pointer hover:scale-105 active:scale-95 text-pink-800 border-pink-600/40 bg-pink-500/15"
+            >
+              <MessageSquareHeart size={18} />
+            </button>
+          </Tooltip>
+          <SoundToggle />
+        </div>
       </div>
 
       {/* Hero Header */}
@@ -184,6 +199,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
           </button>
         </div>
       </div>
+
+      <AnimatePresence>
+        {showFeedback && (
+          <FeedbackPrompt
+            mode="game_overall"
+            levelId={null}
+            contextLabel="EcoSort"
+            onClose={() => setShowFeedback(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

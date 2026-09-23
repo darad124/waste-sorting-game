@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Search, Clock, AlertTriangle, Check } from "lucide-react";
+import { ArrowLeft, Search, Clock, AlertTriangle, Check, HelpCircle } from "lucide-react";
 import { useGameStore } from "../state/gameStore";
 import { WASTE_ITEMS } from "../data/wasteItems";
 import type { WasteCategory } from "../data/wasteItems";
@@ -11,6 +11,7 @@ import { ShareButton } from "../components/ShareButton";
 import { FeedbackPrompt } from "../components/FeedbackPrompt";
 import { canPrompt } from "../utils/feedbackGate";
 import { ModeLoader } from "../components/ModeLoader";
+import { hasSeenDetectiveTutorial, markDetectiveTutorialSeen } from "../utils/tutorial";
 import {
   CASES,
   CLUE_ART,
@@ -117,19 +118,43 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
     useState<"select" | "loading" | "play" | "results">("select");
   const [showFeedback, setShowFeedback] = useState(false);
 
+  // "How to play" overlay: shown once automatically, revisitable from the
+  // HUD. It freezes the clock rather than stopping it outright — dismissing
+  // shifts the deadline forward by however long the overlay was open, so
+  // reading it never costs the player real round time.
+  const [showTutorial, setShowTutorial] = useState(false);
+  const tutorialPauseStartRef = useRef<number | null>(null);
+
   // The one owner of the clock. It reads the deadline four times a second
   // so the displayed second is never stale by more than a quarter of one,
   // and its cleanup is the only thing that stops it — which is why ending a
   // round anywhere else is just a matter of changing the phase.
   useEffect(() => {
-    if (gameState !== "play") return;
+    if (gameState !== "play" || showTutorial) return;
     const id = window.setInterval(() => {
       const left = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
       setTimeLeft(left);
       if (left === 0) setGameState("results");
     }, 250);
     return () => window.clearInterval(id);
-  }, [gameState, deadline]);
+  }, [gameState, deadline, showTutorial]);
+
+  const openTutorial = () => {
+    tutorialPauseStartRef.current = deadline > 0 ? Date.now() : null;
+    setShowTutorial(true);
+  };
+
+  const dismissTutorial = () => {
+    markDetectiveTutorialSeen();
+    if (tutorialPauseStartRef.current !== null) {
+      const pausedMs = Date.now() - tutorialPauseStartRef.current;
+      setDeadline((d) => d + pausedMs);
+      tutorialPauseStartRef.current = null;
+    } else {
+      setDeadline(Date.now() + RULES.roundSeconds * 1000);
+    }
+    setShowTutorial(false);
+  };
 
   // One timer owns the toast; a new message resets it through the cleanup.
   useEffect(() => {
@@ -170,6 +195,8 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
     setToast(null);
     setTimeLeft(RULES.roundSeconds);
     setLoadError(null);
+    setShowTutorial(false);
+    tutorialPauseStartRef.current = null;
     setGameState("loading");
     playSound.detectiveScan();
 
@@ -190,13 +217,20 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
     }
     // The clock starts when the scene is ON SCREEN, not when it was asked
     // for, so a slow chunk does not eat into the round.
-    //
+    setGameState((phase) => (phase === "loading" ? "play" : phase));
+
+    if (!hasSeenDetectiveTutorial()) {
+      // First-ever round: hold the clock at the how-to-play overlay instead
+      // of starting it, so reading it is free rather than a time penalty.
+      setShowTutorial(true);
+      return;
+    }
+
     // The purity rule cannot see that this is an event handler rather than
     // render — it is async, so the body after the await is a callback — and
     // reading the clock is the entire point of setting a deadline.
     // eslint-disable-next-line react-hooks/purity
     setDeadline(Date.now() + RULES.roundSeconds * 1000);
-    setGameState((phase) => (phase === "loading" ? "play" : phase));
   };
 
   const say = (text: string, tone: "good" | "bad" | "info") =>
@@ -390,6 +424,13 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
 
               {/* Bin purity — one pip per bin, dirtied by a wrong drop */}
               <div className="flex items-center gap-1.5">
+                <button
+                  onClick={openTutorial}
+                  aria-label="How to play"
+                  className="mr-0.5 flex items-center justify-center w-6 h-6 rounded-full border border-slate-950/10 bg-white/70 text-slate-700 transition-all hover:bg-white active:scale-95 cursor-pointer"
+                >
+                  <HelpCircle size={12} />
+                </button>
                 <button
                   onClick={useHint}
                   disabled={hintsLeft <= 0}
@@ -627,8 +668,44 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
 
             {/* Hint Box */}
             <div className="text-[10px] font-semibold text-slate-700 mt-2">
-              Not everything here is rubbish. Find what is — and don't spoil a bin guessing.
+              Not everything here is rubbish. Find what is the trash and don't spoil a bin guessing.
             </div>
+
+            {/* How to Play Overlay */}
+            {showTutorial && (
+              <div className="absolute inset-0 bg-slate-950/35 backdrop-blur-sm z-[80] flex items-center justify-center p-6">
+                <div className="glass-panel w-full max-w-[360px] rounded-3xl border border-slate-950/10 p-6 flex flex-col gap-4 scale-in shadow-2xl">
+                  <div className="flex flex-col items-center text-center gap-1">
+                    <div className="w-12 h-12 rounded-full bg-blue-500/15 border border-blue-600/20 flex items-center justify-center text-blue-700 mb-1">
+                      <Search size={24} />
+                    </div>
+                    <h3 className="text-xl font-black text-slate-950 tracking-wide">How to Play</h3>
+                  </div>
+
+                  <ul className="flex flex-col gap-2.5 text-left">
+                    <li className="flex items-start gap-2.5 text-sm text-slate-800 font-semibold">
+                      <span className="mt-0.5 shrink-0 w-5 h-5 rounded-full bg-blue-600 text-white text-[11px] font-black flex items-center justify-center">1</span>
+                      <span>Tap the hidden litter you spot in the scene.</span>
+                    </li>
+                    <li className="flex items-start gap-2.5 text-sm text-slate-800 font-semibold">
+                      <span className="mt-0.5 shrink-0 w-5 h-5 rounded-full bg-blue-600 text-white text-[11px] font-black flex items-center justify-center">2</span>
+                      <span>Pick the correct bin from the picker that pops up.</span>
+                    </li>
+                    <li className="flex items-start gap-2.5 text-sm text-slate-800 font-semibold">
+                      <span className="mt-0.5 shrink-0 w-5 h-5 rounded-full bg-blue-600 text-white text-[11px] font-black flex items-center justify-center">3</span>
+                      <span>A wrong bin <b>contaminates</b> that whole category and costs points at the end skip it if you're not sure.</span>
+                    </li>
+                  </ul>
+
+                  <button
+                    onClick={dismissTutorial}
+                    className="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-extrabold rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all mt-1"
+                  >
+                    <span>GOT IT, LET'S GO</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
