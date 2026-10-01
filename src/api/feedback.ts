@@ -103,8 +103,8 @@ export interface SubmitResult {
 }
 
 /**
- * Record a feedback response. The first answer for a given (player, mode,
- * level) wins; later resubmits are ignored by the DB (insert-only).
+ * Record a feedback response. Every play can be answered, so each submission
+ * is its own row (insert-only).
  */
 export async function submitFeedback(
   input: FeedbackInput,
@@ -130,9 +130,7 @@ export async function submitFeedback(
       stars: input.stars ?? null,
     });
 
-    // 23505 = a feedback row for this (player, mode, level) already exists.
-    // First answer wins; treat a resubmit as success rather than an error.
-    if (error && error.code !== "23505") throw error;
+    if (error) throw error;
     return { ok: true };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : String(e) };

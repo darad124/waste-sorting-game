@@ -9,7 +9,6 @@ import {
   type AgeRange,
   type GameMode,
 } from "../api/feedback";
-import { markPrompted } from "../utils/feedbackGate";
 import { playSound } from "../utils/audio";
 
 interface FeedbackPromptProps {
@@ -42,11 +41,6 @@ export const FeedbackPrompt: React.FC<FeedbackPromptProps> = ({
   const [status, setStatus] = useState<"idle" | "sending" | "done">("idle");
   const [confirmingAge, setConfirmingAge] = useState(false);
 
-  const dismiss = () => {
-    markPrompted(mode, levelId);
-    onClose();
-  };
-
   const handleSendClick = () => {
     if (enjoyed === null || status !== "idle") return;
     if (askAge) {
@@ -59,7 +53,6 @@ export const FeedbackPrompt: React.FC<FeedbackPromptProps> = ({
   const send = async () => {
     if (enjoyed === null || status !== "idle") return;
     setStatus("sending");
-    markPrompted(mode, levelId);
     playSound.correct();
 
     const ageRange: AgeRange | null = askAge ? AGE_RANGES[ageIndex].value : null;
@@ -90,7 +83,7 @@ export const FeedbackPrompt: React.FC<FeedbackPromptProps> = ({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 backdrop-blur-sm p-4"
-      onClick={dismiss}
+      onClick={onClose}
     >
       <motion.div
         initial={{ scale: 0.9, y: 20 }}
@@ -101,7 +94,7 @@ export const FeedbackPrompt: React.FC<FeedbackPromptProps> = ({
         className="w-full max-w-sm bg-[#fde047] rounded-3xl p-5 shadow-2xl border-2 border-slate-950/10 relative"
       >
         <button
-          onClick={dismiss}
+          onClick={onClose}
           aria-label="Dismiss"
           className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/60 hover:bg-white flex items-center justify-center text-slate-600 cursor-pointer transition-colors"
         >

@@ -6,7 +6,6 @@ import { ItemSVG } from "../components/ItemSVG";
 import { triggerConfetti } from "../components/ParticleEmitter";
 import { ShareButton } from "../components/ShareButton";
 import { FeedbackPrompt } from "../components/FeedbackPrompt";
-import { canPrompt } from "../utils/feedbackGate";
 import { useGameStore } from "../state/gameStore";
 
 interface TriviaQuestion {
@@ -500,7 +499,7 @@ export const TriviaScreen: React.FC<TriviaScreenProps> = ({ onBack }) => {
   const activeQuestion = questions[currentIndex];
 
   useEffect(() => {
-    if (isFinished && questions.length > 0 && canPrompt("trivia", null)) {
+    if (isFinished && questions.length > 0) {
       const t = setTimeout(() => setShowFeedback(true), 1200);
       return () => clearTimeout(t);
     }

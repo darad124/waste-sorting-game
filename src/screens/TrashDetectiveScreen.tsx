@@ -9,7 +9,6 @@ import { ItemSVG } from "../components/ItemSVG";
 import { playSound } from "../utils/audio";
 import { ShareButton } from "../components/ShareButton";
 import { FeedbackPrompt } from "../components/FeedbackPrompt";
-import { canPrompt } from "../utils/feedbackGate";
 import { ModeLoader } from "../components/ModeLoader";
 import { hasSeenDetectiveTutorial, markDetectiveTutorialSeen } from "../utils/tutorial";
 import {
@@ -323,7 +322,7 @@ export const TrashDetectiveScreen: React.FC<TrashDetectiveScreenProps> = ({ onBa
   const accuracy = attempts > 0 ? Math.round((foundIds.length / attempts) * 100) : 0;
 
   useEffect(() => {
-    if (gameState === "results" && canPrompt("detective", null)) {
+    if (gameState === "results") {
       const t = window.setTimeout(() => setShowFeedback(true), RULES.feedbackDelayMs);
       return () => clearTimeout(t);
     }
