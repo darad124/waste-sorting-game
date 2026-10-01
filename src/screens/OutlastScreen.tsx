@@ -13,7 +13,6 @@ import { useGameStore } from "../state/gameStore";
 import { playSound } from "../utils/audio";
 import { ShareButton } from "../components/ShareButton";
 import { FeedbackPrompt } from "../components/FeedbackPrompt";
-import { canPrompt } from "../utils/feedbackGate";
 
 /* ====================================================================== *
  *  Outlast — two objects, one question: which one outlasts the other?
@@ -246,11 +245,11 @@ export const OutlastScreen: React.FC<OutlastScreenProps> = ({ onBack }) => {
   const runOver = phase === "settled" && !wasRight;
 
   useEffect(() => {
-    if (runOver && seen >= 4 && canPrompt("hunt", null)) {
+    if (runOver) {
       const t = window.setTimeout(() => setShowFeedback(true), 1400);
       return () => window.clearTimeout(t);
     }
-  }, [runOver, seen]);
+  }, [runOver]);
 
   const restart = () => {
     setStreak(0);

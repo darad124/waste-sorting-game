@@ -6,7 +6,6 @@ import { playSound } from "../utils/audio";
 import { ItemSVG } from "../components/ItemSVG";
 import { ShareButton } from "../components/ShareButton";
 import { FeedbackPrompt } from "../components/FeedbackPrompt";
-import { canPrompt } from "../utils/feedbackGate";
 import { starsFor } from "../data/levels";
 import { AnimatePresence } from "framer-motion";
 
@@ -70,10 +69,9 @@ export const LevelResultScreen: React.FC<LevelResultScreenProps> = ({
     }
   }, [sortedItems]);
 
-  // Offer the feedback prompt shortly after results land (throttled).
+  // Offer the feedback prompt shortly after results land, every play.
   useEffect(() => {
     if (!currentLevel) return;
-    if (!canPrompt("arcade", currentLevel.id)) return;
     const t = setTimeout(() => setShowFeedback(true), 1400);
     return () => clearTimeout(t);
   }, [currentLevel]);
